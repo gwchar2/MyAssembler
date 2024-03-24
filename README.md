@@ -1,2 +1,2 @@
-# MyAssembler
-This is my very own Assembler, for my very own low-level language!
+# Assembler
+This is an encrypted assembler, for a brand new low-level language!
