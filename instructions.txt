@@ -1,4 +1,4 @@
-hardware:
+HARDWARE:
 The computer in the project is build from a CPU, registers, and RAM. some of the ram is used as a stack.
 
 The processor has 9 registers
@@ -39,10 +39,6 @@ Label word:
 	bits 13-12-11-10-9-8-7-6-5-4-3-2 = Address of label 12 bit
 	bits 1-0 = ARE (10 if internal address, 00 if external address)
 
-
-
-
-
 קוד הפעולה תמיד אותיות קטנות
 0 mov
 1 cmp
@@ -61,7 +57,8 @@ Label word:
 14 rts
 15 hlt
 
-Split into 3 groups:
+The commands are split into 3 groups:
+
 First group : These get 2 operands.
 0 mov A, r1 - Copies A to r1
 1 cmp A, r1 - If A = r1, than PSW = Z (Turned on 1) else Turned off (0)
@@ -85,7 +82,7 @@ rts - return to last PC from PC Stack (pop() from PC stack!)
 hlt - exit
 
 
-Macros:
+MACROS:
 Whenever we meet m_mcr in text, we paste the 2 following lines that are in the macro (can be more, user dependent)
 mcr m_mcr
 	inc r2
@@ -104,7 +101,7 @@ length of line in file is up to 80 characters not including \n
 משפת הוראה command sentences - one of the commands above
 משפט הגדרת קבוע define sentences - #define A 5 משפט הגדרת קבוע הנותן שם סימבולי המייצג קבוע מספרי
 
-labled sentences:
+LABLED SENTENCES:
 .data :
 מופרדים בפסיקים, לאו דווקא צמודים
 XYZ is name of the data array (array of ints)
@@ -142,7 +139,7 @@ NOTICE:
 
 
 
-משפת הוראה command sentences:
+משפת הוראה COMMAND SENTENCES:
 התווית אינה חובה
 1. label: opcode source-operand, target-operand
 	HELLO: add r7, B
@@ -151,7 +148,7 @@ NOTICE:
 3. label: opcode
 	END: hlt
 
-משפט הגדרת קבוע define sentences:
+משפט הגדרת קבוע DEFINE SENTENCES:
 .define קבוע-מספרי = שם-הקבוע
 אסור להגדיר את אותו שם קבוע יותר מפעם אחד
 אותו סמל לא יכול לשמש הן כשם של קבוע והן כתווית באותה תוכנית.(.extern / .entry)
