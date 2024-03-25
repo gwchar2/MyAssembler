@@ -21,5 +21,3 @@ struct Error {
         struct mac_text *text ;
         struct macro *next;
     }
-
-#define michal 222
