@@ -22,4 +22,5 @@ struct Error {
         struct macro *next;
     }
 
+#define michal 222
 
