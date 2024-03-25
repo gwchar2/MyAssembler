@@ -57,3 +57,10 @@ funcs.c
 myAssembler
 preAssembler.c
 temp.c
+assembler
+funcs.c
+makefile
+myAssembler
+preAssembler.c
+temp.c
+makefile
