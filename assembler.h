@@ -23,4 +23,3 @@ struct Error {
     }
 
 #define michal 222
-
