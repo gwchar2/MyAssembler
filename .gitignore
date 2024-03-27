@@ -50,3 +50,17 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+*.o
+makefile
+assembler
+funcs.c
+myAssembler
+preAssembler.c
+temp.c
+assembler
+funcs.c
+makefile
+myAssembler
+preAssembler.c
+temp.c
+makefile

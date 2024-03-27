@@ -20,21 +20,20 @@ struct Error {
         char *text;
         struct mac_text *next;
     } mac_text ;
+
     typedef struct macro {
         char *mac_name ;
         struct mac_text *text ;
         struct macro *next;
     } macro ;
 
-
     extern char *commands[];
     extern struct Error errors[];
     extern macro *head ; 
 
-
     /* pre-assembler functions prototypes */
-    void preAssembler(FILE *fp, char* clean_file_name) ;
 
+    void preAssembler(FILE *fp, char* clean_file_name) ;
     mac_text *createText (char *line) ;
     macro *createMacro (char *name, char *line) ;
     void addMcr(char *name, FILE *fp, macro **head) ;
