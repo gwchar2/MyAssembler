@@ -4,6 +4,8 @@
 #define MAX_LINE_LEN 80
 #define MAX_ENDING_LEN 11
 #define BIN_WORD_LEN 14
+#define NUM_OF_REGISTERS 8
+# define NUM_OF_SAVED_WORDS 10
 
 
 
@@ -28,6 +30,8 @@ struct Error {
         struct macro *next;
     } macro ;
 
+    extern char *saved_words[];
+    extern char *registers[];
     extern char *commands[];
     extern struct Error errors[];
     extern macro *head ; 

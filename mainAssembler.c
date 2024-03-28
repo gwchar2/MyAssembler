@@ -4,6 +4,31 @@
 #include <stdlib.h>
 #include "assembler.h"
 
+    /* defining registers array */
+    char *registers[NUM_OF_REGISTERS] = {
+        "r0",
+        "r1",
+        "r2",
+        "r3",
+        "r4",
+        "r5",
+        "r6",
+        "r7"
+    }
+
+    char *saved_words[NUM_OF_SAVED_WORDS] = {
+        "entry",
+        "extern",
+        "define",
+        "data",
+        "string",
+        ".entry",
+        ".extern",
+        ".define",
+        ".data",
+        ".string"
+    }
+
 
     /* defining comamnds array */
     char *commands[NUM_OF_CMDS] = {

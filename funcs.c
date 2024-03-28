@@ -97,9 +97,20 @@ void copyMcrText(macro *cur_mac, FILE *newP) {
 /* this functiond checks if the macro name is valid. returns 1 for valid. 0 for invalid. */
 int validateMcrName(char *mcr_name, macro *head) {
     int i ;
+    /* check for asembler reserved words */
     /* check the cmd name is not a command name */
     for (i=0; i<NUM_OF_CMDS; i++) {
         if (strcmp(commands[i],mcr_name) == 0)
+            return 0 ; 
+    }
+    /* check the cmd name is not a register name */
+    for (i=0; i<NUM_OF_REGISTERS; i++) {
+        if (strcmp(registers[i],mcr_name) == 0)
+            return 0 ; 
+    }
+    /* check the cmd name is not a reserved word */
+    for (i=0; i<NUM_OF_SAVED_WORDS; i++) {
+        if (strcmp(saved_words[i],mcr_name) == 0)
             return 0 ; 
     }
     /* check if mcr name was already defined */
