@@ -3,6 +3,7 @@
 #define FILE_NAME_LEN 50
 #define MAX_LINE_LEN 80
 #define MAX_ENDING_LEN 11
+#define BIN_WORD_LEN 14
 
 
 
@@ -42,3 +43,5 @@ struct Error {
     void copyMcrText(macro *cur_mac, FILE *newP) ;
     int validateMcrName(char *mcr_name, macro *head) ;
     void errorHandler() ;
+
+void binToFour(char *clean_file_name, char *str) ;

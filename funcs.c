@@ -158,3 +158,36 @@ void addText(macro *cur_mac, char *line) {
 
 }
 
+
+/* this function gets a obj file pointer and a binary string. it tranlates the binary code to encrypted 4 base code and writes the line in the obj file */
+void binToFour(FILE *obj_fp, char *str) {
+    int i ;
+    printf("in bin translate\n") ; /* test use */
+        for (i=0; i<BIN_WORD_LEN; i=i+2) {
+            if (*(str+i) == '0') {
+                if (*(str+i+1)=='0') { /* 00 */
+                    fputc('*',obj_fp) ;
+                    continue ;
+                }
+                else {/* 01 */
+                    fputc('#',obj_fp) ;
+                    continue ;
+                }
+            }
+            else {
+                if (*(str+i+1)=='0') { /* 10 */
+                    fputc('%',obj_fp) ;
+                    continue ;
+                }
+                else {/* 11 */
+                    fputc('!',obj_fp) ;
+                    continue ;
+                }
+            }
+        }
+    fputc('\n',obj_fp) ;
+    str++ ; 
+}
+
+
+

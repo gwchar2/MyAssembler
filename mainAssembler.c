@@ -83,7 +83,6 @@ int main(int argc,char *argv[]) {
     }
 
     preAssembler(fp,clean_file_name) ;
-
     
     fclose(fp);
     return 0;
