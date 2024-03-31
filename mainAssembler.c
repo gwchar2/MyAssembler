@@ -24,7 +24,18 @@ char *commands[NUM_OF_CMDS] = {
         "rts" ,
         "hlt"
 } ;    
-
+/* defining registers array */
+char *registers[NUM_OF_REGS] = {
+        "r1",
+        "r2",
+        "r3",
+        "r4",
+        "r5",
+        "r6" ,
+        "r7" ,
+        "r8",
+        "r9",
+} ;  
 /* defining errors array */
 struct Error errors[] = {
         {1,"Undefined register name\n"},

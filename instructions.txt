@@ -129,7 +129,7 @@ NOTICE:
 
 .extern:
 an extern is a parameter that isnt labled in the file before hand !!! (Not as a macro, or as a different lable at ALL!!!)
-extern alerts that assembler that the line of code represented by the lable is in a different file !
+extern alerts the assembler that the line of code represented by the lable is in a different file !
 for example, if we want to use HELLO: add #1, r1 in our file, we must start by adding 
 .extern HELLO
 to the top of the file.

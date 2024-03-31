@@ -32,7 +32,7 @@ label_node *create_label(char *line,char *label_name,int line_initialized,enum L
     new_label -> label_name = malloc(strlen(label_name) + 1);                         /* Initialize room for a new label_name string */
     check_allocation(new_label -> label_name);
     strcpy(new_label -> label_name, label_name);                                      /* Store a copy of the label_name */
-
+    
     new_label -> line_initialized = line_initialized;
     new_label -> label_type = label_type;
 
@@ -46,5 +46,20 @@ label_node *create_label(char *line,char *label_name,int line_initialized,enum L
     new_label -> row_list_head = NULL;
 
     return new_label;
+}
+
+void add_label (char *line,char *label_name,int line_initialized,enum Label_Type label_type,union Data data, label_node **head, label_node **tail) {
+    label_node *new_label = create_label(line, label_name,line_initialized,label_type,data);                           /* Creates a new node */
+    label_node *temp = *head; 
+    if ((*head) == NULL) {                                                                                              /* If the list is empty, add the new node to the top of the list */
+        (*head) = new_label;
+        (*tail) = new_label;
+        return;
+    }
+    else {
+       *tail -> next_label = new_label;
+       *tail = new_label;
+    }
+    return;
 }
 

@@ -2,6 +2,7 @@
 #define MIN_ARGV 2
 #define FILE_NAME_LEN 50
 #define MAX_LINE_LEN 80
+#define NUM_OF_REGS 9
 /* Checks if the memory for (C) was allocated properly */
 #define check_allocation(c)\
         if (c == NULL){\
@@ -32,7 +33,7 @@ struct Error {
 typedef struct Label_node{
     int line_initialized; /* The specific row where the Label was first initialized - since can only be used after initialized! */
     char line[MAX_LINE_LEN]; /* The full row it is initialized with */
-    char *label_name; /* Name of the label */
+    char label_name[31]; /* Name of the label */
     enum Label_Type label_type; /* The type of label, as written bellow */
     union Data data; /* The data stored in the label, can hold 4 different types, according to the label_type - integer is for .define ONLY*/
     struct Row_node *row_list_head;  /* Head of the list of appearences */
@@ -41,7 +42,7 @@ typedef struct Label_node{
 
 union Data {
     char string[MAX_LINE_LEN]; /* label_type = STRING_LABEL */
-    int array[max_line_len]; /* label_type = DATA_LABEL OR .define */
+    int array[MAX_LINE_LEN]; /* label_type = DATA_LABEL OR .define */
 };
 
 /*A list of appearences of a specific label */
@@ -57,9 +58,13 @@ enum Label_Type{
     DATA_LABEL, /*num array */
     ENTRY_LABEL,
     EXTERNAL_LABEL,
-    DEFINE_LABEL /* .define ls = 2 */
+    DEFINE_LABEL, /* .define ls = 2 */
+    INVALID
 };
 
 
 /**********************************************/
 extern char *commands[]; 
+extern char *registers[]; 
+extern label_node *label_head;
+extern label_node *label_tail;
