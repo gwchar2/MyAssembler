@@ -37,5 +37,4 @@ void error_manager(ErrorCode errorCode) {
             fprintf(stderr, "Error: Unknown error\n");
             break;
     }
-    exit(EXIT_FAILURE);
 }
