@@ -8,6 +8,8 @@ int curr_line_number = 0;
 int IC = 0;
 int DC = 0;
 int err_flag = 0;
+char *commands[MAX_COMMANDS];
+char *registers[MAX_REGISTERS];
 label_node *lbl_head = NULL; /* Label table head */
 label_node *dc_head = NULL; /* Data segment head */
 cmd_node *cmd_head = NULL; /* Instruction segment head */
