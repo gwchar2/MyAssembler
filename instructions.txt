@@ -206,4 +206,4 @@ Externals file format:
 NAME_OF_LABEL | (base 10) ADDRESS OF EVERY SINGLE PLACE IN THE CODE IT IS USED!! EVERY PLACE -> NEW LINE (with NAME OF LABEL)
 
 
-
+https://www.figma.com/file/vnuBfEvpOJfwIhQHCc1v6Q/Assembler?type=whiteboard&node-id=0-1&t=YVzJSuFsveAoX8L8-0
