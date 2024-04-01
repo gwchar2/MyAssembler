@@ -35,6 +35,7 @@ void scan_file(FILE *file){
                 break;
             case 3: /* Everything else */
                 /*check_command(); */
+                מיכל פה זה החלק שלך, שימי לב שיש את כל הפוינטרים שביקשת כגלובלים ולכן לא צריך לשלוח אותם לפונקציה
                 curr_line_number++;
                 break;
             default:
