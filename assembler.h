@@ -95,14 +95,6 @@ extern int err_flag;
 extern ErrorCode errorCode;
 
 /************************************
-********** QUALITY OF LIFE **********
-*************************************/
-int checkWordInArray(char *words, char* targetWord); /* searches if a targetWord exists in an array of words*/
-
-char *addFileEnding(char *file_name, int type); /* Adds the appropriate file ending */
-
-void binToFour(char *clean_file_name, char *str); /* Translates a string of 14 binary characters, to encrypted base 4 */
-/************************************
 ********** MACRO STRUCTURE ********
 *************************************/
 typedef struct mac_text {
@@ -115,6 +107,7 @@ typedef struct macro {
     struct mac_text *text;
     struct macro *next;
 } macro;
+
 extern macro *head;
 
 mac_text *createText (char *line); /* creating a new mac_text struct and setting line in it's text member */
@@ -175,7 +168,6 @@ typedef struct Row_node{
 extern label_node *lbl_head; /* Label table head */
 extern label_node *dc_head; /* Data segment head */
 
-
 label_node *create_label(int line_init, char *label_name,Label_Type label_type); /* This function creates a word_node according to the label name, type, initiated address and sets everything else to NULL */
 
 void add_label (int line_init, char *label_name,Label_Type label_type); /* This function adds a label to the list */
@@ -190,6 +182,17 @@ row_node *create_row(int address); /* This function creates a row_node */
 
 void add_row(label_node *cur_label, int address); /* This function adds an address to the specific label node  */
 
+/************************************
+********** QUALITY OF LIFE **********
+*************************************/
+int checkWordInArray(char *words, char* targetWord); /* searches if a targetWord exists in an array of words*/
+
+char *addFileEnding(char *file_name, int type); /* Adds the appropriate file ending */
+
+void binToFour(char *clean_file_name, char *str); /* Translates a string of 14 binary characters, to encrypted base 4 */
+
+int check_first_word (char *word); /* Checks the first word in every line */
+
 /**********************
 **** ERROR HANDLER ****
 **********************/
@@ -202,7 +205,7 @@ void preAssembler(FILE *fp, char* clean_file_name); /* Inputs all macros */
 
 void scan_file(FILE *file); /* Scans the .am file for the first time */
 
-int check_first_word (char *word); /* Checks the first word in every line */
+
 
 
 #endif
