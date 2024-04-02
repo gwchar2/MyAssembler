@@ -1,8 +1,8 @@
 #include "../include/assembler.h"
 
-void error_manager(ErrorCode errorCode) {
+int error_manager(ErrorCode errorCode) {
     err_flag++;
-    switch (errorCode) {
+    switch (errorCode-1) {
         case ERR_UNDEFINED_REGISTER:
             fprintf(stderr, "Error: Undefined register name\n");
             break;
