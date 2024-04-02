@@ -67,7 +67,8 @@ label_node *label_exists(char *curr_label) {
 
 
 /*
-*   This command receives a variable and prints the coresponding list. 
+*   This function receives a variable and prints the coresponding list. 
+*   Enter 1 for label list, 2 for dc list, and 3 for instruction list.
 */
 void printList(int num){
     label_node *temp = NULL;
@@ -152,8 +153,8 @@ void printList(int num){
 }
 
 /*
-*   This function frees the dynamicaly allocated nodes in the list 
-*   1 for label lest, 2 for dc list, 3 for cmd list
+*   This function frees the dynamicaly allocated nodes in the list.
+*   Enter 1 for label list, 2 for dc list, and 3 for instruction list.
 */
 void free_list(int num) {
     label_node *current_label = lbl_head;
