@@ -1,32 +1,10 @@
-MainAssembler: build/MainAssembler.o build/breakdown.o build/error_handler.o build/funcs.o build/preAssembler.o build/label_nodes.o build/row_nodes.o build/macro_nodes.o
-	gcc -g -ansi -Wall -pedantic build/MainAssembler.o build/breakdown.o build/error_handler.o build/funcs.o build/preAssembler.o build/label_nodes.o build/row_nodes.o build/macro_nodes.o -o MainAssembler
-
-build/MainAssembler.o: src/mainAssembler.c include/assembler.h | build
-	gcc -ansi -Wall -pedantic -c src/mainAssembler.c -o build/MainAssembler.o
-
-build/breakdown.o: lib/breakdown.c | build
-	gcc -ansi -Wall -pedantic -c lib/breakdown.c -o build/breakdown.o
-
-build/error_handler.o: lib/error_handler.c | build
-	gcc -ansi -Wall -pedantic -c lib/error_handler.c -o build/error_handler.o
-
-build/funcs.o: lib/funcs.c | build
-	gcc -ansi -Wall -pedantic -c lib/funcs.c -o build/funcs.o
-
-build/preAssembler.o: lib/preAssembler.c | build
-	gcc -ansi -Wall -pedantic -c lib/preAssembler.c -o build/preAssembler.o
-
-build/label_nodes.o: data_structures/label_nodes.c | build
-	gcc -ansi -Wall -pedantic -c data_structures/label_nodes.c -o build/label_nodes.o
-
-build/row_nodes.o: data_structures/row_nodes.c | build
-	gcc -ansi -Wall -pedantic -c data_structures/row_nodes.c -o build/row_nodes.o
-
-build/macro_nodes.o: data_structures/macro_nodes.c | build
-	gcc -ansi -Wall -pedantic -c data_structures/macro_nodes.c -o build/macro_nodes.o
-
-build:
-	mkdir -p build
-
+myAssembler: mainAssembler.o funcs.o preAssembler.o
+	gcc -ansi -Wall -g -pedantic mainAssembler.o funcs.o preAssembler.o -o myAssembler 
+mainAssmebler.o: mainAssembler.c assembler.h 
+	gcc -ansi -Wall -c -pedantic mainAssembler.c -o mainAssembler.o
+funcs.o: funcs.c assembler.h
+	gcc -ansi -Wall -c -pedantic funcs.c -o funcs.o	
+preAssembler.o: preAssembler.c assembler.h
+	gcc -ansi -Wall -c -pedantic preAssembler.c -o preAssembler.o	
 clean:
 	rm -rf build/*.o MainAssembler
