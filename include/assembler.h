@@ -44,6 +44,7 @@ typedef enum Label_Type{
     CMD_LABEL,
     DATA_LABEL, /* Includes string, but if it is string, it must have \0 as last data array (14 zeros)*/
     ENTRY_LABEL,
+    DEF_LABEL,
     EXTERNAL_LABEL
 } Label_Type;
 
@@ -121,8 +122,9 @@ extern cmd_node *cmd_head; /* Instruction segment head */
 *************************************/
 typedef struct Label_node{
     int line_init; /* Address the label was intialized in */
-    char *label_name; /* Label name */
     int data_count; /* Total amount of data stored in the label */
+    int definedData; /* The immediate value of a define label */
+    char *label_name; /* Label name */
     enum Label_Type label_type; /* Type of label */
 
     struct Bin_data *data; /* The data list */
