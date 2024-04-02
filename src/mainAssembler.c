@@ -6,25 +6,26 @@
 
 
 char *commands[NUM_OF_CMDS] = {
-    "mov",
-    "cmp",
-    "add",
-    "sub",
-    "not",
-    "clr" ,
-    "lea" ,
-    "inc",
-    "dec",
-    "jmp",
-    "bne",
-    "red",
-    "prn",
-    "jsr",
-    "rts",
-    "hlt"
+    "mov", /* 0, gruop 1 */
+    "cmp", /* 1, gruop 1 */
+    "add", /* 2, gruop 1 */
+    "sub", /* 3, gruop 1 */
+    "not", /* 4, gruop 2 */
+    "clr", /* 5, gruop 2 */
+    "lea", /* 6, gruop 1 */
+    "inc", /* 7, gruop 2 */
+    "dec", /* 8, gruop 2 */
+    "jmp", /* 9, gruop 2 */
+    "bne", /* 10, gruop 2 */
+    "red", /* 11, gruop 2 */
+    "prn", /* 12, gruop 2 */
+    "jsr", /* 13, gruop 2 */
+    "rts", /* 14 */
+    "hlt" /* 15 */
 };    
 
 char *registers[NUM_OF_REGS] = {
+    "r0",
     "r1",
     "r2",
     "r3",

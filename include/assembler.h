@@ -15,8 +15,25 @@
 #define MAX_LINE_LEN 80
 #define MAX_ENDING_LEN 11
 #define BIN_WORD_LEN 14
-#define NUM_OF_REGS 9
+#define NUM_OF_REGS 10
 #define MAX_LINE_LEN 80
+#define FIRST_GROUP_VARS 2
+#define SECOMD_GROUP_VARS 1
+#define THIRD_GROUP_VARS 0
+#define COMMA ','
+#define SPACE_COMMA_DEL ", \f\r\t\v\n"
+#define BITS_IN_INT 12
+#define MAX_12BITS 2047
+#define MIN_12BITS -2048
+#define BIN_WORD_LEN 15
+#define RS_FIELD 5
+
+
+
+
+
+
+
 /* Checks if the memory for (C) was allocated properly */
 #define check_allocation(c)\
         if (c == NULL){\
@@ -38,6 +55,7 @@ typedef enum ErrorCode{
     ERR_MULTIPLE_CONSECUTIVE_COMMAS,
     ERR_SEGMENTATION_FAULT,
     ERR_REDEFINITION_MACRO
+    ERR_ILLEGAL_ADDRESSING,
 } ErrorCode; 
 
 typedef enum Label_Type{
@@ -106,11 +124,14 @@ void addText(macro *cur_mac, char *line);
 typedef struct Cmd_node{
     int address; /* The instruction count */
     int total_vars; /* The total amount of variables it holds */
+    int L; /* num of bin words */
     char *binary_cmd;
-    char *var1_binary;
-    char *var2_binary;
-    char *var3_binary;
-    char *var4_binary; 
+    int sourceAdd;
+    int targetAdd;
+    char *source1_binary;
+    char *source2_binary;
+    char *target1_binary;
+    char *target2_binary; 
     struct Cmd_node *next_cmd; /* Next cmd */
     struct Label_node *next_label; /* Next label (null until merging with DC ) */
 } cmd_node;
