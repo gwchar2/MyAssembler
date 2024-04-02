@@ -123,20 +123,20 @@ extern cmd_node *cmd_head; /* Instruction segment head */
 typedef struct Label_node{
     int line_init; /* Address the label was intialized in */
     int data_count; /* Total amount of data stored in the label */
-    int definedData; /* The immediate value of a define label */
+    int definedData; /* The immediate value of a define label or extern (-1)*/
     char *label_name; /* Label name */
     enum Label_Type label_type; /* Type of label */
 
-    struct Bin_data *data; /* The data list */
+    struct data *data; /* The data list */
     struct Row_node *row_list; /* The row list (the rows which it appears in )*/
     struct Label_node *next_label; /* Next label */
     struct Label_node *prev_label; /* Prev label */
 } label_node;
 
-typedef struct Bin_data{ /* For string, we put in ascii values */
-    char string[15];
-    struct Bin_data *next_data;
-} bin_data;
+typedef struct data{ /* For string, we put in ascii values */
+    int data;
+    struct data *next_data;
+} data;
 
 typedef struct Row_node{
     int address;
