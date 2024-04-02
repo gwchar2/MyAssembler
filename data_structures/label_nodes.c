@@ -18,7 +18,7 @@ label_node *create_label(int line_init, char *label_name,Label_Type label_type){
 
     new_label -> line_init = line_init;
     new_label -> label_type = label_type;
-
+    new_label -> definedData = NULL;
     new_label -> data_count = 0;
     new_label -> data = NULL;
     new_label -> row_list = NULL;
@@ -93,16 +93,21 @@ void printList(int num){
             }
             temp = lbl_head;
             while (temp != NULL){
-                printf("[%s] Holds the following data in binary\n",temp -> label_name);
-                data_temp = temp -> data;
-                while (data_temp != NULL){
-                    if (data_temp -> next_data == NULL)
-                        printf("%s\n",data_temp -> string);
-                    else
-                        printf("%s,",data_temp -> string);
-                    data_temp = data_temp -> next_data;
+                printf("[%s] Holds the following data \n",temp -> label_name);
+                if (temp -> label_type == DEF_LABEL){
+                    printf("%d",temp -> definedData);
                 }
-                temp = temp -> next_label;
+                else {
+                    data_temp = temp -> data;
+                    while (data_temp != NULL){
+                        if (data_temp -> next_data == NULL)
+                            printf("%s\n",data_temp -> string);
+                        else
+                            printf("%s,",data_temp -> string);
+                        data_temp = data_temp -> next_data;
+                    }
+                    temp = temp -> next_label;
+                }
             }
             break;
         case 2: /* dc list */
