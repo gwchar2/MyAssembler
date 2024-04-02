@@ -18,7 +18,7 @@ label_node *create_label(int line_init, char *label_name,Label_Type label_type){
 
     new_label -> line_init = line_init;
     new_label -> label_type = label_type;
-    new_label -> definedData = NULL;
+    new_label -> definedData = -1;
     new_label -> data_count = 0;
     new_label -> data = NULL;
     new_label -> row_list = NULL;
@@ -73,7 +73,7 @@ label_node *label_exists(char *curr_label) {
 void printList(int num){
     label_node *temp = NULL;
     cmd_node *cmd_temp = NULL;
-    bin_data *data_temp = NULL; 
+    data *data_temp = NULL; 
     row_node *row_temp = NULL; 
     switch (num){
         case 1: /* label list */
@@ -101,9 +101,9 @@ void printList(int num){
                     data_temp = temp -> data;
                     while (data_temp != NULL){
                         if (data_temp -> next_data == NULL)
-                            printf("%s\n",data_temp -> data);
+                            printf("%d\n",data_temp -> data);
                         else
-                            printf("%s,",data_temp -> data);
+                            printf("%d,",data_temp -> data);
                         data_temp = data_temp -> next_data;
                     }
                     temp = temp -> next_label;
@@ -166,8 +166,8 @@ void free_list(int num) {
     label_node *temp_label = NULL;
     row_node *current_row = NULL;
     row_node *temp_row = NULL;
-    bin_data *current_data = NULL;
-    bin_data *temp_data = NULL;
+    data *current_data = NULL;
+    data *temp_data = NULL;
     cmd_node *current_cmd = NULL;
     cmd_node *temp_cmd = NULL;
     switch(num){
@@ -180,7 +180,7 @@ void free_list(int num) {
             temp_data = NULL;
             while (current_label != NULL) {
                 current_row = current_label->row_list;
-                current_data = current_label->data;
+                current_data = current_label -> data;
                 while (current_row != NULL) {
                     temp_row = current_row->next_row;
                     free(current_row);
