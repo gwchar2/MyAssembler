@@ -101,9 +101,9 @@ void printList(int num){
                     data_temp = temp -> data;
                     while (data_temp != NULL){
                         if (data_temp -> next_data == NULL)
-                            printf("%s\n",data_temp -> string);
+                            printf("%s\n",data_temp -> data);
                         else
-                            printf("%s,",data_temp -> string);
+                            printf("%s,",data_temp -> data);
                         data_temp = data_temp -> next_data;
                     }
                     temp = temp -> next_label;
@@ -127,13 +127,13 @@ void printList(int num){
             }
             temp = dc_head;
             while (temp != NULL){
-                printf("[%s] Holds the following data in binary\n",temp -> label_name);
+                printf("[%s] Holds the following data\n",temp -> label_name);
                 data_temp = temp -> data;
                 while (data_temp != NULL){
                     if (data_temp -> next_data == NULL)
-                        printf("%s\n",data_temp -> string);
+                        printf("%d\n",data_temp -> data);
                     else
-                        printf("%s,",data_temp -> string);
+                        printf("%d,",data_temp -> data);
                     data_temp = data_temp -> next_data;
                 }
                 temp = temp -> next_label;
