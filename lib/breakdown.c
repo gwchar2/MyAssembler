@@ -22,6 +22,7 @@ void scan_file(FILE *file){
         pointer = strtok(inputCopy, " \t"); /* Get the first word from the line */
         /*test*/
         printf("Line: %s",inputCopy);
+        /* להבנתי, צריך אחרי כל קריאה לאחת מן הפונקציות, לבצע בדיקת של ספירת השגיאות,*/
         switch (check_first_word(pointer)){
             case 0: /* Blank or note line - ignore */
                 break; 

@@ -36,6 +36,9 @@ int error_manager(ErrorCode errorCode) {
         case ERR_ILLEGAL_ADDRESSING:
             fprintf(stderr, "Error: Illegal addressing method in line %d\n", curr_line_number);
             return 1;
+        case: ERR_IMM_OVERFLOW:
+            fprintf(stderr, "Error: Immidiate overflow in line %d\n", curr_line_number);
+            return 1;
         default:
             fprintf(stderr, "Error: Unknown error in line %d\n", curr_line_number);
             return 1;

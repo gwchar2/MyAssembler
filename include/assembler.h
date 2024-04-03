@@ -27,6 +27,7 @@
 #define MIN_12BITS -2048
 #define BIN_WORD_LEN 15
 #define RS_FIELD 5
+#define LSB 13
 
 
 
@@ -56,6 +57,7 @@ typedef enum ErrorCode{
     ERR_SEGMENTATION_FAULT,
     ERR_REDEFINITION_MACRO
     ERR_ILLEGAL_ADDRESSING,
+    ERR_IMM_OVERFLOW
 } ErrorCode; 
 
 typedef enum Label_Type{
