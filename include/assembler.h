@@ -12,11 +12,10 @@
 #define NUM_OF_CMDS 16
 #define MIN_ARGV 2
 #define FILE_NAME_LEN 50
-#define MAX_LINE_LEN 80
+#define MAX_LINE_LEN 81
 #define MAX_ENDING_LEN 11
 #define BIN_WORD_LEN 14
 #define NUM_OF_REGS 9
-#define MAX_LINE_LEN 80
 /* Checks if the memory for (C) was allocated properly */
 #define check_allocation(c)\
         if (c == NULL){\
@@ -31,21 +30,26 @@ typedef enum ErrorCode{
     ERR_UNDEFINED_REGISTER,
     ERR_UNDEFINED_COMMAND,
     ERR_EXTRANEOUS_TEXT,
+    ERR_EXTRANEOUS_LABEL,
     ERR_UNDEFINED_ARGUMENT,
     ERR_MISSING_ARGUMENT,
     ERR_ILLEGAL_COMMA,
     ERR_MISSING_COMMA,
     ERR_MULTIPLE_CONSECUTIVE_COMMAS,
     ERR_SEGMENTATION_FAULT,
-    ERR_REDEFINITION_MACRO
+    ERR_REDEFINITION_MACRO,
+    ERR_SIZE_LEAK,
+    ERR_DUPLICATE_LABEL
 } ErrorCode; 
 
 typedef enum Label_Type{
     CMD_LABEL,
-    DATA_LABEL, /* Includes string, but if it is string, it must have \0 as last data array (14 zeros)*/
+    DATA_LABEL, 
     ENTRY_LABEL,
     DEF_LABEL,
-    EXTERNAL_LABEL
+    EXTERNAL_LABEL,
+    STRING_LABEL,
+    INVALID
 } Label_Type;
 
 enum ending_type {
@@ -56,22 +60,14 @@ enum ending_type {
         entreis
 };
 
-extern char *commands[];
-extern char *registers[];
+extern char *commands[NUM_OF_CMDS];
+extern char *registers[NUM_OF_REGS];
 extern int curr_line_number;
 extern int IC;
 extern int DC;
 extern int err_flag;
 extern ErrorCode errorCode;
 
-/************************************
-********** QUALITY OF LIFE **********
-*************************************/
-int checkWordInArray(char *words, char* targetWord); /* searches if a targetWord exists in an array of words*/
-
-char *addFileEnding(char *file_name, int type); /* Adds the appropriate file ending */
-
-void binToFour(FILE *obj_fp, char *str); /* Translates a string of 14 binary characters, to encrypted base 4 */
 /************************************
 ********** MACRO STRUCTURE ********
 *************************************/
@@ -105,8 +101,9 @@ void addText(macro *cur_mac, char *line);
 ********** COMMAND STRUCTURE ********
 *************************************/
 typedef struct Cmd_node{
-    int address; /* The instruction count */
-    int total_vars; /* The total amount of variables it holds */
+    int address;                                                            /* The instruction count */
+    int total_vars;                                                         /* The total amount of variables it holds */
+    int L;
     char *binary_cmd;
     char *var1_binary;
     char *var2_binary;
@@ -117,17 +114,19 @@ typedef struct Cmd_node{
 } cmd_node;
 
 extern cmd_node *cmd_head; /* Instruction segment head */
+
 /************************************
 ********** LABEL STRUCTURE **********
 *************************************/
 typedef struct Label_node{
-    int line_init; /* Address the label was intialized in */
-    int data_count; /* Total amount of data stored in the label */
-    int definedData; /* The immediate value of a define label or extern (-1)*/
-    char *label_name; /* Label name */
-    enum Label_Type label_type; /* Type of label */
+    int line_init;                                                                      /* Address the label was intialized in */
+    int data_count;                                                                     /* Total amount of data stored in the label */
+    int definedData;                                                                    /* The immediate value of a define label or extern (-1)*/
+    char *label_name;                                                                   /* Label name */
+    int entry_count;                                                                    /* 0 if an entry doesnt have a 'partner' yet, 1 if it does. */
+    enum Label_Type label_type;                                                         /* Type of label */
 
-    struct data *data; /* The data list */
+    struct data *data;                                                                  /* The data list */
     struct Row_node *row_list; /* The row list (the rows which it appears in )*/
     struct Label_node *next_label; /* Next label */
     struct Label_node *prev_label; /* Prev label */
@@ -160,20 +159,65 @@ void free_list(int num); /* Frees the list, 1 for label list, 2 for dc list, 3 f
 row_node *create_row(int address); /* This function creates a row_node */
 
 void add_row(label_node *cur_label, int address); /* This function adds an address to the specific label node  */
+/************************************
+********** QUALITY OF LIFE **********
+*************************************/
+int checkWordInArray(char **words, char* targetWord); /* This function checks to see if a targetWord exists in a word_array */
 
-/**********************
-**** ERROR HANDLER ****
-**********************/
+char *addFileEnding(char *file_name, int type); /* Adds the appropriate file ending */
+
+void binToFour(FILE *obj_fp, char *str); /* Translates a string of 14 binary characters, to encrypted base 4 */
+/************************************
+*********** ERROR HANDLER ***********
+*************************************/
 void error_manager(ErrorCode errorCode); /* Prints the appropriate error message */
 
-/***************************
-****** MAIN FUNCTIONS *****
-***************************/
+
+
+/************************************
+*********** LABEL HANDLER ***********
+*************************************/
+int check_first_word (char *word); /* This function receives a word and checks what type of label it can potentialy be. */
+
+Label_Type getLabelType(char *pointer); /* This function receives a word and returns the type of label it represents */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/************************************
+********** MAIN FUNCTIONS ***********
+*************************************/
 void preAssembler(FILE *fp, char* clean_file_name); /* Inputs all macros */ 
 
 void scan_file(FILE *file); /* Scans the .am file for the first time */
 
-int check_first_word (char *word); /* Checks the first word in every line */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 #endif

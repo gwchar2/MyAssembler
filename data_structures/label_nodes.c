@@ -19,6 +19,7 @@ label_node *create_label(int line_init, char *label_name,Label_Type label_type){
     new_label -> line_init = line_init;
     new_label -> label_type = label_type;
     new_label -> definedData = -1;
+    new_label -> entry_count = 0;
     new_label -> data_count = 0;
     new_label -> data = NULL;
     new_label -> row_list = NULL;
@@ -54,9 +55,9 @@ void add_label (int line_init, char *label_name,Label_Type label_type) {
 label_node *label_exists(char *curr_label) {
     label_node *temp = lbl_head;
     if (lbl_head==NULL)
-        return NULL;                                                        /* Returns if the list is empty */
+        return NULL;                                                                                /* Returns if the list is empty */
     while (temp != NULL) {
-        if (strcmp(temp -> label_name,curr_label) == 0)                            /* Goes through the list and compares the names */
+        if (strcmp(temp -> label_name,curr_label) == 0)                                             /* Goes through the list and compares the names */
             return temp;
         temp = temp -> next_label; 
     }
@@ -75,11 +76,12 @@ void printList(int num){
     cmd_node *cmd_temp = NULL;
     data *data_temp = NULL; 
     row_node *row_temp = NULL; 
+    printf("\n");
     switch (num){
         case 1: /* label list */
             temp = lbl_head;
             while (temp != NULL){
-                printf("[%s] is of type [%d]\n",temp -> label_name,temp -> label_type);
+                printf("[%s] is initialized in line [%d] is of type [%d]\n",temp -> label_name,temp -> line_init,temp -> label_type);
                 printf("[%s] appears in rows\n",temp -> label_name);
                 row_temp = temp -> row_list;
                 while (row_temp != NULL){
@@ -113,7 +115,7 @@ void printList(int num){
         case 2: /* dc list */
             temp = dc_head;
             while (temp != NULL){
-                printf("[%s] is of type [%d]\n",temp -> label_name,temp -> label_type);
+                printf("[%s] is initialized in line [%d] is of type [%d]\n",temp -> label_name,temp -> line_init,temp -> label_type);
                 printf("[%s] appears in rows\n",temp -> label_name);
                 row_temp = temp -> row_list;
                 while (row_temp != NULL){
@@ -236,3 +238,5 @@ void free_list(int num) {
     return;
 
 }
+
+
