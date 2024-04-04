@@ -16,9 +16,38 @@ void scan_file(FILE *file){
                 break;
             }
         }
+
+        inputCopy = (char *)malloc(strlen(line) + 1); 
+        check_allocation(inputCopy);
+        strcpy(inputCopy, line); 
+
+        pointer = strtok(inputCopy, " \t"); /* Get the first word from the line */
+        /*test*/
+        printf("Line: %s",inputCopy);
+        /* להבנתי, צריך אחרי כל קריאה לאחת מן הפונקציות, לבצע בדיקת של ספירת השגיאות,*/
+        switch (check_first_word(pointer)){
+            case 0: /* Blank or note line - ignore */
+                break; 
+            case 1: /* .define .extern or .entry line */
+               /* check_symbol(pointer);*/
+                curr_line_number++;
+                break;
+            case 2: /* potential label */
+               /* check_label(pointer); */
+                curr_line_number++;
+                break;
+            case 3: /* Everything else */
+                /*check_command(); return 0 if no error found. return 1 if error found. */ 
+               /* מיכל פה זה החלק שלך, שימי לב שיש את כל הפוינטרים שביקשת כגלובלים ולכן לא צריך לשלוח אותם לפונקציה*/
+                curr_line_number++;
+                break;
+            default:
+                break;
+
         if (strlen(line) == MAX_LINE_LEN - 1 && line[MAX_LINE_LEN - 2] != '\n') {           /* Checking to see if the array is full without \n */
             errorCode = ERR_SIZE_LEAK;
             error_manager(errorCode);
+
         }
         else {
             inputCopy = (char *)malloc(strlen(line) + 1); 
