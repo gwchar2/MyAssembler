@@ -79,5 +79,17 @@ void binToFour(FILE *obj_fp, char *str) {
     str++ ; 
 }
 
-
+/* 
+*   This function checks to see if a targetWord exists in a word_array
+*/
+int checkWordInArray(char **word_array, char *targetWord){
+    int i,len;
+    len = strlen(*word_array);
+    for (i = 0; i < len ; i++){
+        if (strcmp(word_array[i],targetWord) == 0){
+            return 1;
+        }
+    }   
+    return 0;
+}
 
