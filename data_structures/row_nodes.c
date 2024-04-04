@@ -20,7 +20,7 @@ row_node *create_row(int address){
 /*
 *   This function adds a row to the specific label node 
 */
-void add_row(label_node *cur_label, int address) {
+void *add_row(label_node *cur_label, int address) {
     row_node *new_row = create_row(address); 
     row_node *cur_row = cur_label -> row_list;
 

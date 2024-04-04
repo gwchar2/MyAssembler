@@ -21,29 +21,23 @@ void preAssembler(FILE *fp, char* clean_file_name) {
     /* adding the .am ending */
     temp_name = addFileEnding(clean_file_name,1) ;
     file_name = (char*)malloc(strlen(temp_name)+1) ;/* allocate memory for file name with ending */
-    if (file_name == NULL) {
-        fprintf(stderr, "error: memory allocation failed.\n");
-        exit(1) ; 
-    }
-    strcpy(file_name,temp_name) ; /* file name updated with the correct .am ending */
+    check_allocation(file_name);
+    strcpy(file_name,temp_name); /* file name updated with the correct .am ending */
 
-    newP = fopen(file_name,"w") ;
-    if (newP == NULL){
-        fprintf(stderr, "error: file opening failed.\n");
-        exit(1) ;
-    }
+    newP = fopen(file_name,"w");
+    check_allocation(newP);
 
     /* going through the source file, spreading macros to the new .am file */
     while((fgets(cur_line, MAX_LINE_LEN, fp)) != NULL) {
         strcpy(copy_line,cur_line) ; /* copying current line */
         token = strtok(copy_line," \n\t"); /* cut first word */
-        temp_mac = searchMcrList(token, head) ;
+        temp_mac = searchMcrList(token, head);
         if (temp_mac != NULL) {/* word found in macro list */
-            copyMcrText(temp_mac,newP) ; /* writing macro content in the new file */
+            copyMcrText(temp_mac,newP); /* writing macro content in the new file */
             continue ; /* get next line */
         }
         if (strcmp(token,"mcr") == 0){
-            token = strtok(NULL," \n\t") ; /* cut macro name */
+            token = strtok(NULL," \n\t"); /* cut macro name */
             if (validateMcrName(token, head)) {/* return 1 if name is new and legal. else, returns 0;  */
                 addMcr(token,fp,&head) ; /* add macro to list with it's content. return after endmcr */
                 continue ;
@@ -52,7 +46,7 @@ void preAssembler(FILE *fp, char* clean_file_name) {
                 errorCode = 10;/* "Redefenition of macro name" */
                 error_manager(errorCode);
             }
-            continue ;
+            continue;
         }
         /* no macro defenition or use. copy line as is */
         fputs(cur_line,newP) ;

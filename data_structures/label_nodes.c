@@ -9,7 +9,7 @@
 /*
 *   This function creates a word_node according to the label name, type, initiated address and sets everything else to NULL
 */
-label_node *create_label(int line_init, char *label_name,Label_Type label_type){
+label_node *create_label(int line_init,int definedData,char *label_name,int entry_count,Label_Type label_type){
     label_node *new_label = malloc(sizeof(label_node));                        /* Initialize room for a new label node */
     check_allocation(new_label);
     new_label -> label_name = malloc(strlen(label_name) + 1);                         /* Initialize room for a new label string */
@@ -18,46 +18,49 @@ label_node *create_label(int line_init, char *label_name,Label_Type label_type){
 
     new_label -> line_init = line_init;
     new_label -> label_type = label_type;
-    new_label -> definedData = -1;
-    new_label -> entry_count = 0;
+    new_label -> definedData = definedData;
+    new_label -> entry_count = entry_count;
     new_label -> data_count = 0;
-    new_label -> data = NULL;
+    new_label -> data_node = NULL;
     new_label -> row_list = NULL;
     new_label -> next_label = NULL;
     new_label -> prev_label = NULL;
     return new_label;
 }
+
 /*
 *   This function adds a label to the list
- */
-void add_label (int line_init, char *label_name,Label_Type label_type) {
-    label_node *new_label = create_label(line_init, label_name, label_type);                           /* Creates a new node */
+*/
+void *add_label (int line_init,int definedData,char *label_name,int entry_count,Label_Type label_type) {
+
+    label_node *new_label = create_label(line_init, definedData, label_name, entry_count, label_type);                           /* Creates a new node */
     label_node *temp = lbl_head; 
     if (lbl_head == NULL) {                                                   /* If the list is empty, add the new node to the top of the list */
         lbl_head = new_label;
-        return;
     }
     else {
         while (temp -> next_label != NULL) {
             temp = temp -> next_label;      
         }  
         temp -> next_label = new_label;
-        new_label -> prev_label = temp;   
-        return;
+        new_label -> prev_label = temp;  
     }
-        
-    return;
 }
+
 
 /*
 *   This function checks if a label exists in the data list 
 */
 label_node *label_exists(char *curr_label) {
+    char *copy = NULL;
+    copy = malloc(strlen(curr_label));
+    check_allocation(copy);
+    strcpy(copy,curr_label);
     label_node *temp = lbl_head;
     if (lbl_head==NULL)
         return NULL;                                                                                /* Returns if the list is empty */
     while (temp != NULL) {
-        if (strcmp(temp -> label_name,curr_label) == 0)                                             /* Goes through the list and compares the names */
+        if (strcmp(temp -> label_name,copy) == 0)                                             /* Goes through the list and compares the names */
             return temp;
         temp = temp -> next_label; 
     }
@@ -74,71 +77,73 @@ label_node *label_exists(char *curr_label) {
 void printList(int num){
     label_node *temp = NULL;
     cmd_node *cmd_temp = NULL;
-    data *data_temp = NULL; 
+    data_node *data_temp = NULL; 
     row_node *row_temp = NULL; 
+    dc_node *dc_temp = NULL;
     printf("\n");
     switch (num){
         case 1: /* label list */
             temp = lbl_head;
             while (temp != NULL){
-                printf("[%s] is initialized in line [%d] is of type [%d]\n",temp -> label_name,temp -> line_init,temp -> label_type);
-                printf("[%s] appears in rows\n",temp -> label_name);
-                row_temp = temp -> row_list;
-                while (row_temp != NULL){
-                    if (row_temp -> next_row == NULL)
-                        printf("%d\n",row_temp -> address);
-                    else
-                        printf("%d,",row_temp -> address);
-                    row_temp = row_temp -> next_row;
+                switch (temp -> label_type){
+                    case EXTERN_LABEL:
+                        printf("[%s]-[%d]-[%d]-",temp -> label_name,temp -> label_type,temp -> line_init);
+                        row_temp = temp -> row_list;
+                        if (row_temp == NULL){
+                            printf("NONE\n");
+                        }
+                        else{
+                            while (row_temp != NULL){
+                                if (row_temp -> next_row == NULL)
+                                    printf("[%d]\n",row_temp -> address);
+                            else
+                                printf("[%d]-",row_temp -> address);
+                            row_temp = row_temp -> next_row;
+                            }
+                            printf("\n");
+                        }
+                        break;
+                    case DEF_LABEL:
+                        printf("[%s]-[%d]-[%d]\n",temp -> label_name,temp -> label_type,temp -> definedData);
+                        printf("\n");
+                        break;
+                    case ENTRY_LABEL:
+                        printf("[%s]-[%d]-[%d]\n",temp -> label_name,temp -> label_type,temp -> entry_count);
+                        printf("\n");
+                        break;
+                    case CMD_LABEL:
+                        printf("[%s]-[%d]-[%d]",temp -> label_name,temp -> label_type,temp -> line_init);
+                        printf("\n");
+                        break;
+                    default:
+                        printf("[%s]-[%d]-",temp -> label_name,temp -> label_type);
+                        data_temp = temp -> data_node;
+                        while (data_temp != NULL){
+                            if (data_temp -> next_data == NULL)
+                                printf("[%d]\n",data_temp -> data);
+                            else
+                                printf("[%d]-",data_temp -> data);
+                        data_temp = data_temp -> next_data;
+                        }
+                        printf("\n");
+                        break;
                 }
                 temp = temp -> next_label;
-            }
-            temp = lbl_head;
-            while (temp != NULL){
-                printf("[%s] Holds the following data \n",temp -> label_name);
-                if (temp -> label_type == DEF_LABEL){
-                    printf("%d",temp -> definedData);
-                }
-                else {
-                    data_temp = temp -> data;
-                    while (data_temp != NULL){
-                        if (data_temp -> next_data == NULL)
-                            printf("%d\n",data_temp -> data);
-                        else
-                            printf("%d,",data_temp -> data);
-                        data_temp = data_temp -> next_data;
-                    }
-                    temp = temp -> next_label;
-                }
             }
             break;
         case 2: /* dc list */
-            temp = dc_head;
-            while (temp != NULL){
-                printf("[%s] is initialized in line [%d] is of type [%d]\n",temp -> label_name,temp -> line_init,temp -> label_type);
-                printf("[%s] appears in rows\n",temp -> label_name);
-                row_temp = temp -> row_list;
-                while (row_temp != NULL){
-                    if (row_temp -> next_row == NULL)
-                        printf("%d\n",row_temp -> address);
-                    else
-                        printf("%d,",row_temp -> address);
-                    row_temp = row_temp -> next_row;
-                }
-                temp = temp -> next_label;
-            }
-            temp = dc_head;
-            while (temp != NULL){
-                printf("[%s] Holds the following data\n",temp -> label_name);
-                data_temp = temp -> data;
+            dc_temp = dc_head;
+            while (dc_temp != NULL){
+               printf("[%s]-[%d]-",dc_temp -> label_node -> label_name,dc_temp -> label_node ->label_type);
+                data_temp = dc_temp -> label_node -> data_node;
                 while (data_temp != NULL){
                     if (data_temp -> next_data == NULL)
-                        printf("%d\n",data_temp -> data);
+                        printf("[%d]\n",data_temp -> data);
                     else
-                        printf("%d,",data_temp -> data);
+                        printf("[%d]-",data_temp -> data);
                     data_temp = data_temp -> next_data;
                 }
-                temp = temp -> next_label;
+                printf("\n");
             }
             break;
         case 3: /* cmd list */
@@ -168,8 +173,8 @@ void free_list(int num) {
     label_node *temp_label = NULL;
     row_node *current_row = NULL;
     row_node *temp_row = NULL;
-    data *current_data = NULL;
-    data *temp_data = NULL;
+    data_node *current_data = NULL;
+    data_node *temp_data = NULL;
     cmd_node *current_cmd = NULL;
     cmd_node *temp_cmd = NULL;
     switch(num){
@@ -182,7 +187,7 @@ void free_list(int num) {
             temp_data = NULL;
             while (current_label != NULL) {
                 current_row = current_label->row_list;
-                current_data = current_label -> data;
+                current_data = current_label -> data_node;
                 while (current_row != NULL) {
                     temp_row = current_row->next_row;
                     free(current_row);
@@ -206,10 +211,10 @@ void free_list(int num) {
             current_data = NULL;
             temp_data = NULL;
             while (current_label != NULL) {
-                current_row = current_label->row_list;
-                current_data = current_label->data;
+                current_row = current_label -> row_list;
+                current_data = current_label -> data_node;
                 while (current_row != NULL) {
-                    temp_row = current_row->next_row;
+                    temp_row = current_row -> next_row;
                     free(current_row);
                     current_row = temp_row;
                 }

@@ -12,9 +12,6 @@ void error_manager(ErrorCode errorCode) {
         case ERR_EXTRANEOUS_TEXT:
             fprintf(stderr, "Error: Extraneous text after end of command in line %d\n", curr_line_number);
             break;
-        case ERR_EXTRANEOUS_LABEL:
-            fprintf(stderr, "Error: Label length in line [%d] exceeds the allowable limit \n", curr_line_number);
-            break;
         case ERR_UNDEFINED_ARGUMENT:
             fprintf(stderr, "Error: Undefined argument in line %d\n", curr_line_number);
             break;
@@ -26,6 +23,9 @@ void error_manager(ErrorCode errorCode) {
             break;
         case ERR_MISSING_COMMA:
             fprintf(stderr, "Error: Missing comma in line %d\n", curr_line_number);
+            break;
+        case ERR_MISSING_PARENTHESES:
+            fprintf(stderr, "Error: Missing parentheses in line %d\n", curr_line_number);
             break;
         case ERR_MULTIPLE_CONSECUTIVE_COMMAS:
             fprintf(stderr, "Error: Multiple consecutive commas in line %d\n", curr_line_number);
@@ -42,7 +42,9 @@ void error_manager(ErrorCode errorCode) {
         case ERR_DUPLICATE_LABEL:
             fprintf(stderr, "Error: Label in line [%d] is a duplicate! \n", curr_line_number);
             break;
-
+        case ERR_INVALID_LABEL:
+            fprintf(stderr, "Error: Invalid Label name in line %d\n", curr_line_number);
+            break;
 
 
 

@@ -22,7 +22,7 @@
             fprintf(stderr, "Error allocating memory %s",strerror(errno));\
             exit(EXIT_FAILURE);\
         }
-
+#define WHITESPACE(c) ((c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '\f' || c == '\v'))     /* Checks if a character is a whitespace */
 /********************************* 
 ****** GLOBAL INTS & ENUMS *******
 **********************************/
@@ -30,11 +30,12 @@ typedef enum ErrorCode{
     ERR_UNDEFINED_REGISTER,
     ERR_UNDEFINED_COMMAND,
     ERR_EXTRANEOUS_TEXT,
-    ERR_EXTRANEOUS_LABEL,
+    ERR_INVALID_LABEL,
     ERR_UNDEFINED_ARGUMENT,
     ERR_MISSING_ARGUMENT,
     ERR_ILLEGAL_COMMA,
     ERR_MISSING_COMMA,
+    ERR_MISSING_PARENTHESES,
     ERR_MULTIPLE_CONSECUTIVE_COMMAS,
     ERR_SEGMENTATION_FAULT,
     ERR_REDEFINITION_MACRO,
@@ -45,10 +46,10 @@ typedef enum ErrorCode{
 typedef enum Label_Type{
     CMD_LABEL,
     DATA_LABEL, 
-    ENTRY_LABEL,
-    DEF_LABEL,
-    EXTERNAL_LABEL,
     STRING_LABEL,
+    ENTRY_LABEL,
+    EXTERN_LABEL,
+    DEF_LABEL,
     INVALID
 } Label_Type;
 
@@ -57,16 +58,17 @@ enum ending_type {
         am,
         o,
         external, 
-        entreis
+        entries
 };
 
-extern char *commands[NUM_OF_CMDS];
-extern char *registers[NUM_OF_REGS];
-extern int curr_line_number;
-extern int IC;
-extern int DC;
-extern int err_flag;
-extern ErrorCode errorCode;
+extern char *commands[NUM_OF_CMDS];                                         /* Global Commands array */
+extern char *registers[NUM_OF_REGS];                                        /* Global Register array */
+extern int curr_line_number;                                                /* Current file number counter */
+extern int IC;                                                              /* IC Counter */
+extern int DC;                                                              /* DC Counter */
+extern int err_flag;                                                        /* Global error flag */
+extern int FR;                                                              /* Rotation flag */
+extern ErrorCode errorCode;                                                 /* Global error variable */
 
 /************************************
 ********** MACRO STRUCTURE ********
@@ -101,19 +103,19 @@ void addText(macro *cur_mac, char *line);
 ********** COMMAND STRUCTURE ********
 *************************************/
 typedef struct Cmd_node{
-    int address;                                                            /* The instruction count */
-    int total_vars;                                                         /* The total amount of variables it holds */
+    int address;                                                                        /* The instruction count */
+    int total_vars;                                                                     /* The total amount of variables it holds */
     int L;
     char *binary_cmd;
     char *var1_binary;
     char *var2_binary;
     char *var3_binary;
     char *var4_binary; 
-    struct Cmd_node *next_cmd; /* Next cmd */
-    struct Label_node *next_label; /* Next label (null until merging with DC ) */
+    struct Cmd_node *next_cmd;                                                          /* Next cmd */
+    struct Label_node *next_label;                                                      /* Next label (null until merging with DC ) */
 } cmd_node;
 
-extern cmd_node *cmd_head; /* Instruction segment head */
+extern cmd_node *cmd_head;                                                              /* Instruction segment head */
 
 /************************************
 ********** LABEL STRUCTURE **********
@@ -126,29 +128,34 @@ typedef struct Label_node{
     int entry_count;                                                                    /* 0 if an entry doesnt have a 'partner' yet, 1 if it does. */
     enum Label_Type label_type;                                                         /* Type of label */
 
-    struct data *data;                                                                  /* The data list */
-    struct Row_node *row_list; /* The row list (the rows which it appears in )*/
-    struct Label_node *next_label; /* Next label */
-    struct Label_node *prev_label; /* Prev label */
+    struct Data_node *data_node;                                                        /* The data list */
+    struct Row_node *row_list;                                                          /* The row list (the rows which it appears in )*/
+    struct Label_node *next_label;                                                      /* Next label */
+    struct Label_node *prev_label;                                                      /* Prev label */
 } label_node;
 
-typedef struct data{ /* For string, we put in ascii values */
+typedef struct Data_node{                                                               /* For string, we put in ascii values */
     int data;
-    struct data *next_data;
-} data;
+    struct Data_node *next_data;
+}data_node;
 
 typedef struct Row_node{
     int address;
     struct Row_node *next_row;
 } row_node;
 
-extern label_node *lbl_head; /* Label table head */
-extern label_node *dc_head; /* Data segment head */
+typedef struct DC_Node{
+    struct Label_node *label_node;    
+    struct DC_Node *next_node;
+} dc_node;
+
+extern label_node *lbl_head;                                                            /* Label table head */
+extern dc_node *dc_head;                                                                /* Data segment head */
 
 
-label_node *create_label(int line_init, char *label_name,Label_Type label_type); /* This function creates a word_node according to the label name, type, initiated address and sets everything else to NULL */
+label_node *create_label(int line_init,int definedData,char *label_name,int entry_count,Label_Type label_type); /* This function creates a word_node according to the label name, type, initiated address and sets everything else to NULL */
 
-void add_label (int line_init, char *label_name,Label_Type label_type); /* This function adds a label to the list */
+void *add_label (int line_init,int definedData,char *label_name,int entry_count,Label_Type label_type); /* This function adds a label to the list */
 
 label_node *label_exists(char *curr_label); /* This function checks if a label exists in the data list  */
 
@@ -158,15 +165,24 @@ void free_list(int num); /* Frees the list, 1 for label list, 2 for dc list, 3 f
 
 row_node *create_row(int address); /* This function creates a row_node */
 
-void add_row(label_node *cur_label, int address); /* This function adds an address to the specific label node  */
+void *add_row(label_node *cur_label, int address); /* This function adds an address to the specific label node  */
+
+data_node *create_data(int data, label_node *label_node); /* This function creates a data_node */
+
+void *add_data (int data,label_node *label_node); /* This function adds a data node to the data list in a label */
+
 /************************************
 ********** QUALITY OF LIFE **********
 *************************************/
-int checkWordInArray(char **words, char* targetWord); /* This function checks to see if a targetWord exists in a word_array */
+int checkWordInArray(char **words, char* targetWord); /* This function checks to see if a targetWord exists in a word_array Returns 1 if it is, 0 if it isnt.*/
 
 char *addFileEnding(char *file_name, int type); /* Adds the appropriate file ending */
 
 void binToFour(FILE *obj_fp, char *str); /* Translates a string of 14 binary characters, to encrypted base 4 */
+
+int strToInt(char *string); /* Calculates the given string to an int value. */
+
+FILE *openFile(char *clean_file_name, int num); /* Opens a file with a specific ending. */
 /************************************
 *********** ERROR HANDLER ***********
 *************************************/
@@ -181,19 +197,32 @@ int check_first_word (char *word); /* This function receives a word and checks w
 
 Label_Type getLabelType(char *pointer); /* This function receives a word and returns the type of label it represents */
 
+int check_label(char *p_copy,Label_Type label_type); /* Checks if a label is according to the demands, returns 1 if yes 0 if no */
 
+int check_alpha(char *pointer); /* Checks if a string is all alphabetical letters returns 1 of yes 0 if no */
 
+/*********** DEFINE HANDLER ***********/
 
+void define_handler(char *pointer, Label_Type label_type); /* This function handles all the different cases of .define */
 
+void def_case_1(char *pointer, Label_Type label_type); /* Handles the first case of define data input. case 1:  .define label=num */
 
+void def_case_2(char *pointer, Label_Type label_type,char *pointer2);/* Handles the first case of define data input. case 2:  .define label =num */
 
+void def_case_3(char *pointer, Label_Type label_type,char *pointer2);/* Handles the first case of define data input. case 3:  .define label= num */
 
+void def_case_4(char *pointer, Label_Type label_type ,char *pointer2);/* Handles the first case of define data input. case 4:  .define label = num */
 
+/*********** EXTERN HANDLER ***********/
+void extern_handler(char *pointer,Label_Type label_type); /* Handles extern labels */
 
+/*********** DSTRING HANDLER ***********/
 
+int dstring_handler(char *pointer); /* This handels the .data and .string labels */
 
+int check_data(char *p_copy,Label_Type label_type); /* This checks the data received in a .data / .string label */
 
-
+void fetch_data(char *p_copy, label_node *temp_node); /* This fetches the date received from a .data / .string label */
 /************************************
 ********** MAIN FUNCTIONS ***********
 *************************************/
