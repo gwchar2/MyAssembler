@@ -41,10 +41,10 @@ int curr_line_number = 0;
 int IC = 0;
 int DC = 0;
 int err_flag = 0;
-label_node *lbl_head = NULL; /* Label table head */
-label_node *dc_head = NULL; /* Data segment head */
-cmd_node *cmd_head = NULL; /* Instruction segment head */
-ErrorCode errorCode = 0; /* Global error variable */
+label_node *lbl_head = NULL;                                                        /* Label table head */
+label_node *dc_head = NULL;                                                         /* Data segment head */
+cmd_node *cmd_head = NULL;                                                          /* Instruction segment head */
+ErrorCode errorCode = 0;                                                            /* Global error variable */
 
 
 int main(int argc,char *argv[]) {
@@ -52,11 +52,11 @@ int main(int argc,char *argv[]) {
     FILE *fp ;
     char *file_name = NULL ;
     char *temp_name = NULL ; 
-    char *clean_file_name = (char*)malloc(FILE_NAME_LEN) ; /* string to hold the name as recieved in command line. no endings. */
-    int file_count = 0 ; /* pointer to argv index */
+    char *clean_file_name = (char*)malloc(FILE_NAME_LEN) ;                          /* string to hold the name as recieved in command line. no endings. */
+    int file_count = 0 ;                                                            /* pointer to argv index */
     check_allocation(clean_file_name);
-     /* checking arguments */
-    if (argc < MIN_ARGV) /* no arguments */ {
+    /* checking arguments */
+    if (argc < MIN_ARGV)                                                            /* no arguments */ {
         fprintf(stderr, "error: no arguments.\n");
         exit(1) ;
     }
@@ -83,5 +83,7 @@ int main(int argc,char *argv[]) {
     check_allocation(fp);
     
     scan_file(fp);
+    printf("Hello?");
+    printList(1);
     return 0;
 }
