@@ -50,7 +50,7 @@ int main(int argc,char *argv[]) {
     preAssembler(fp,clean_file_name) ;
     fclose(fp);
 
-    /* First Rotation */
+    /* First & Second Rotation (FR Flag) */
     fp = openFile(clean_file_name,1);
     scan_file(fp);
 
