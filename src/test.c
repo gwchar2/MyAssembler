@@ -1,17 +1,26 @@
 #include <stdio.h>
-#include <stdint.h>
 #include <string.h>
 
-int main() {
-    char line1[] = "label[ 3]" ;
-    char line2[] = "label[     3]" ;
-    
-    int num ; 
-    char label[64];
-    sscanf(line1, "%[a-zA-Z0-9][ %d]", label, &num ) ;
-    printf("label is - %s\n   number is - %d\n", label, num) ;
-    /*sscanf(line1, "%s[ %d]", label, &num ) ;
-    printf("label is - %s   number is - %d", label, num) ;*/
+char *combineRegBin(char *str1, char *str2) {
+    int i;
+    static char result[15] ;
+    for (i-0; i<9; i++) {
+        result[i] = *(str1+i) ;
+    }
+    for (i=9; i<=11; i++) {
+        result[i] = *(str2+i) ;
+    }
+    result[12] = '0' ;
+    result[13] = '0' ;
+    result[14] = '\0';
+    return result ;
 
-    return 0;
+}
+
+int main () {
+    char str1[15] ;
+    strcpy(str1,combineRegBin("00000011100000", "00000000011100")) ;
+    printf("%s\n", str1) ;
+
+    return 0; 
 }

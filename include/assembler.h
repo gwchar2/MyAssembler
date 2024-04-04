@@ -25,8 +25,22 @@
 #define MAX_12BITS 2047
 #define MIN_12BITS -2048
 #define BIN_WORD_LEN 15
-#define RS_FIELD 5
+#define RS_SHIFT 5
+#define RT_SHIFT 2
+#define RT_BIT_FIELD 9
 #define LSB 13
+#define RSA_FIELD 8
+#define RTA_FIELD 10
+#define OPCODE_BIN_LEN 4
+#define OPCODE_FIELD 4
+
+
+
+
+
+
+
+
 /* Checks if the memory for (C) was allocated properly */
 #define check_allocation(c)\
         if (c == NULL){\
@@ -120,8 +134,7 @@ typedef struct Cmd_node{
     int address; /* The instruction count */
     int total_vars; /* The total amount of variables it holds */
     int L; /* num of bin words */
-    int address;                                                            /* The instruction count */
-    char *binary_cmd;
+    char *cmd_binary;
     int sourceAdd;
     int targetAdd;
     char *source1_binary;
