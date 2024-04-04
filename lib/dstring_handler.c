@@ -10,16 +10,21 @@
 * Returns 0 if error, 1 if ok, 2 if needs cmd check
 */
 int dstring_handler(char *pointer){
-    char *label_name = NULL;                                     /* Copies the pointer */
+    char *label_name = NULL;                                            /* Copies the pointer */
     char *p_copy = NULL;
+    int i;
     Label_Type label_type;
     label_node *temp_node = NULL;
+    label_name = pointer;
+    i = 0;
+    while (pointer[i] != ':'){
+        i++;
+    }
+    pointer[i] = '\0';
     label_name = malloc(strlen(pointer));
     check_allocation(label_name);
     strcpy(label_name,pointer);
-   
     pointer = strtok(NULL," \t\n\r\f\v");                              /* Increments the copy (pointer stays the same as before in father func) */
-
     /* Check to see if missing argument */
     if (pointer == NULL){
         errorCode = ERR_UNDEFINED_ARGUMENT;
@@ -29,7 +34,6 @@ int dstring_handler(char *pointer){
     
     else{
         label_type = getLabelType(pointer);
-
         /* Check the label */
         if (!check_label(label_name,label_type)){
             return 0;

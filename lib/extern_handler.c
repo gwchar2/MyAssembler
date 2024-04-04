@@ -12,6 +12,12 @@ void extern_handler(char *pointer,Label_Type label_type){
     if (!check_label(p_copy,label_type)){
         return;    
     }
+    printf("%s  %s\n",__FUNCTION__,p_copy);
+    if (label_exists(p_copy) != NULL){
+        errorCode = ERR_DUPLICATE_LABEL;
+        error_manager(errorCode);
+        return;
+    }
     label_name = malloc(strlen(p_copy));
     check_allocation(label_name);
     strcpy(label_name,p_copy);

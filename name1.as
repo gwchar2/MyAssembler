@@ -1,1 +1,2 @@
-r1: add r1 r2
+LOL: .string "1,2"
+.extern LOL

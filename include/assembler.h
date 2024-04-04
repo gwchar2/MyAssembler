@@ -61,14 +61,14 @@ enum ending_type {
         entries
 };
 
-extern char *commands[NUM_OF_CMDS];                                         /* Global Commands array */
-extern char *registers[NUM_OF_REGS];                                        /* Global Register array */
-extern int curr_line_number;                                                /* Current file number counter */
-extern int IC;                                                              /* IC Counter */
-extern int DC;                                                              /* DC Counter */
-extern int err_flag;                                                        /* Global error flag */
-extern int FR;                                                              /* Rotation flag */
-extern ErrorCode errorCode;                                                 /* Global error variable */
+extern char *commands[NUM_OF_CMDS];                                                     /* Global Commands array */
+extern char *registers[NUM_OF_REGS];                                                    /* Global Register array */
+extern int curr_line_number;                                                            /* Current file number counter */
+extern int IC;                                                                          /* IC Counter */
+extern int DC;                                                                          /* DC Counter */
+extern int err_flag;                                                                    /* Global error flag */
+extern int FR;                                                                          /* Rotation flag */
+extern ErrorCode errorCode;                                                             /* Global error variable */
 
 /************************************
 ********** MACRO STRUCTURE ********
@@ -171,8 +171,8 @@ data_node *create_data(int data, label_node *label_node); /* This function creat
 
 void *add_data (int data,label_node *label_node); /* This function adds a data node to the data list in a label */
 
-/************************************
-********** QUALITY OF LIFE **********
+/*************************************
+********** QUALITY OF LIFE ***********
 *************************************/
 int checkWordInArray(char **words, char* targetWord); /* This function checks to see if a targetWord exists in a word_array Returns 1 if it is, 0 if it isnt.*/
 
@@ -183,15 +183,15 @@ void binToFour(FILE *obj_fp, char *str); /* Translates a string of 14 binary cha
 int strToInt(char *string); /* Calculates the given string to an int value. */
 
 FILE *openFile(char *clean_file_name, int num); /* Opens a file with a specific ending. */
-/************************************
-*********** ERROR HANDLER ***********
+/*************************************
+*********** ERROR HANDLER ************
 *************************************/
 void error_manager(ErrorCode errorCode); /* Prints the appropriate error message */
 
 
 
-/************************************
-*********** LABEL HANDLER ***********
+/*************************************
+*********** LABEL HANDLER ************
 *************************************/
 int check_first_word (char *word); /* This function receives a word and checks what type of label it can potentialy be. */
 
@@ -201,7 +201,9 @@ int check_label(char *p_copy,Label_Type label_type); /* Checks if a label is acc
 
 int check_alpha(char *pointer); /* Checks if a string is all alphabetical letters returns 1 of yes 0 if no */
 
-/*********** DEFINE HANDLER ***********/
+/*************************************
+*********** DEFINE HANDLER ***********
+*************************************/
 
 void define_handler(char *pointer, Label_Type label_type); /* This function handles all the different cases of .define */
 
@@ -213,18 +215,24 @@ void def_case_3(char *pointer, Label_Type label_type,char *pointer2);/* Handles 
 
 void def_case_4(char *pointer, Label_Type label_type ,char *pointer2);/* Handles the first case of define data input. case 4:  .define label = num */
 
-/*********** EXTERN HANDLER ***********/
+/*************************************
+********** EXTERN HANDLER ************
+*************************************/
+
 void extern_handler(char *pointer,Label_Type label_type); /* Handles extern labels */
 
-/*********** DSTRING HANDLER ***********/
+/************************************
+********** DSTRING HANDLER **********
+*************************************/
 
 int dstring_handler(char *pointer); /* This handels the .data and .string labels */
 
 int check_data(char *p_copy,Label_Type label_type); /* This checks the data received in a .data / .string label */
 
 void fetch_data(char *p_copy, label_node *temp_node); /* This fetches the date received from a .data / .string label */
-/************************************
-********** MAIN FUNCTIONS ***********
+
+/*************************************
+********** MAIN FUNCTIONS ************
 *************************************/
 void preAssembler(FILE *fp, char* clean_file_name); /* Inputs all macros */ 
 
