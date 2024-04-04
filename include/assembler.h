@@ -213,18 +213,28 @@ int check_first_word (char *word); /* This function receives a word and checks w
 
 Label_Type getLabelType(char *pointer); /* This function receives a word and returns the type of label it represents */
 
-
-
-
-
-
-
-
-
-
-
-
-
+/************************************
+***** COMMAND PARSER FUNCTIONS ******
+*************************************/
+void check_command() ;
+int valid_command_name(char *cmd);
+void getNumOfVars();
+int sourceOpCheck(char *token);
+int isIndex(char *input, int index, label_node *baseLabel) ;
+int targetOpCheck(char *token);
+int immProcessor(char *token, int *immNum);
+int labelPrecessor(label_node *labelOp, int *labalVal) ;
+int isNumber(char *imm, int *num);
+char *BinTranslation12Bit(int num, int ARE) ;
+int isReg(char *token) ;
+char *RSBinTranslation(int reg_num) ;
+char *RTBinTranslation(int reg_num);
+char *cmdBinTranslation(int cmd_num, int sourceAdd, int targetAdd) ;
+int rangeCheck(int num);
+char *opcodeBinTranslation(int num) ;
+char *combineRegBin(char *str1, char *str2);
+int commaCheck(cmd_node *new_cmd)
+cmd_node *create_cmd_node(int cmd_num) ;
 
 /************************************
 ********** MAIN FUNCTIONS ***********

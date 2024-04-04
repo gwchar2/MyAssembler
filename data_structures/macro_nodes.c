@@ -3,6 +3,8 @@
 mac_text *createText (char *line) {
     mac_text *result = malloc(sizeof(mac_text)) ;
     result->text = malloc(sizeof(line)) ;
+    check_allocation(result) ;
+    check_allocation(result->text) ;
     strcpy(result->text,line) ;
     result->next = NULL ;
     return result ;
@@ -12,6 +14,8 @@ mac_text *createText (char *line) {
 macro *createMacro (char *name, char *line) {
     macro *result = malloc(sizeof(macro)) ;
     result->mac_name = malloc(sizeof(name)) ;
+    check_allocation(result) ;
+    check_allocation(result->mac_name) ;
     strcpy(result->mac_name,name) ;
     result->next = NULL ;
     result->text = createText(line);

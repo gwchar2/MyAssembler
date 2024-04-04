@@ -8,7 +8,6 @@
 cmd_node *new_cmd ; 
 
 /* this function is called only if first token of command line is NOT blank/.define/.data/.string/.extern/.entry/pottential LABEL */
-
 void check_command() {
     int error_num = 0 ;
     int cmd_num ; 
@@ -70,7 +69,14 @@ void check_command() {
     }
 
     /* if reached here, both source and target ops are valid. now we will translate the command line itself. */
+    eeror_num = commaCheck(&new_cmd) ; /* check for legal comma */
+    if (error_num != 0){
+            errorCode = error_num ;
+            error_manager(errorCode,curr_line_number) ;
+            return ;
+    }
     strcpy(new_cmd->cmd_binary,cmdBinTranslation(&new_cmd)) ;
+
 
 }
 
@@ -461,46 +467,7 @@ char *BinTranslation12Bit(int num, int ARE) {
     return result ;
 }
 
-int validatIEnput(data *my_data, Mat *mats, char *commands){
-    char *token = strtok(my_data->input,SPACE_COMMA_DEL) ; /* cut the command part */
-    int error_num = 0 ;
-    size_t len ;
-    if (token == NULL) /* if command line is empty, move to the next command. */ 
-        return 0;
-    error_num = commandCheck(token, my_data) ; /* send to command name validation */
-    if (error_num!=0) 
-        return error_num ;
-    else { /* command name is valid */
-        /* check for illegal comma after command name */
-        len = strspn(my_data->input_copy," my_data->cmd_name") ;
-        if (*((my_data->input_copy)+len)==COMMA)
-            return 6 ; /* illegal comma */
-        /* no illegal comma after command name. continue. */
-        //////////////////////////////////
-        token = strtok(NULL, SPACE_COMMA_DEL) ; /* cut #1 parmeter */
-        error_num = parm1Check(token, my_data, mats) ; /* send to validation */
-        if (error_num!=0)
-            return error_num ;
-        else {
-            if (my_data->cmd_num==0)  /* if command is "read_mat", and parm1 is valid, call special validation. */
-                return (readCheck(my_data)) ;
-            token = strtok(NULL, SPACE_COMMA_DEL) ; /* cut #2 parmeter */
-            error_num = parm2Check(token, my_data, mats) ; /* send to validation */
-            if (error_num!=0)
-                return error_num ;
-            else {
-                token = strtok(NULL, SPACE_COMMA_DEL) ; /* cut #3 parmeter */
-                error_num = parm3Check(token, my_data, mats) ;
-                if (error_num!=0)
-                    return error_num ;
-            }       
-        }
-    }
-    /* command name and parms are valid -> error_num == 0 */
-    error_num = commaCheck(my_data) ; /* send to comma validation */
-    return error_num ;
-}
-
+/* this function gets a string and checks if it matches one of the register names. return reg number if found  otherwose return -1. */
 int isReg(char *token) {
     int i ;
     for (i=0; i<NUM_OF_REGS-2; i++) { /* last 2 registers are not allowed to be used on commands */
@@ -510,6 +477,7 @@ int isReg(char *token) {
     return -1 ;
 }
 
+/* this function gets a reg number. translate to binary and sets the number in the RS bit field. */
 char *RSBinTranslation(int reg_num) {
    static char result[BIN_WORD_LEN] ;
     int num = reg_num << RS_SHIFT ; /* shifting left to get the RS number in the 5-7 bits */
@@ -517,6 +485,7 @@ char *RSBinTranslation(int reg_num) {
     return result ;
 }
 
+/* this function gets a reg number. translate to binary and sets the number in the RT bit field. */
 char *RTBinTranslation(int reg_num) {
    static char result[BIN_WORD_LEN] ;
     int num = reg_num << RT_SHIFT ; /* shifting left to get the RS number in the 5-7 bits */
@@ -628,38 +597,17 @@ char *combineRegBin(char *str1, char *str2) {
 
 }
 
-
-
-
-
-
-/*  This function checks if the comma apereances in the command line are valid. 
-    This function is bIEng called only when all seperate parts of the command line are valid 
-    Single commas need to seperate parameters in the command line 
-    Comma is illegal after command name 
-    Multiple consecutive commas are illegal  
-    @param comma_count - total numbers of commas in command line 
-    @param consecutive_comma - counts the numbers of commas written in a row (with only spaces in between)
-    @param input_copy - copy of original input 
-    @param jump - number of chars on input until first charachter not part of command name 
-    @param input - string of command line without command name
-    @param cmd_num - current command number 
-    @param len - rest of command line length. used in loop. 
-    @param i - index
-    @param comma_req - number of commas required according to the current command 
-    @return int - the error number founded */
-int commaCheck(data *my_data) {
+/* this function gets the cmd node and the input line copy. checks fer legal commas. returns 0 if valid. otherwose returns error number. */
+int commaCheck(cmd_node *new_cmd) {
     int comma_count = 0 ; /* comma appereance counter */
     int consecutive_comma = 0 ; /* consecutive comma counter */
-    char *input_copy = my_data->input_copy ;
-    size_t jump = strspn(input_copy,LETTERS_OF_CMD_AND_SPACE) ; /* number of chars that are part of command name */
-    char *input = input_copy + jump ; /* jump over command name */
-    int cmd_num = my_data->cmd_num ;
-    int len = strlen(input) ;
+    char *input = input_copy + CMD_NAME_LEN ; /* jump over command name */
+    /*int cmd_num = my_data->cmd_num ;*/
+    int len = strlen(input_copy) ;
     int i , comma_req ; /* num of commas required for each command type */
     
     if (*input==COMMA)
-        return 6; /* Error: illegal comma */
+        return 6; /* Error: illegal comma after command */
     for (i=0; i<len; i++){
         if (*(input+i)==COMMA){ /* if current char is a comma, count.  */
             comma_count++;
@@ -675,12 +623,10 @@ int commaCheck(data *my_data) {
         return 8 ; /* Error: multiple consecutiva commas error */
 
     /* set required number of commas */
-    if (cmd_num == 1) /* print_mat */
+    if (new_cmd->total_vars == SECOND_GROUP_VARS || new_cmd->total_vars == THIRD_GROUP_VARS) 
         comma_req = 0 ;
-    if (cmd_num == 6) /* tran_mat */
+    if (new_cmd->total_vars == FIRST_GROUP_VARS) 
         comma_req = 1 ;
-    if (cmd_num == 2 || cmd_num == 3 || cmd_num == 4 || cmd_num == 5) /* add,sub,mul,mul_scalar */
-        comma_req = 2 ;
 
     if (comma_count < comma_req)
         return 7 ; /* Error: missing comma */
@@ -690,57 +636,8 @@ int commaCheck(data *my_data) {
         return 0 ; /* no error */
     
 }
-
-/*  This function checks if the comma apereances in the read_mat command line are valid. 
-    The funciton gets my_data struct and the number of parms counted in readCheck function. 
-    This function is bIEng called after command name and mat name were validated 
-    Single commas need to seperate parameters in the command line 
-    Comma is illegal after command name 
-    Multiple consecutive commas are illegal 
-    @param comma_count - total numbers of commas in command line 
-    @param consecutive_comma - counts the numbers of commas written in a row (with only spaces in between)
-    @param input_copy - copy of original input 
-    @param jump - number of chars on input until first charachter not part of command name 
-    @param input - string of command line without command name
-    @param len - rest of command line length. used in loop. 
-    @param i - index
-    @return int - the error number founded*/
-int read_commaCheck(data *my_data, int num_of_parms) {
-    int comma_count = 0 ; /* comma appereance counter */
-    int consecutive_comma = 0 ; /* consecutive comma counter */
-    char *input_copy = my_data->input_copy ;
-    size_t jump = strspn(input_copy,JUMP_OVER_READ) ; /* number of chars that are part of command name */
-    char *input = input_copy + jump ; /* jump over command name */
-    int len = strlen(input) ; 
-    int i  ; 
     
-    if (len==0)
-        return 0 ; /* legal to call read without parms */
-    if (*input==COMMA)
-        return 6; /* illegal comma after command  */
-    for (i=0; i<len; i++){
-        if (*(input+i)==COMMA){ /* if current char is a comma, count it */
-            comma_count++;
-            consecutive_comma++;
-            continue ;
-        }
-        if (isspace(*(input+i))!=0) /* if current char is a space, move on. */
-            continue ;
-        else  /* current char is not a space and not a comma */
-            consecutive_comma = 0 ; /* zero consecutive counter */   
-    }
 
-    if (consecutive_comma > 1)
-        return 8 ; /* Error: multiple consecutiva commas error */
-    if (comma_count < num_of_parms)
-        return 7 ; /* Error: missing comma */
-    if (comma_count > num_of_parms)
-        return 6 ; /* Error: illegal comma */
 
-    /* comma_count == num_of_parms */
-    return 0 ; /* no error */
-}
-    
-    
 
 
