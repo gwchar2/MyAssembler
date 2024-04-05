@@ -155,26 +155,33 @@ typedef struct DC_Node{
 } dc_node;
 
 extern label_node *lbl_head;                                                            /* Label table head */
-extern dc_node *dc_head;                                                                /* Data segment head */
-
+extern label_node *entry_head;                                                          /* Entry list head */
+extern label_node *extern_head;                                                         /* Extern list head */
 
 label_node *create_label(int line_init,int definedData,char *label_name,int entry_count,Label_Type label_type); /* This function creates a word_node according to the label name, type, initiated address and sets everything else to NULL */
 
-void *add_label (int line_init,int definedData,char *label_name,int entry_count,Label_Type label_type); /* This function adds a label to the list */
-
-label_node *label_exists(char *curr_label); /* This function checks if a label exists in the data list  */
-
-void printList(int num); /*prints: 1 for label list, 2 for dc list, 3 for cmd list */
-
-void free_list(int num); /* Frees the list, 1 for label list, 2 for dc list, 3 for cmd list*/
-
 row_node *create_row(int address); /* This function creates a row_node */
-
-void *add_row(label_node *cur_label, int address); /* This function adds an address to the specific label node  */
 
 data_node *create_data(int data, label_node *label_node); /* This function creates a data_node */
 
-void *add_data (int data,label_node *label_node); /* This function adds a data node to the data list in a label */
+label_node *label_exists(char *curr_label); /* This function checks if a label exists in the data list  */
+
+void *add_label(int line_init,int definedData,char *label_name,int entry_count,Label_Type label_type); /* This function adds a label to the list */
+
+void *add_row(label_node *cur_label, int address); /* This function adds an address to the specific label node  */
+
+void *add_data(int data,label_node *label_node); /* This function adds a data node to the data list in a label */
+
+void *add_entry(label_node *label_node);  /* This function adds a an entry node to the entry list */
+
+void *add_extern(label_node *label_node); /* This function adds a an extern node to the extern list */
+
+void printList(int num); /* Prints: 1 for label list, 2 for dc list, 3 for cmd list */
+
+void print_label_guide(); /* Prints the guide for the table */
+
+void free_list(int num); /* Frees the list, 1 for label list, 2 for dc list, 3 for cmd list*/
+
 
 /*************************************
 ********** QUALITY OF LIFE ***********
