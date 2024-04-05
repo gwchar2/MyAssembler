@@ -116,7 +116,7 @@ void printList(int num){
                         printf("\n");
                         break;
                     default:
-                        printf("[%s]-[%d]-",temp -> label_name,temp -> label_type);
+                        printf("[%s]-[%d]-[%d]-",temp -> label_name,temp -> label_type,temp -> line_init);
                         data_temp = temp -> data_node;
                         while (data_temp != NULL){
                             if (data_temp -> next_data == NULL)

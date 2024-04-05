@@ -23,6 +23,11 @@
             exit(EXIT_FAILURE);\
         }
 #define WHITESPACE(c) ((c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '\f' || c == '\v'))     /* Checks if a character is a whitespace */
+#define error(c) \
+    do { \
+        errorCode = c; \
+        error_manager(errorCode); \
+    } while(0)
 /********************************* 
 ****** GLOBAL INTS & ENUMS *******
 **********************************/

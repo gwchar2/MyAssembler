@@ -43,8 +43,7 @@ void preAssembler(FILE *fp, char* clean_file_name) {
                 continue ;
             }
             else {
-                errorCode = 10;/* "Redefenition of macro name" */
-                error_manager(errorCode);
+                error(ERR_REDEFINITION_MACRO);
             }
             continue;
         }

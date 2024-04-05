@@ -27,12 +27,12 @@ int dstring_handler(char *pointer){
     pointer = strtok(NULL," \t\n\r\f\v");                              /* Increments the copy (pointer stays the same as before in father func) */
     /* Check to see if missing argument */
     if (pointer == NULL){
-        errorCode = ERR_UNDEFINED_ARGUMENT;
-        error_manager(errorCode);
+        error(ERR_UNDEFINED_ARGUMENT);
         return 0;
     }
     
     else{
+        
         label_type = getLabelType(pointer);
         /* Check the label */
         if (!check_label(label_name,label_type)){
@@ -45,13 +45,12 @@ int dstring_handler(char *pointer){
 
         /* Check the remainding text */
         pointer = strtok(NULL,"\n\r\f\v"); 
-
+        
         if (pointer == NULL){
-            errorCode = ERR_UNDEFINED_ARGUMENT;
-            error_manager(errorCode);
+            error(ERR_UNDEFINED_ARGUMENT);
             return 0;
         }
-    
+        
         /* Fetch data according to label type */
         if (label_type == STRING_LABEL || label_type == DATA_LABEL){
             p_copy = malloc(strlen(pointer));
@@ -66,7 +65,7 @@ int dstring_handler(char *pointer){
             /* search & grab the new node */
             temp_node = label_exists(label_name);
             if (DC == 1){
-                dc_head = label_exists(label_name);
+                /* dc_head = label_exists(label_name); */
             }
 
 
@@ -86,6 +85,10 @@ int dstring_handler(char *pointer){
         else if (label_type == CMD_LABEL){
             add_label(IC,0,label_name,0,label_type);
             return 2;
+        }
+        else if (label_type == INVALID){
+            error(ERR_UNDEFINED_COMMAND);
+            return 0;
         }
     }
     return 1;
@@ -111,8 +114,7 @@ int check_data(char *p_copy,Label_Type label_type){
 
         /* If string is missing parentheses  */
         if (string[0] != '"' && string[strlen(string)-1] != '"'){
-            errorCode = ERR_MISSING_PARENTHESES;
-            error_manager(errorCode);
+            error(ERR_MISSING_PARENTHESES);
             return 0;
         }
 
@@ -125,8 +127,7 @@ int check_data(char *p_copy,Label_Type label_type){
                 }
             }
             if (counter >= 2){
-                errorCode = ERR_EXTRANEOUS_TEXT;
-                error_manager(errorCode);
+                error(ERR_EXTRANEOUS_TEXT);
                 return 0;
             }
         }
@@ -139,8 +140,7 @@ int check_data(char *p_copy,Label_Type label_type){
                     counter++;
                 }
                 if (counter >= 2){
-                errorCode = ERR_UNDEFINED_ARGUMENT;
-                error_manager(errorCode);
+                error(ERR_UNDEFINED_ARGUMENT);
                 return 0;
                 }
             }
@@ -164,15 +164,13 @@ int check_data(char *p_copy,Label_Type label_type){
 
                 /* If no such define exists, or if a label exists but its NOT a define */
                 if (temp == NULL || ((temp -> label_type) != DEF_LABEL)){
-                    errorCode = ERR_UNDEFINED_ARGUMENT;
-                    error_manager(errorCode);
+                    error(ERR_UNDEFINED_ARGUMENT);
                     return 0;
                 }
             }
             /* If its not fully alphabetical, than it must be a number! RIGHT? So lets check the value! if its OOVVEERR 9000! (meme) its no good... */
             else if (strToInt(pointer) == 9000){
-                errorCode = ERR_UNDEFINED_ARGUMENT;
-                error_manager(errorCode);
+                error(ERR_UNDEFINED_ARGUMENT);
                 return 0;
             }
             numCounter++;
@@ -180,8 +178,7 @@ int check_data(char *p_copy,Label_Type label_type){
         } 
         /* The maximum amount of numbers is 36 (with 1 letter label & 35 commas) */
         if (p_copy != NULL && numCounter >= 36){                                                   
-            errorCode = ERR_EXTRANEOUS_TEXT;
-            error_manager(errorCode);
+            error(ERR_EXTRANEOUS_TEXT);
             return 0;
         }
 
@@ -204,8 +201,7 @@ int check_data(char *p_copy,Label_Type label_type){
         }
         /* These statements return errors according to what we previously found out */
         if ((numCounter == 0 && total_comma >= 1) || total_comma > 35 ){
-            errorCode = ERR_ILLEGAL_COMMA;
-            error_manager(errorCode);
+            error(ERR_ILLEGAL_COMMA);
             return 0;
         }
         else if (total_comma < numCounter-1){
@@ -214,8 +210,7 @@ int check_data(char *p_copy,Label_Type label_type){
             return 0; 
         }
         else if (total_comma >= numCounter){
-            errorCode = ERR_EXTRANEOUS_TEXT;
-            error_manager(errorCode);
+            error(ERR_EXTRANEOUS_TEXT);
             return 0;
         }
     }

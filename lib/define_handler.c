@@ -59,8 +59,7 @@ void def_case_1(char *pointer, Label_Type label_type){
 
     /* If there is no '=' return error */
     if (len != -1){
-        errorCode = ERR_UNDEFINED_ARGUMENT;
-        error_manager(errorCode);
+        error(ERR_UNDEFINED_ARGUMENT);
         return;
     }
 
@@ -87,16 +86,14 @@ void def_case_1(char *pointer, Label_Type label_type){
         return;
     }
     else if (atoi(num) == 0){
-        errorCode = ERR_UNDEFINED_ARGUMENT;
-        error_manager(errorCode);
+        error(ERR_UNDEFINED_ARGUMENT);
         return;
     }
 
     /* Check there is no more data */
     p_copy = strtok(NULL," \t\n\r\f\v");
     if (p_copy != NULL){
-        errorCode = ERR_EXTRANEOUS_TEXT;
-        error_manager(errorCode);
+        error(ERR_EXTRANEOUS_TEXT);
         return;
     }
 
@@ -134,8 +131,7 @@ void def_case_2(char *pointer, Label_Type label_type, char *pointer2){
         return;
     }
     else if ((strToInt(num)) == 9000){
-        errorCode = ERR_UNDEFINED_ARGUMENT;
-        error_manager(errorCode);
+        error(ERR_UNDEFINED_ARGUMENT);
         return;
     }
 
@@ -143,8 +139,7 @@ void def_case_2(char *pointer, Label_Type label_type, char *pointer2){
     p_copy = pointer2;
     p_copy = strtok(NULL," \t\n\r\f\v");
     if (p_copy != NULL){
-        errorCode = ERR_EXTRANEOUS_TEXT;
-        error_manager(errorCode);
+        error(ERR_EXTRANEOUS_TEXT);
         return;
     }
 
@@ -181,8 +176,7 @@ void def_case_3(char *pointer, Label_Type label_type ,char *pointer2){
         return;
     }
     else if (strToInt(num) == 9000){
-        errorCode = ERR_UNDEFINED_ARGUMENT;
-        error_manager(errorCode);
+        error(ERR_UNDEFINED_ARGUMENT);
         return;
     }
 
@@ -190,8 +184,7 @@ void def_case_3(char *pointer, Label_Type label_type ,char *pointer2){
     p_copy = pointer2;
     p_copy = strtok(NULL," \t\n\r\f\v");
     if (p_copy != NULL){
-        errorCode = ERR_EXTRANEOUS_TEXT;
-        error_manager(errorCode);
+        error(ERR_EXTRANEOUS_TEXT);
         return;
     }
 
@@ -229,8 +222,7 @@ void def_case_4(char *pointer, Label_Type label_type ,char *pointer2){
         return;
     }
     else if (strToInt(num) == 9000){
-        errorCode = ERR_UNDEFINED_ARGUMENT;
-        error_manager(errorCode);
+        error(ERR_UNDEFINED_ARGUMENT);
         return;
     }
     
@@ -238,8 +230,7 @@ void def_case_4(char *pointer, Label_Type label_type ,char *pointer2){
     p_copy = pointer2;
     p_copy = strtok(NULL," \t\n\r\f\v");
     if (p_copy != NULL){
-        errorCode = ERR_EXTRANEOUS_TEXT;
-        error_manager(errorCode);
+        error(ERR_EXTRANEOUS_TEXT);
         return;
     }
     /* Add the label */

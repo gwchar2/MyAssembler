@@ -9,27 +9,30 @@ void scan_file(FILE *file){
     char line[MAX_LINE_LEN];
     char *inputCopy = NULL;
     char *pointer = NULL;
-    char *label_name;
+    char *full_line = NULL;
     Label_Type label_type;
     int flag;
     while (1) {
         /* Grab the next line from the file */
         if (fgets(line, MAX_LINE_LEN, file) == NULL) {
-            if (feof(file)) {
+            if (feof(file) && FR == 1) {
                 FR = 2;
-                break;
+                fseek(file, 0, SEEK_SET); 
+                curr_line_number = 1; 
+            }
+            else if (feof(file) && FR == 2){
+                break; 
             }
         }
 
         /* Check to see if the file is shorter than 80 characters if it isnt, go next line, else, handle. */
         if (strlen(line) == MAX_LINE_LEN - 1 && line[MAX_LINE_LEN - 2] != '\n') {                                       /* Checking to see if the array is full without \n */
-            errorCode = ERR_SIZE_LEAK;
-            error_manager(errorCode);
+            error(ERR_SIZE_LEAK);
         }
 
-        /* FR is flag for rotation! */
-        else if (FR){
-            inputCopy = (char *)malloc(strlen(line) + 1); 
+        /* First rotation */
+        else if (FR == 1){
+            inputCopy = malloc(strlen(line) + 1); 
             check_allocation(inputCopy);
             strcpy(inputCopy, line); 
 
@@ -63,9 +66,15 @@ void scan_file(FILE *file){
                         curr_line_number++;
                     }
                     else if (flag == 2){
-                        pointer = strtok(NULL, " \t\n\r\f\v");
-                        printf("%s %s %d ~~SEND TO MIHAL~~ \n",__FILE__,__FUNCTION__,__LINE__);
-                        curr_line_number++;
+                        int len;
+                        inputCopy = malloc(strlen(line) + 1); 
+                        check_allocation(inputCopy);
+                        strcpy(inputCopy, line);
+                        len = strlen(pointer)+1;
+                        full_line = inputCopy + len;
+                        /*printf("Line = %s\n",full_line);*/
+                        printf("%s %s r%d ~~SEND TO MIHAL full_line~~ \n",__FILE__,__FUNCTION__,__LINE__);
+                            /*curr_line_number++;*/
                     }
                     break;
 
@@ -75,15 +84,14 @@ void scan_file(FILE *file){
                     curr_line_number++;
                     break;
                 default:
-                    errorCode = ERR_UNDEFINED_COMMAND;
-                    error_manager(errorCode);
+                    error(ERR_UNDEFINED_COMMAND);
                     break;
                 
             }
             free(inputCopy); 
         }
-        else{
-
+        else if (FR == 2){
+            /*printf("%s",line);*/
         }
     }
 }

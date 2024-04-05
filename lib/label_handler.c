@@ -22,8 +22,7 @@ int check_first_word (char *word){
         if (type == DEF_LABEL || type == EXTERN_LABEL)
             return 1;                                                                                       /* .define or .extern line */
         else{
-            errorCode = ERR_UNDEFINED_COMMAND;
-            error_manager(errorCode);
+            error(ERR_UNDEFINED_COMMAND);
             return 0;
         }
     }
@@ -70,27 +69,23 @@ int check_label(char *p_copy, Label_Type label_type){
     if (label_type == DEF_LABEL || label_type == EXTERN_LABEL || label_type == ENTRY_LABEL){
         /* Checks to see if 1 <= label <= 31, if the label is a reg / cmd name, if its all alphabetical letters*/
         if (strlen(p_copy) < 1 || strlen(p_copy) > 31 || checkWordInArray(registers,p_copy) == 1 || checkWordInArray(commands,p_copy) == 1 || check_alpha(p_copy) == 0){
-            errorCode = ERR_INVALID_LABEL;
-            error_manager(errorCode);
+            error(ERR_INVALID_LABEL);
             return 0;
         }
         if (label_exists(p_copy) != NULL){   
-            printf("\n%s %s %d  THIS NEEDS TO BE CHANGED FOR ENTRY!\n",__FILE__,__FUNCTION__,__LINE__);
+            printf("\n[%s %s r%d ] THIS NEEDS TO BE CHANGED FOR ENTRY!\n",__FILE__,__FUNCTION__,__LINE__);
             /*Change here for entry !! (if it exists, we need to check if it partner bit 0 or 1 )*/   
-            errorCode = ERR_DUPLICATE_LABEL;
-            error_manager(errorCode);                                                                                                  /* checks to see if the label exists. Entries do not exist yet */
+            error(ERR_DUPLICATE_LABEL);                                                                                                 /* checks to see if the label exists. Entries do not exist yet */
             return 0;
         }
         if (strcmp(p_copy,".define") == 0 || strcmp(p_copy,".data") == 0 || strcmp(p_copy,".string") == 0 || (strcmp(p_copy,".entry") == 0 || strcmp(p_copy,".extern") == 0)){
-            errorCode = ERR_INVALID_LABEL;
-            error_manager(errorCode); 
+            error(ERR_INVALID_LABEL);
             return 0;
         }
     }
     else if (label_type == CMD_LABEL || label_type == DATA_LABEL || label_type == STRING_LABEL){
         if (strlen(p_copy) < 2 || strlen(p_copy) > 32){
-            errorCode = ERR_INVALID_LABEL;
-            error_manager(errorCode);
+            error(ERR_INVALID_LABEL);
             return 0;
         }
         pointer = malloc(strlen(p_copy)-1);
@@ -98,14 +93,12 @@ int check_label(char *p_copy, Label_Type label_type){
         strcpy(pointer,p_copy);
         pointer[strlen(pointer)-1] = '\0';
         if (!check_alpha(pointer) || checkWordInArray(registers,pointer) == 1 || checkWordInArray(commands,pointer) == 1){                        /* Check to see if the label is all alphabetical letters or reg / cmd name*/
-            errorCode = ERR_INVALID_LABEL;
-            error_manager(errorCode);   
+            error(ERR_INVALID_LABEL);   
             free(pointer);                     
             return 0;
         }
         if (label_exists(pointer) != NULL){                                                                                                        /* checks to see if the label exists. Entries do not exist yet */
-            errorCode = ERR_INVALID_LABEL;
-            error_manager(errorCode);
+            error(ERR_INVALID_LABEL);
             free(pointer);
             return 0;
         }
