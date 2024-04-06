@@ -12,27 +12,27 @@
 int dstring_handler(char *pointer){
     char *label_name = NULL;                                            /* Copies the pointer */
     char *p_copy = NULL;
-    int i;
+    int i = 0,flag = 0;
     Label_Type label_type;
     label_node *temp_node = NULL;
     label_name = pointer;
-    i = 0;
     while (pointer[i] != ':'){
         i++;
     }
     pointer[i] = '\0';
-    label_name = malloc(strlen(pointer));
+    label_name = malloc(strlen(pointer)+1);
     check_allocation(label_name);
     strcpy(label_name,pointer);
+
     pointer = strtok(NULL," \t\n\r\f\v");                              /* Increments the copy (pointer stays the same as before in father func) */
+    
     /* Check to see if missing argument */
     if (pointer == NULL){
-        error(ERR_UNDEFINED_ARGUMENT);
+        error(ERR_MISSING_ARGUMENT);
         return 0;
     }
     
     else{
-        
         label_type = getLabelType(pointer);
         /* Check the label */
         if (!check_label(label_name,label_type)){
@@ -45,15 +45,14 @@ int dstring_handler(char *pointer){
 
         /* Check the remainding text */
         pointer = strtok(NULL,"\n\r\f\v"); 
-        
         if (pointer == NULL){
-            error(ERR_UNDEFINED_ARGUMENT);
+            error(ERR_MISSING_ARGUMENT);
             return 0;
         }
         
         /* Fetch data according to label type */
         if (label_type == STRING_LABEL || label_type == DATA_LABEL){
-            p_copy = malloc(strlen(pointer));
+            p_copy = malloc(strlen(pointer)+1);
             check_allocation(p_copy);
             strcpy(p_copy,pointer);
 
@@ -61,14 +60,31 @@ int dstring_handler(char *pointer){
             if (!check_data(p_copy,label_type)){
                 return 0;
             }
-            add_label(DC,DC,label_name,0,label_type);
-            /* search & grab the new node */
+            /* If a label doesnt exist, add a new one */
             temp_node = label_exists(label_name);
-            if (DC == 1){
-                /* dc_head = label_exists(label_name); */
+            if (temp_node != NULL){
+                if (((temp_node -> label_type) == ENTRY_LABEL || (temp_node -> label_type) == EXTERN_LABEL) && temp_node -> entry_count == 0){
+                    temp_node -> entry_count = 1;
+                    flag = 1;
+                }
+                else{    
+                    error(ERR_DUPLICATE_LABEL);
+                    return 0;
+                }
+            }
+            add_label(DC,DC,label_name,0,label_type);
+
+            /* search & grab the new node */
+            temp_node = lbl_head;
+            while (temp_node != NULL && !((temp_node -> label_type) == label_type && strcmp((temp_node -> label_name),label_name) == 0)){
+                temp_node = temp_node -> next_label;
             }
 
-
+            /* If we flagged it for having an extern/entry partner */
+            if (flag == 1){
+                temp_node -> entry_count = 1;
+            }
+           
             /* Fetch data according to label type */
             if (label_type == STRING_LABEL){
                 fetch_data(p_copy,temp_node);
@@ -94,19 +110,19 @@ int dstring_handler(char *pointer){
     return 1;
 }
 
-int check_data(char *p_copy,Label_Type label_type){
+int check_data(char *pointer,Label_Type label_type){
     /* Copy the string for safety */
-    int i,counter,len,total_comma,total_comma_in_a_row,var_counter,pos,neg,flag;
+    int i,counter,len;
     char *string = NULL;
     label_node *temp = NULL;
     counter = 0;
-    var_counter = 0;
-    string = malloc(strlen(p_copy));
+    string = malloc(strlen(pointer)+1);
     check_allocation(string);
-    strcpy(string,p_copy);
-
+    strcpy(string,pointer);
+    
     /* Check the string according to label type */
     if (label_type == STRING_LABEL){
+        
         /* As long as last char is useless, decrease the string */
         while (string[strlen(string)-1] == '\n' || string[strlen(string)-1] == '\t' || string[strlen(string)-1] == ' '){
             string[strlen(string)-1] ='\0';
@@ -126,8 +142,12 @@ int check_data(char *p_copy,Label_Type label_type){
                     counter++;
                 }
             }
-            if (counter >= 2){
+            if (counter >= 2 ){
                 error(ERR_EXTRANEOUS_TEXT);
+                return 0;
+            }
+            if (counter < 2){
+                error(ERR_MISSING_PARENTHESES);
                 return 0;
             }
         }
@@ -139,58 +159,63 @@ int check_data(char *p_copy,Label_Type label_type){
                 if (string[i] == '"'){
                     counter++;
                 }
-                if (counter >= 2){
-                error(ERR_UNDEFINED_ARGUMENT);
-                return 0;
+                if (counter >= 2 || counter < 2){
+                    error(ERR_MISSING_PARENTHESES);
+                    return 0;
                 }
             }
         }
     }
     else if (label_type == DATA_LABEL){
-        int numCounter = 0, total_comma = 0, total_comma_in_a_row = 0,j; 
-        size_t i = 0, size_remainder = strlen(string);
-        char *pointer = NULL;
-        string = malloc(strlen(p_copy));
-        check_allocation(string);
-        strcpy(string,p_copy);
-        pointer = strtok(string," ,\t\n\r\f\v");
+        size_t i = 0, size_remainder;
+        int numCounter = 0, total_comma = 0, total_comma_in_a_row = 0; 
+        char *remainder_copy;
+        char *pp = NULL;
+        remainder_copy = (char*)malloc(strlen(pointer) + 1);   
+        check_allocation(remainder_copy);
+        strcpy(remainder_copy,pointer);                                               /* Copies the input */ 
+        size_remainder = strlen(remainder_copy); 
 
+        pp = strtok(string," ,\t\n\r\f\v");
         /* As long as we have not reached the end of the input */
-        while (pointer != NULL){     
-
+        while (pp != NULL ){     
+            
             /* If the current pointer string is all alphabetical letters, it must be a define! */                    
-            if (check_alpha(pointer)) {
-                temp = label_exists(pointer);
-
-                /* If no such define exists, or if a label exists but its NOT a define */
-                if (temp == NULL || ((temp -> label_type) != DEF_LABEL)){
+            if (check_alpha(pp)) {
+                temp = label_exists(pp);
+                
+                /* If no such define exists, or if a label exists but its NOT a define! */
+                if (temp == NULL || ((temp -> label_type) != DEF_LABEL) ){
                     error(ERR_UNDEFINED_ARGUMENT);
                     return 0;
                 }
             }
             /* If its not fully alphabetical, than it must be a number! RIGHT? So lets check the value! if its OOVVEERR 9000! (meme) its no good... */
-            else if (strToInt(pointer) == 9000){
+            else if (strToInt(pp) == 9000){
                 error(ERR_UNDEFINED_ARGUMENT);
                 return 0;
             }
             numCounter++;
-            pointer = strtok(NULL," ,\t\n\r\f\v");
+            pp = strtok(NULL," ,\t\n\r\f\v");
         } 
         /* The maximum amount of numbers is 36 (with 1 letter label & 35 commas) */
-        if (p_copy != NULL && numCounter >= 36){                                                   
+        if (pp != NULL && numCounter >= 36){                                                   
             error(ERR_EXTRANEOUS_TEXT);
             return 0;
         }
-
+        
         /* Checks for extra and consecutive commas */
-        for (i = 0; i < size_remainder; i++){
-            if (!WHITESPACE(p_copy[i])){
-                if (p_copy[i] == ','){
+        for (i = 0; i < size_remainder; i++){            
+            if (!WHITESPACE(remainder_copy[i])){
+                if (remainder_copy[i] == ','){
+                    if (i == 0){
+                        error(ERR_ILLEGAL_COMMA);
+                    return 0;
+                    }
                     total_comma++;
                     total_comma_in_a_row++;
                     if (total_comma_in_a_row >= 2){
-                        errorCode = ERR_MULTIPLE_CONSECUTIVE_COMMAS;
-                        error_manager(errorCode);
+                        error(ERR_MULTIPLE_CONSECUTIVE_COMMAS);
                         return 0;
                     }
                 }
@@ -205,8 +230,7 @@ int check_data(char *p_copy,Label_Type label_type){
             return 0;
         }
         else if (total_comma < numCounter-1){
-            errorCode = ERR_MISSING_COMMA;
-            error_manager(errorCode);
+            error(ERR_MISSING_COMMA);
             return 0; 
         }
         else if (total_comma >= numCounter){
@@ -226,7 +250,7 @@ void fetch_data(char *p_copy, label_node *temp_node){
     char *pointer = NULL;
     char *num;
     label_node *ptr;
-    string = malloc(strlen(p_copy));
+    string = malloc(strlen(p_copy)+1);
     check_allocation(string);
     strcpy(string,p_copy);
     
@@ -247,7 +271,7 @@ void fetch_data(char *p_copy, label_node *temp_node){
         
         /* Go through the data array that we received */
         while (pointer != NULL){
-            num = malloc(strlen(pointer));
+            num = malloc(strlen(pointer)+1);
             check_allocation(num);
             strcpy(num,pointer);
 

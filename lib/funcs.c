@@ -107,22 +107,17 @@ int strToInt(char *string){
         flag = 1;
     }
     len = strlen(string);
-    if (flag != 0 && strlen(string) > 1){
-        for (i = 1; i < len; i++){
-            if (string[i] > 57 || string[i] < 48)
-                return 9000;
-        }
-    }
-    else if (flag == 0 && strlen(string) > 1){
-        for (i = 0; i < len; i++){
-            if (string[i] > 57 || string[i] < 48)
-                return 9000;
-        }
-    }
     if (flag != 0)
         string = string+1;
     else 
         flag = 1;
+
+    for (i = 0; i < len; i++){
+        if (string[i] > 57 || string[i] < 48)
+            return 9000;
+    }
+
+    
     if (flag*atoi(string) > 8191 || flag*atoi(string) < -8191)
         return 9000;
     return flag*atoi(string);

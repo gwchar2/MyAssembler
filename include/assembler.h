@@ -50,11 +50,11 @@ typedef enum ErrorCode{
 
 typedef enum Label_Type{
     CMD_LABEL,
-    DATA_LABEL, 
-    STRING_LABEL,
+    DEF_LABEL, 
     ENTRY_LABEL,
     EXTERN_LABEL,
-    DEF_LABEL,
+    STRING_LABEL,
+    DATA_LABEL,
     INVALID
 } Label_Type;
 
@@ -72,7 +72,6 @@ extern int curr_line_number;                                                    
 extern int IC;                                                                          /* IC Counter */
 extern int DC;                                                                          /* DC Counter */
 extern int err_flag;                                                                    /* Global error flag */
-extern int FR;                                                                          /* Rotation flag */
 extern ErrorCode errorCode;                                                             /* Global error variable */
 
 /************************************
@@ -120,8 +119,6 @@ typedef struct Cmd_node{
     struct Label_node *next_label;                                                      /* Next label (null until merging with DC ) */
 } cmd_node;
 
-extern cmd_node *cmd_head;                                                              /* Instruction segment head */
-
 /************************************
 ********** LABEL STRUCTURE **********
 *************************************/
@@ -137,6 +134,9 @@ typedef struct Label_node{
     struct Row_node *row_list;                                                          /* The row list (the rows which it appears in )*/
     struct Label_node *next_label;                                                      /* Next label */
     struct Label_node *prev_label;                                                      /* Prev label */
+    struct Label_node *next_entry;
+    struct Label_node *next_extern;
+    struct Label_node *next_dc;                                                   
 } label_node;
 
 typedef struct Data_node{                                                               /* For string, we put in ascii values */
@@ -149,14 +149,15 @@ typedef struct Row_node{
     struct Row_node *next_row;
 } row_node;
 
-typedef struct DC_Node{
-    struct Label_node *label_node;    
-    struct DC_Node *next_node;
-} dc_node;
-
+                                                           
 extern label_node *lbl_head;                                                            /* Label table head */
 extern label_node *entry_head;                                                          /* Entry list head */
 extern label_node *extern_head;                                                         /* Extern list head */
+<<<<<<< Updated upstream
+=======
+extern label_node *dc_head;                                                             /* Data segment list head */
+extern cmd_node *cmd_head;                                                              /* Instruction segment head */
+>>>>>>> Stashed changes
 
 label_node *create_label(int line_init,int definedData,char *label_name,int entry_count,Label_Type label_type); /* This function creates a word_node according to the label name, type, initiated address and sets everything else to NULL */
 
@@ -172,16 +173,36 @@ void *add_row(label_node *cur_label, int address); /* This function adds an addr
 
 void *add_data(int data,label_node *label_node); /* This function adds a data node to the data list in a label */
 
+<<<<<<< Updated upstream
 void *add_entry(label_node *label_node);  /* This function adds a an entry node to the entry list */
 
 void *add_extern(label_node *label_node); /* This function adds a an extern node to the extern list */
 
+=======
+void *add_cmd(cmd_node *some_node); /* This function adds a cmd node to the cmd list */
+
+/*void *add_entry(label_node *label_node); */ /* This function adds a an entry node to the entry list */
+
+void *add_extern(label_node *label_node); /* This function adds a an extern node to the extern list */
+
+void *add_dc(label_node *label_node); /* This function adds a data node to the data segment list */
+
+>>>>>>> Stashed changes
 void printList(int num); /* Prints: 1 for label list, 2 for dc list, 3 for cmd list */
 
 void print_label_guide(); /* Prints the guide for the table */
 
 void free_list(int num); /* Frees the list, 1 for label list, 2 for dc list, 3 for cmd list*/
 
+<<<<<<< Updated upstream
+=======
+
+
+
+
+
+
+>>>>>>> Stashed changes
 
 /*************************************
 ********** QUALITY OF LIFE ***********

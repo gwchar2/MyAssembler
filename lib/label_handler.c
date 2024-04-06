@@ -10,25 +10,33 @@
 *   This function receives a word and checks what type of label it can potentialy be.
 */
 int check_first_word (char *word){
-    Label_Type type; 
+    Label_Type type;
+    
+    /* We completely ignore notes / empty lines */
     if (word == NULL || *word == '\n' || *word == ';' || word[0] == ';'){                                                     /* Blank or note line - ignore */
         return 0; 
     }
+    /* If the first word starts with a . it is either .define .extern .entry or WRONG */
     else if (word[0] == '.'){
+        
         type = getLabelType(word);
-        if (type == ENTRY_LABEL){                                                                           /* ignore entry labels in the first lap */
+        if (type == ENTRY_LABEL){  
+            curr_line_number++;                                                                        /* ignore entry labels in the first lap */
             return 0;
         }
         if (type == DEF_LABEL || type == EXTERN_LABEL)
             return 1;                                                                                       /* .define or .extern line */
         else{
             error(ERR_UNDEFINED_COMMAND);
+            curr_line_number++;
             return 0;
         }
     }
+    /* If it ends with : it must be a label. */
     else if (word[strlen(word)-1] == ':'){    
         return 2;                                                                                           
     }
+    /* Everything else goes to 3. */
     else 
         return 3;                                                                                           /* Everything else */
 }
@@ -40,6 +48,7 @@ Label_Type getLabelType(char *pointer){
     p_copy = malloc(strlen(pointer));
     check_allocation(p_copy);
     strcpy(p_copy,pointer);
+    
     if (p_copy == NULL){
         return INVALID;
     }else if (strcmp(p_copy, ".data") == 0) {
@@ -66,23 +75,34 @@ Label_Type getLabelType(char *pointer){
 */
 int check_label(char *p_copy, Label_Type label_type){
     char *pointer;
+    label_node *temp;
     if (label_type == DEF_LABEL || label_type == EXTERN_LABEL || label_type == ENTRY_LABEL){
+        
         /* Checks to see if 1 <= label <= 31, if the label is a reg / cmd name, if its all alphabetical letters*/
         if (strlen(p_copy) < 1 || strlen(p_copy) > 31 || checkWordInArray(registers,p_copy) == 1 || checkWordInArray(commands,p_copy) == 1 || check_alpha(p_copy) == 0){
             error(ERR_INVALID_LABEL);
             return 0;
         }
-        if (label_exists(p_copy) != NULL){   
-            printf("\n[%s %s r%d ] THIS NEEDS TO BE CHANGED FOR ENTRY!\n",__FILE__,__FUNCTION__,__LINE__);
-            /*Change here for entry !! (if it exists, we need to check if it partner bit 0 or 1 )*/   
-            error(ERR_DUPLICATE_LABEL);                                                                                                 /* checks to see if the label exists. Entries do not exist yet */
-            return 0;
+        temp = label_exists(p_copy);
+        /* If there is a duplicate */
+        if (temp != NULL){   
+            /* If its we are checking an entry, and its a duplicate with entry/extern/entry_val = 1 */
+            if (label_type == ENTRY_LABEL && (temp -> label_type == ENTRY_LABEL || temp -> label_type == EXTERN_LABEL || temp -> entry_count == 1)){
+                error(ERR_DUPLICATE_LABEL);                                                                                                 
+                return 0;
+                }
+            else {
+                error(ERR_DUPLICATE_LABEL);                                                                                                 
+                return 0;
+            }
         }
+        /* If the string is equal to .define .data or .string - illegal */
         if (strcmp(p_copy,".define") == 0 || strcmp(p_copy,".data") == 0 || strcmp(p_copy,".string") == 0 || (strcmp(p_copy,".entry") == 0 || strcmp(p_copy,".extern") == 0)){
             error(ERR_INVALID_LABEL);
             return 0;
         }
     }
+    /* If there label is for a data/cmd/string */
     else if (label_type == CMD_LABEL || label_type == DATA_LABEL || label_type == STRING_LABEL){
         if (strlen(p_copy) < 2 || strlen(p_copy) > 32){
             error(ERR_INVALID_LABEL);
@@ -91,12 +111,13 @@ int check_label(char *p_copy, Label_Type label_type){
         pointer = malloc(strlen(p_copy)-1);
         check_allocation(pointer);
         strcpy(pointer,p_copy);
-        pointer[strlen(pointer)-1] = '\0';
+        /* Checks to see if it is a legal word */
         if (!check_alpha(pointer) || checkWordInArray(registers,pointer) == 1 || checkWordInArray(commands,pointer) == 1){                        /* Check to see if the label is all alphabetical letters or reg / cmd name*/
             error(ERR_INVALID_LABEL);   
             free(pointer);                     
             return 0;
         }
+        /* Checks to see that no pointer exists */
         if (label_exists(pointer) != NULL){                                                                                                        /* checks to see if the label exists. Entries do not exist yet */
             error(ERR_INVALID_LABEL);
             free(pointer);

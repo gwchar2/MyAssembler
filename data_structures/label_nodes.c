@@ -23,6 +23,9 @@ label_node *create_label(int line_init,int definedData,char *label_name,int entr
     new_label -> data_count = 0;
     new_label -> data_node = NULL;
     new_label -> row_list = NULL;
+    new_label -> next_entry = NULL;
+    new_label -> next_extern = NULL;
+    new_label -> next_dc = NULL;
     new_label -> next_label = NULL;
     new_label -> prev_label = NULL;
     return new_label;
@@ -32,7 +35,6 @@ label_node *create_label(int line_init,int definedData,char *label_name,int entr
 *   This function adds a label to the list
 */
 void *add_label (int line_init,int definedData,char *label_name,int entry_count,Label_Type label_type) {
-
     label_node *new_label = create_label(line_init, definedData, label_name, entry_count, label_type);                           /* Creates a new node */
     label_node *temp = lbl_head; 
     if (lbl_head == NULL) {                                                   /* If the list is empty, add the new node to the top of the list */
@@ -45,6 +47,14 @@ void *add_label (int line_init,int definedData,char *label_name,int entry_count,
         temp -> next_label = new_label;
         new_label -> prev_label = temp;  
     }
+    if (new_label -> label_type == EXTERN_LABEL)
+        add_extern(new_label);
+    /*else if (new_label -> label_type == ENTRY_LABEL)
+        add_entry(new_label);*/
+    else if (new_label -> label_type == DATA_LABEL || new_label -> label_type == STRING_LABEL)
+        add_dc(new_label);
+    /*else if (new_label -> label_type == CMD_LABEL);
+        add_cmd(new_label);   */
 }
 
 
@@ -56,9 +66,10 @@ label_node *label_exists(char *curr_label) {
     copy = malloc(strlen(curr_label));
     check_allocation(copy);
     strcpy(copy,curr_label);
-    label_node *temp = lbl_head;
+    label_node *temp = NULL;
+    temp = lbl_head;
     if (lbl_head==NULL)
-        return NULL;                                                                                /* Returns if the list is empty */
+        return NULL;                                                                          /* Returns if the list is empty */
     while (temp != NULL) {
         if (strcmp(temp -> label_name,copy) == 0)                                             /* Goes through the list and compares the names */
             return temp;
@@ -68,7 +79,68 @@ label_node *label_exists(char *curr_label) {
 }
 
 
+/*
+*   This function adds a an entry node to the entry list
 
+void *add_entry(label_node *some_node) {
+    label_node *temp = entry_head;
+    if (entry_head == NULL) {                                                   /* If the list is empty, add the new node to the top of the list 
+        entry_head = some_node;
+    }
+    else {
+        while (temp -> next_entry != NULL) {
+            temp = temp -> next_entry;      
+        }  
+        temp -> next_entry = some_node;
+    }
+}
+/*
+*   This function adds a an external node to the extern list
+*/
+void *add_extern(label_node *some_node) {
+    label_node *temp = extern_head; 
+    if (extern_head == NULL) {                                                   /* If the list is empty, add the new node to the top of the list */
+        extern_head = some_node;
+    }
+    else {
+        while (temp -> next_extern != NULL) {
+            temp = temp -> next_extern;      
+        }  
+        temp -> next_extern = some_node;
+    }
+}
+
+/*
+*   This function adds a dc node to the dc list
+*/
+void *add_dc(label_node *some_node){
+    label_node *temp = dc_head; 
+    if (dc_head == NULL) {                                                   /* If the list is empty, add the new node to the top of the list */
+        dc_head = some_node;
+    }
+    else {
+        while (temp -> next_dc != NULL) {
+            temp = temp -> next_dc;      
+        }  
+        temp -> next_dc = some_node;
+    }
+}
+
+/*
+*   This function adds a cmd node to the cmd list
+*/
+void *add_cmd(cmd_node *some_node){
+    cmd_node *temp = cmd_head; 
+    if (cmd_head == NULL) {                                                   /* If the list is empty, add the new node to the top of the list */
+        cmd_head = some_node;
+    }
+    else {
+        while (temp -> next_cmd != NULL) {
+            temp = temp -> next_cmd;      
+        }  
+        temp -> next_cmd = some_node;
+    }
+}
 
 /*
 *   This function receives a variable and prints the coresponding list. 
@@ -76,13 +148,14 @@ label_node *label_exists(char *curr_label) {
 */
 void printList(int num){
     label_node *temp = NULL;
-    cmd_node *cmd_temp = NULL;
+    /*cmd_node *cmd_temp = NULL;*/
     data_node *data_temp = NULL; 
     row_node *row_temp = NULL; 
-    dc_node *dc_temp = NULL;
+    label_node *dc_temp = NULL;
     printf("\n");
     switch (num){
         case 1: /* label list */
+            print_label_guide();
             temp = lbl_head;
             while (temp != NULL){
                 switch (temp -> label_type){
@@ -100,20 +173,16 @@ void printList(int num){
                                 printf("[%d]-",row_temp -> address);
                             row_temp = row_temp -> next_row;
                             }
-                            printf("\n");
                         }
                         break;
                     case DEF_LABEL:
                         printf("[%s]-[%d]-[%d]\n",temp -> label_name,temp -> label_type,temp -> definedData);
-                        printf("\n");
                         break;
                     case ENTRY_LABEL:
                         printf("[%s]-[%d]-[%d]\n",temp -> label_name,temp -> label_type,temp -> entry_count);
-                        printf("\n");
                         break;
                     case CMD_LABEL:
                         printf("[%s]-[%d]-[%d]",temp -> label_name,temp -> label_type,temp -> line_init);
-                        printf("\n");
                         break;
                     default:
                         printf("[%s]-[%d]-[%d]-",temp -> label_name,temp -> label_type,temp -> line_init);
@@ -125,29 +194,36 @@ void printList(int num){
                                 printf("[%d]-",data_temp -> data);
                         data_temp = data_temp -> next_data;
                         }
-                        printf("\n");
                         break;
                 }
+                if (temp -> next_label != NULL)
+                    printf("  |\n");
+                else    
+                    printf("\n");
                 temp = temp -> next_label;
             }
             break;
         case 2: /* dc list */
             dc_temp = dc_head;
             while (dc_temp != NULL){
-               printf("[%s]-[%d]-",dc_temp -> label_node -> label_name,dc_temp -> label_node ->label_type);
-                data_temp = dc_temp -> label_node -> data_node;
+                printf("[%s]-[%d]-[%d]-",dc_temp -> label_name,dc_temp -> label_type,dc_temp -> line_init);
+                data_temp = dc_temp -> data_node;
                 while (data_temp != NULL){
                     if (data_temp -> next_data == NULL)
                         printf("[%d]\n",data_temp -> data);
                     else
                         printf("[%d]-",data_temp -> data);
                     data_temp = data_temp -> next_data;
-                }
-                printf("\n");
+                    }
+                if (dc_temp -> next_dc != NULL)
+                    printf("  |\n");
+                else    
+                    printf("\n");
+                dc_temp = dc_temp -> next_dc;
             }
             break;
         case 3: /* cmd list */
-            cmd_temp = cmd_head;
+            /*cmd_temp = cmd_head;
             while (cmd_temp != NULL && cmd_temp->next_label != dc_head){
                 printf("Address [%d] holds [%d] variables\n",cmd_temp -> address,cmd_temp -> total_vars);
                 printf("binary_cmd: %s\t",cmd_temp -> binary_cmd);
@@ -156,7 +232,7 @@ void printList(int num){
                 printf("var3_binary: %s\t",cmd_temp -> var3_binary);
                 printf("var4_binary: %s\n",cmd_temp -> var4_binary);
                 cmd_temp = cmd_temp -> next_cmd;
-            }
+            }*/
             break;
         default:
             break;
@@ -203,7 +279,7 @@ void free_list(int num) {
                 current_label = temp_label;
             }
             break;
-        case 2:
+        case 2:/*
             current_label = dc_head;
             temp_label = NULL;
             current_row = NULL;
@@ -226,7 +302,7 @@ void free_list(int num) {
                 temp_label = current_label->next_label;
                 free(current_label);
                 current_label = temp_label;
-            }
+            }*/
             break;
         case 3:     
             current_cmd = cmd_head;
@@ -245,3 +321,15 @@ void free_list(int num) {
 }
 
 
+void print_label_guide() {
+    printf("-----------------------------------------------------------------\n");
+    printf("| Label Name | Label Type   | Details                           |\n");
+    printf("-----------------------------------------------------------------\n");
+    printf("| LabelName  | CMD_LABEL(0)   | LineInit                        |\n");
+    printf("| LabelName  | DEF_LABEL(1)   | DefinedData                     |\n");
+    printf("| LabelName  | ENTRY_LABEL(2) | EntryCount                      |\n");
+    printf("| LabelName  | EXTERN_LABEL(3)| LineInit| Addresses: Address1...|\n");   
+    printf("| LabelName  | STRING_LABEL(4)| DC | Data: Data1, ...           |\n");
+    printf("| LabelName  | DATA_LABEL(5)  | DC | Data: Data1, ...           |\n");
+    printf("-----------------------------------------------------------------\n");
+}
