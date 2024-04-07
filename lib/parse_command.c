@@ -70,8 +70,12 @@ int valid_command_name(char *cmd) {
             } 
         }    
         if (i==NUM_OF_CMDS) /* command name not found */
+<<<<<<< Updated upstream
             return error_manager(1,curr_line_number); /* Error: undefined command */
         
+=======
+            return -1 ; /* Error: undefined command */
+>>>>>>> Stashed changes
     }
     
     return 0; /* no error found */
