@@ -40,7 +40,7 @@ void scan_file(FILE *file){
                 curr_line_number++;
                 break;
             case 3: /* Everything else */
-                /*check_command(); return 0 if no error found. return 1 if error found. */ 
+                /*check_command(line); return 0 if no error found. return 1 if error found. */ 
                /* מיכל פה זה החלק שלך, שימי לב שיש את כל הפוינטרים שביקשת כגלובלים ולכן לא צריך לשלוח אותם לפונקציה*/
                 curr_line_number++;
                 break;
