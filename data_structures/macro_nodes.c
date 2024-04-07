@@ -47,7 +47,7 @@ void copyMcrText(macro *cur_mac, FILE *newP) {
 }
 
 /* this functiond checks if the macro name is valid. returns 1 for valid. 0 for invalid. */
-int validateMcrName(char *mcr_name, macro *mac_head) {
+int validateMcrName(char *mcr_name, macro *mcr_head) {
     int i ;
     /* check the cmd name is not a command name */
     for (i=0; i<NUM_OF_CMDS; i++) {
