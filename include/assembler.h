@@ -24,7 +24,6 @@
 #define BITS_IN_INT 12
 #define MAX_12BITS 2047
 #define MIN_12BITS -2048
-#define BIN_WORD_LEN 15
 #define RS_SHIFT 5
 #define RT_SHIFT 2
 #define RT_BIT_FIELD 9
@@ -33,8 +32,6 @@
 #define RTA_FIELD 10
 #define OPCODE_BIN_LEN 4
 #define OPCODE_FIELD 4
-
-
 /* Checks if the memory for (C) was allocated properly */
 #define check_allocation(c)\
         if (c == NULL){\
@@ -47,6 +44,8 @@
         errorCode = c; \
         error_manager(errorCode); \
     } while(0)
+
+
 /********************************* 
 ****** GLOBAL INTS & ENUMS *******
 **********************************/
@@ -62,10 +61,9 @@ typedef enum ErrorCode{
     ERR_MISSING_PARENTHESES,
     ERR_MULTIPLE_CONSECUTIVE_COMMAS,
     ERR_SEGMENTATION_FAULT,
-    ERR_REDEFINITION_MACRO
-    ERR_ILLEGAL_ADDRESSING,
-    ERR_IMM_OVERFLOW
     ERR_REDEFINITION_MACRO,
+    ERR_ILLEGAL_ADDRESSING,
+    ERR_IMM_OVERFLOW,
     ERR_SIZE_LEAK,
     ERR_DUPLICATE_LABEL
 
@@ -87,7 +85,7 @@ enum ending_type {
         o,
         external, 
         entries
-};
+} ;
 
 extern char *commands[NUM_OF_CMDS];                                                     /* Global Commands array */
 extern char *registers[NUM_OF_REGS];                                                    /* Global Register array */
@@ -130,8 +128,6 @@ void addText(macro *cur_mac, char *line);
 ********** COMMAND STRUCTURE ********
 *************************************/
 typedef struct Cmd_node{
-
-
     int address; /* The instruction count */
     int total_vars; /* The total amount of variables it holds */
     int L; /* num of bin words */

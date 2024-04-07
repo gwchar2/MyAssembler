@@ -6,40 +6,22 @@
 
 
 char *commands[NUM_OF_CMDS] = {
-
-    "mov", /* 0, group 1 */
-    "cmp", /* 1, group 1 */
-    "add", /* 2, group 1 */
-    "sub", /* 3, group 1 */
-    "not", /* 4, group 2 */
-    "clr", /* 5, group 2 */
-    "lea", /* 6, group 1 */
-    "inc", /* 7, group 2 */
-    "dec", /* 8, group 2 */
-    "jmp", /* 9, group 2 */
-    "bne", /* 10, group 2 */
-    "red", /* 11, group 2 */
-    "prn", /* 12, group 2 */
-    "jsr", /* 13, group 2 */
-    "rts", /* 14 */
-    "hlt" /* 15 */
-};    
-
-char *registers[NUM_OF_REGS] = {
-    "r0",
-    "r1",
-    "r2",
-    "r3",
-    "r4",
-    "r5",
-    "r6" ,
-    "r7" ,
-    "PSW",
-    "PC"
-
-    "mov","cmp","add","sub","not","clr",
-    "lea" ,"inc","dec","jmp","bne","red",
-    "prn","jsr","rts","hlt"
+    "mov", 
+    "cmp", 
+    "add", 
+    "sub", 
+    "not", 
+    "clr", 
+    "lea", 
+    "inc", 
+    "dec",  
+    "jmp", 
+    "bne", 
+    "red", 
+    "prn", 
+    "jsr",
+    "rts", 
+    "hlt" 
 };    
 
 char *registers[NUM_OF_REGS] = {
