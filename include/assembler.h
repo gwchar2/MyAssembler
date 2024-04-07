@@ -250,7 +250,7 @@ int check_alpha(char *pointer); /* Checks if a string is all alphabetical letter
 /************************************
 ***** COMMAND PARSER FUNCTIONS ******
 *************************************/
-void check_command(char *string);
+void check_command() ;
 int valid_command_name(char *cmd);
 void getNumOfVars();
 int sourceOpCheck(char **token);

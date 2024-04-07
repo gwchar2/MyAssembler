@@ -20,7 +20,12 @@ void scan_file(FILE *file){
                 break; 
             }
         }
-        
+        inputCopy = (char *)malloc(strlen(line) + 1); 
+        check_allocation(inputCopy);
+        strcpy(inputCopy, line); 
+
+        pointer = strtok(inputCopy, " \t"); /* Get the first word from the line */
+
         /* Check to see if the file is shorter than 80 characters if it isnt, go next line, else, handle. */
         if (strlen(line) == MAX_LINE_LEN - 1 && line[MAX_LINE_LEN - 2] != '\n') {                                       /* Checking to see if the array is full without \n */
             error(ERR_SIZE_LEAK);
