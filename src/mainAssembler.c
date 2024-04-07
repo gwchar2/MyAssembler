@@ -6,28 +6,14 @@
 
 
 char *commands[NUM_OF_CMDS] = {
-    "mov", 
-    "cmp", 
-    "add", 
-    "sub", 
-    "not", 
-    "clr", 
-    "lea", 
-    "inc", 
-    "dec",  
-    "jmp", 
-    "bne", 
-    "red", 
-    "prn", 
-    "jsr",
-    "rts", 
-    "hlt" 
+    "mov","cmp","add","sub","not","clr",
+    "lea" ,"inc","dec","jmp","bne","red",
+    "prn","jsr","rts","hlt"
 };    
 
 char *registers[NUM_OF_REGS] = {
     "r1","r2","r3","r4","r5",
     "r6","r7" ,"PSW","PC"
-
 };
 
                                                                  
@@ -41,7 +27,8 @@ label_node *entry_head = NULL;                                                  
 label_node *extern_head = NULL;                                                     /* Extern list head */
 label_node *dc_head = NULL;                                                         /* Data segment list head */
 ErrorCode errorCode = 0;                                                            /* Global error variable */
-
+cmd_node *new_cmd = NULL;
+char *rest_of_line = NULL;                                                          /* this pointer will always pont to the rest of the input line that wans't proccessed yet. */
 
 int main(int argc,char *argv[]) {
     
@@ -58,7 +45,7 @@ int main(int argc,char *argv[]) {
     file_count++ ;                                                                  /* argumants found. increase file count */
     strcpy(clean_file_name, argv[1]); /* getting file name */
 
-
+    
     /* PreAssembler */
     fp = openFile(clean_file_name,0);
     preAssembler(fp,clean_file_name) ;
@@ -67,7 +54,7 @@ int main(int argc,char *argv[]) {
     /* First & Second Rotation (FR Flag) */
     /* Before we begin, we must note the following:
     Note lines ( ';' ) and empty lines in the file, will not be counted toward IC, DC or as lines in the file!!! */
-
+    
     fp = openFile(clean_file_name,1);
     scan_file(fp);
 
@@ -81,7 +68,10 @@ int main(int argc,char *argv[]) {
         printf("DC head is: [%p] [%s] printing list: \n",(void*)dc_head,dc_head->label_name);
         printList(2);
     }
-    
+    if (cmd_head != NULL){
+        printf("CMD head is: [%p] printing list: \n",(void*)cmd_head);
+        printList(3);
+    }
     
     printf("Need to go a second time for labels. in label_handler->check_label->line 122 ->need to edit the case(maybe?)\n ");
     printf("| Add to entry list via add_label() cmd!! |\n");

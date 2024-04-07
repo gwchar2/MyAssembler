@@ -27,9 +27,7 @@ nooooo:
 .define szzzzzzzzz = 
 .define szzzzzzzzzz=
 .extern ThisShouldWork3
-;asdcasd asdjlah aheakwehkj abskjdagwekg aks
 .extern ThisShouldWork
-;
 ABCDEFGHIJABCDEFGHIJABCDE: .data ,1,,2,3
 .entry ThisShouldWork
 cmd hello

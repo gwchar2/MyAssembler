@@ -148,7 +148,7 @@ void *add_cmd(cmd_node *some_node){
 */
 void printList(int num){
     label_node *temp = NULL;
-    /*cmd_node *cmd_temp = NULL;*/
+    cmd_node *cmd_temp = NULL;
     data_node *data_temp = NULL; 
     row_node *row_temp = NULL; 
     label_node *dc_temp = NULL;
@@ -223,16 +223,16 @@ void printList(int num){
             }
             break;
         case 3: /* cmd list */
-            /*cmd_temp = cmd_head;
-            while (cmd_temp != NULL && cmd_temp->next_label != dc_head){
-                printf("Address [%d] holds [%d] variables\n",cmd_temp -> address,cmd_temp -> total_vars);
-                printf("binary_cmd: %s\t",cmd_temp -> binary_cmd);
-                printf("var1_binary: %s\t",cmd_temp -> var1_binary);
-                printf("var2_binary: %s\t",cmd_temp -> var2_binary);
-                printf("var3_binary: %s\t",cmd_temp -> var3_binary);
-                printf("var4_binary: %s\n",cmd_temp -> var4_binary);
+            cmd_temp = cmd_head;
+            while (cmd_temp != NULL){
+                if (cmd_temp -> next_cmd == NULL){
+                   printf("[%d]-[%d]",cmd_temp -> sourceAdd ,cmd_temp -> targetAdd); 
+                   printf("  |\n");
+                }
+                else 
+                    printf("[%d]-[%d]-",cmd_temp -> sourceAdd ,cmd_temp -> targetAdd);
                 cmd_temp = cmd_temp -> next_cmd;
-            }*/
+            }
             break;
         default:
             break;

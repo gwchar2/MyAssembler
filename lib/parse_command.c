@@ -5,9 +5,6 @@
 #include "../include/assembler.h"
 
 
-cmd_node *new_cmd ; 
-char *rest_of_line = NULL ; /* this pointer will always pont to the rest of the input line that wans't proccessed yet. */
-
 /* this function is called only if first token of command line is NOT blank/.define/.data/.string/.extern/.entry/pottential LABEL */
 /* pointer - first token of comman dline
    line - the whole command line 
@@ -18,20 +15,24 @@ void check_command(char *input) { /* input is the full command line */
     int cmd_num ; 
     char *cmd_name = NULL ;
     char *extra = NULL ;
-
-    strcpy(inputCopy, input) ;
-    cmdName = strtok(inputCopy," \t") ; /* cut the first word in input */
-
-    if (cmd_num = valid_command_name(cmd_name) == -1) {
+    char *token = NULL;
+    inputCopy = malloc(strlen(input)+1);
+    check_allocation(inputCopy);
+    strcpy(inputCopy, input) ;    
+    cmd_name = strtok(inputCopy," \t") ; /* cut the first word in input */
+    cmd_num = valid_command_name(cmd_name);
+    if (cmd_num == -1) {
         errorCode = 1 ; /* undefined command */
-        error_manager(errorCode,curr_line_number) ;
+        error_manager(errorCode) ;
         return ;
     }
+    
     /* command name is valid. new_cmd node is created. cmd_num is set. L=1 */
     new_cmd = create_cmd_node(cmd_num) ; /* create a new command node with the matching command number */
     
+    
     getNumOfVars() ; /* set num of required operands in totalVars */
-
+    
     /* check for illegal comma after command name ??????? */
     /*if (*(line+CMD_NAME_LEN) == COMMA) {
         errorCode = 5 ;
@@ -40,15 +41,18 @@ void check_command(char *input) { /* input is the full command line */
     }
     /* no illegal comma after command name. continue. */ 
 
-    rest_of_line = input+CMD_NAME_LEN ; /* rest of the line points to after command name */
+/* לתקן מעבר / דילוג על רווחים */
+    rest_of_line = input+CMD_NAME_LEN+1 ; /* rest of the line points to after command name */
 
     /*token = strtok(NULL, SPACE_COMMA_DEL) ; /* cut #1 parmeter */
-
+    
     if (new_cmd->total_vars == FIRST_GROUP_VARS) { /* 2 operands are required */
+        
         error_num = sourceOpCheck(&rest_of_line) ; /* send to validation. return 0 if valid. otherwise if invalid. */
+        
         if (error_num != 0){
             errorCode = error_num ;
-            error_manager(errorCode,curr_line_number) ;
+            error_manager(errorCode) ;
             return ;
         }
     }
@@ -57,31 +61,27 @@ void check_command(char *input) { /* input is the full command line */
         error_num = targetOpCheck(&rest_of_line) ; /* send to validation */
         if (error_num != 0){
             errorCode = error_num ;
-            error_manager(errorCode,curr_line_number) ;
+            error_manager(errorCode) ;
             return ;
-        }
-        token = strtok(NULL, SPACE_COMMA_DEL) ; /* cut #2 parmeter */
-        if (token != NULL ) {
-            errorCode = 2
-            error_manager(errorCode, curr_line_number) ; /* Extraneous text after end of command in line */
         }
     }
 
     if (new_cmd->total_vars == THIRD_GROUP_VARS) { /* no operands required */
+        token = strtok(rest_of_line, SPACE_COMMA_DEL);
         if (token != NULL ){
-            errorCode = 2
-            error_manager(errorCode, curr_line_number) ; /* Extraneous text after end of command in line */
+            errorCode = 2;
+            error_manager(errorCode) ; /* Extraneous text after end of command in line */
         }
     }
 
     /* if reached here, both source and target ops are valid. now we will translate the command line itself. */
-    eeror_num = commaCheck(&new_cmd) ; /* check for legal comma */
+    error_num = commaCheck(&new_cmd, input) ; /* check for legal comma */
     if (error_num != 0){
             errorCode = error_num ;
-            error_manager(errorCode,curr_line_number) ;
+            error_manager(errorCode) ;
             return ;
     }
-    strcpy(new_cmd->cmd_binary,cmdBinTranslation(&new_cmd)) ;
+    strcpy(new_cmd->cmd_binary,cmdBinTranslation(new_cmd -> cmd_num , new_cmd -> sourceAdd, new_cmd -> targetAdd)) ;
 
 
 }
@@ -89,20 +89,22 @@ void check_command(char *input) { /* input is the full command line */
 /* this function gets a word and checks if it is one of the legel commands  if yes - it creates a new command node with the mathing cmd_num. if not - error*/
 int valid_command_name(char *cmd) {
     int cmd_num,i ;
-    if (strlen(cmd) != CMD_NAME_LEN+1) /* check valid len */
+    if (strlen(cmd) > CMD_NAME_LEN) {/* check valid len */
         return -1 ; /* Error: undefined command */
+    }
     else {
         /* go through command name array and look for matching command */
         for (i=0; i<NUM_OF_CMDS; i++) {
             if (strcmp(cmd, commands[i])==0) { /* if command name found */
+                
                 cmd_num = i; /* save matching command number */
-    
                 break;
             } 
         }    
         if (i==NUM_OF_CMDS) /* command name not found */
             return -1 ; /* Error: undefined command */
     }
+    
     
     return cmd_num ; /* no error found. i is cimmand number. */
 }
@@ -140,23 +142,30 @@ void getNumOfVars() {
             vars_req = THIRD_GROUP_VARS;
             break ;
         }
-
+    
+    new_cmd -> total_vars = vars_req;
 }
 
 /* called only if command is from 1st group */
-int sourceOpCheck(char *rest_of_line) {
+int sourceOpCheck(char **rest_of_line) {
     int error_num = 0 ;
-    char *lineCopy ;
+    char *lineCopy = NULL ;
     char *op1 = NULL ;
     /*size_t len = strlen(token) ;*/
     int reg_num, immNum , labelVal, index ;
     label_node *labelOp = NULL ;
-    strcpy(lineCopy, rest_of_line) ;
-
+    lineCopy = malloc(strlen(*rest_of_line));
+    strcpy(lineCopy, *rest_of_line) ;
+        
+    
     op1 = strtok(lineCopy, SPACE_COMMA_DEL) ; /* cut first op */
+    
+        
     /* Addressing method - 0 */
-    if (*op1 == '#') { /* source op is an immidiate number. */
+    if (*op1 == 35) { /* source op is an immidiate number. */
+    
         if (new_cmd->cmd_num == 6 ) { /* lea command - Imm addressing is illegal */
+        
             return 10 ;
         }
         error_num = immProcessor(op1,&immNum) ; /* validation. if valid, immNum will be the imm to tranlate */
@@ -165,12 +174,14 @@ int sourceOpCheck(char *rest_of_line) {
             (new_cmd->L)++ ; /* increase number of bin words by 1 */
             strcpy(new_cmd->source1_binary,BinTranslation12Bit(immNum,new_cmd->sourceAdd)) ; /* translate num to 12 bits. last 2 bit are 00 */
             strcpy(new_cmd->source2_binary, '\0') ; /* for imm source op, only 1 word required. */
-            return targetOpCheck(rest_of_line) ;
+            return targetOpCheck(*rest_of_line) ;
         }
         else
             return error_num ; /* operand in undefined. */
 
     }
+    
+        
     /* Addressing method - 3 */
     if ((reg_num = isReg(op1)) != -1 ) { /* source op is a register. */
         if (new_cmd->cmd_num == 6 )  /* lea command - Reg addressing is illegal */
@@ -178,21 +189,21 @@ int sourceOpCheck(char *rest_of_line) {
         new_cmd->sourceAdd = 3 ;     
         (new_cmd->L)++ ; /* increase number of bin words by 1 */
         strcpy(new_cmd->source1_binary, RSBinTranslation(reg_num)) ;
-        strcpy(new_cmd->source2_binary, '\0') ; /* for register source op, only 1 word required. */
+        new_cmd->source2_binary = '\0'; /* for register source op, only 1 word required. */\
         return targetOpCheck(rest_of_line) ;
         /* source operand is a legal register. RSbin word was already translated. */
     }
-
+    
 
     /* Addressing method - 1 */
     if ((labelOp = label_exists(op1)) != NULL) { /* source op is a label. */
         error_num = labelPrecessor(&labelOp, &labelVal) ; 
         if (error_num == 0) {
-            new_cmd->sourceAdd = 1 /* set addressing method */
+            new_cmd->sourceAdd = 1; /* set addressing method */
             (new_cmd->L)++ ; /* increase number of bin words by 1 */
             strcpy(new_cmd->source1_binary,BinTranslation12Bit(labelVal,new_cmd->sourceAdd)) ; /* translate num to 12 bits. last 2 bit are 00 */
             strcpy(new_cmd->source2_binary, '\0') ; /* for label source op, only 1 word required. */
-            return targetOpCheck(rest_of_line) ;
+            return targetOpCheck(*rest_of_line) ;
         }
     }
 
@@ -203,24 +214,24 @@ int sourceOpCheck(char *rest_of_line) {
     if (error_num == 1)  /* error found */
         return 3; /* undefined op */
     else if (error_num == 0) { 
-        new_cmd->sourceAdd = 2 /* set addressing method */
+        new_cmd->sourceAdd = 2; /* set addressing method */
         (new_cmd->L) = (new_cmd->L) + 2 ; /* increase number of bin words by 2 */
         strcpy(new_cmd->source1_binary,"?") ; /* mark later translation of label address */
         strcpy(new_cmd->source2_binary, BinTranslation12Bit(index,new_cmd->sourceAdd)) ; /*  tranlate the index value. */
-        return targetOpCheck(rest_of_line); 
+        return targetOpCheck(*rest_of_line); 
     }
         else if (error_num == -1) { /* not an index method  still possible it is a label undefined yet. */
                 strcpy(new_cmd->source1_binary,"?") ; /* optional label  */
                 strcpy(new_cmd->source1_binary,"\0") ; /* for addressing method 1 - only 1 word required.  \0 */
                 (new_cmd->L)++ ; /* increase word count */
-                reutrn 0;
+                return 0;
         }
             else {/* error_num == -2. index found  label not  */
-                new_cmd->sourceAdd = 2 /* set addressing method */
+                new_cmd->sourceAdd = 2; /* set addressing method */
                 (new_cmd->L) = (new_cmd->L) + 2 ; /* increase number of bin words by 2 */
                 strcpy(new_cmd->source1_binary,"?") ; /* mark for optional label defining later */
                 strcpy(new_cmd->source2_binary, BinTranslation12Bit(index,new_cmd->sourceAdd)) ; /* tranlate the index value */ 
-                return targetOpCheck(rest_of_line);
+                return targetOpCheck(*rest_of_line);
             }
 
     return 3 ; /* if source op doesnt fit the prior options, it is undefined. */
@@ -238,11 +249,11 @@ int isIndex(char *input, int index, label_node *baseLabel) {
     size_t len = strlen(input) ;
 
     /* get base label */
-    for (i=0; *(token+i)!=']' || i <= len ; i++) ;
+    for (i=0; *(input+i)!=']' || i <= len ; i++) ;
     if (i==len-1) /*  reach end of input */
         return -1; /* no ] found. not addressing method 2. still possible that it's a label not defined yet. */
     /* ] found. look for [ opener */
-    for (j=i; *(token+j)!='[' || j >= 0 ; j--) ;
+    for (j=i; *(input+j)!='[' || j >= 0 ; j--) ;
     if (j==0) /* [ opener not found */
         return 1 ; /* error - ] found but not [ */
     
@@ -257,17 +268,17 @@ int isIndex(char *input, int index, label_node *baseLabel) {
             s++ ;
         }
     }
-    indexS[s] = '\0' /* string null terminator */
+    indexS[s] = '\0'; /* string null terminator */
     /* indexS is now the index. check if it is a label or a number */
     if (isalpha(indexS[0]) != 0) {/* a letter. check label list */
         labelIndex = label_exists(indexS) ;
         if (labelIndex == NULL) /* label not found */
             return 1 ;
         /* label found. get value */
-        *index = labelIndex->definedData ; 
+        index = labelIndex->definedData ; 
     }
     else { /* a number or symbol. check if integer. */
-        if (isNumber(indexS,*index) != 0 ) /* not a number */
+        if (isNumber(indexS,index) != 0 ) /* not a number */
             return 1; /* index is not a label and not a number. invalid */
     }
     /* if reached here - index is valid. continue to check label validation. */
@@ -298,8 +309,9 @@ int targetOpCheck(char *rest_of_line) {
     char *extra = NULL ;
     int reg_num, immNum , labelVal, index ;
     label_node *labelOp = NULL ;
+    lineCopy = malloc(strlen(rest_of_line));
+    check_allocation(lineCopy);
     strcpy(lineCopy, rest_of_line) ;
-
     op2 = strtok(NULL, SPACE_COMMA_DEL) ; /* cut 2 op */
     /* Addressing method - 0 */
     if (*op2 == '#') { /* source op is an immidiate number. */
@@ -342,7 +354,7 @@ int targetOpCheck(char *rest_of_line) {
     if ((labelOp = label_exists(op2)) != NULL) { /* source op is a label. */
         error_num = labelPrecessor(&labelOp, &labelVal) ; 
         if (error_num == 0) {
-            new_cmd->targetAdd = 1 /* set addressing method */
+            new_cmd->targetAdd = 1; /* set addressing method */
             (new_cmd->L)++ ; /* increase number of bin words by 1 */
             strcpy(new_cmd->target1_binary,BinTranslation12Bit(labelVal,new_cmd->sourceAdd)) ; /* translate num to 12 bits. last 2 bit are 00 */
             strcpy(new_cmd->target2_binary, '\0') ; /* for label source op, only 1 word required. */
@@ -361,7 +373,7 @@ int targetOpCheck(char *rest_of_line) {
         if ((new_cmd->cmd_num == 9) || (new_cmd->cmd_num == 10) || (new_cmd->cmd_num == 13)) { /*  index addressing is illegal for jmp/bne/jsr commands.  */
             return 10 ;
         }
-        new_cmd->targetAdd = 2 /* set addressing method */
+        new_cmd->targetAdd = 2; /* set addressing method */
         (new_cmd->L) = (new_cmd->L) + 2 ; /* increase number of bin words by 2 */
         strcpy(new_cmd->target1_binary,"?") ; /* mark later translation of label address */
         strcpy(new_cmd->target2_binary, BinTranslation12Bit(index,new_cmd->targetAdd)) ; /*  tranlate the index value. */
@@ -377,14 +389,14 @@ int targetOpCheck(char *rest_of_line) {
                 if ((new_cmd->cmd_num == 9) || (new_cmd->cmd_num == 10) || (new_cmd->cmd_num == 13)) { /*  index addressing is illegal for jmp/bne/jsr commands.  */
                     return 10 ;
                 }
-                new_cmd->targetAdd = 2 /* set addressing method */
+                new_cmd->targetAdd = 2; /* set addressing method */
                 (new_cmd->L) = (new_cmd->L) + 2 ; /* increase number of bin words by 2 */
                 strcpy(new_cmd->target1_binary,"?") ; /* mark for optional label defining later */
                 strcpy(new_cmd->target2_binary, BinTranslation12Bit(index,new_cmd->targetAdd)) ; /* tranlate the index value */ 
                 /* index is valid. label doesnt exists. optioanl later defenition of label */
             }
 
-    if (targetAdd == 2){
+    if (new_cmd -> targetAdd == 2){
         extra = strtok(rest_of_line," \t") ;
         if (extra != NULL)
             return ERR_EXTRANEOUS_TEXT ;
@@ -407,7 +419,7 @@ int immProcessor(char *token, int *immNum) {
     if (immP == NULL) /* blank */
         return 4 ; /* missing argumant */
     if ((lblP = label_exists(immP)) != NULL ) { /* imm is a label */
-        if (lblP->Label_Type != DEF_LABEL)
+        if (lblP->label_type != DEF_LABEL)
             return 3 ; /* undefined argument */
         /* label found, type is define. */
         *immNum = lblP->definedData ;
@@ -424,13 +436,13 @@ int immProcessor(char *token, int *immNum) {
 }
 
 /* this function is called if operand is found in label list. checks it's value. return 0 for valid. else error num */
-int labelPrecessor(label_node *labelOp, int *labalVal) {
-    if (labalOp->labal_type == EXTERNAL_LABEL) {
-        *labalVal = 0 ; /* external label, we cant know the label value */
+int labelPrecessor(label_node *labelOp, int *labelVal) {
+    if (labelOp->label_type == EXTERN_LABEL) {
+        *labelVal = 0 ; /* external label, we cant know the label value */
         return 0 ;
     }
     else {
-        *labelVal = labelOp->data->data ; 
+        *labelVal = labelOp->data_node->data ; 
         if (rangeCheck(labelVal) == 1)
             return 11 ; /* can't be represented in 12 bits. */
         else
@@ -460,15 +472,15 @@ char *BinTranslation12Bit(int num, int ARE) {
     int i, bit, index = 0 ;
     int negHandle = 1 << BITS_IN_INT ; /* for neg numbers, add 4096 to get the correct Two's complement bin representation */
 
-    // Handle negative numbers using Two's complement
+    /* Handle negative numbers using Two's complement */
     if (num < 0) {
         num += negHandle ;
     }
 
-    // Store the binary representation of num in the string
+    /* Store the binary representation of num in the string */
     for (i = BITS_IN_INT - 1; i >= 0; i--) {
         bit = (num >> i) & 1;
-        result[index] = bit + '0'; // Convert the bit to ASCII '0' or '1'
+        result[index] = bit + '0'; 
         index++ ;
     }
     switch (ARE) {
@@ -476,19 +488,19 @@ char *BinTranslation12Bit(int num, int ARE) {
             /* set the ARE fIEld to 00 */
             result[LSB-1] = '0' ;
             result[LSB] = '0' ;
-            result[LSB+1] = '\0'; // Null terminate the string
+            result[LSB+1] = '\0'; 
             break ;
         case 1:
             /* set the ARE fIEld to 01 */
             result[LSB-1] = '0' ;
             result[LSB] = '1' ;
-            result[LSB+1] = '\0'; // Null terminate the string
+            result[LSB+1] = '\0'; 
             break ;
         case 2:
             /* set the ARE fIEld to 01 */
             result[LSB-1] = '1' ;
             result[LSB] = '0' ;
-            result[LSB+1] = '\0'; // Null terminate the string
+            result[LSB+1] = '\0'; 
             break ;
 
     }
@@ -499,7 +511,7 @@ char *BinTranslation12Bit(int num, int ARE) {
 int isReg(char *token) {
     int i ;
     for (i=0; i<NUM_OF_REGS-2; i++) { /* last 2 registers are not allowed to be used on commands */
-        if (strcpm(token, register[i]) == 0 )  /* register found */
+        if (strcmp(token, registers[i]) == 0 )  /* register found */
             return i ;
     }
     return -1 ;
@@ -528,7 +540,7 @@ char *cmdBinTranslation(int cmd_num, int sourceAdd, int targetAdd) {
     char opcode[OPCODE_BIN_LEN] ;
 
     /* left 4 bits are always set to 0 */
-    for (i=0, i<=3; i++) {
+    for (i=0; i<=3; i++) {
         result[i] = 0 ;
     }
 
@@ -546,14 +558,14 @@ char *cmdBinTranslation(int cmd_num, int sourceAdd, int targetAdd) {
             break ;
         case 1:
             result[RSA_FIELD] = '0';
-            esult[RSA_FIELD+1] = '1';
+            result[RSA_FIELD+1] = '1';
             break ;
         case 2:
             result[RSA_FIELD] = '1';
             result[RSA_FIELD+1] = '0';
             break ;
         case 3:
-            esult[RSA_FIELD] = '1';
+            result[RSA_FIELD] = '1';
             result[RSA_FIELD+1] = '1';
             break ;
     }
@@ -565,28 +577,28 @@ char *cmdBinTranslation(int cmd_num, int sourceAdd, int targetAdd) {
             break ;
         case 1:
             result[RTA_FIELD] = '0';
-            esult[RTA_FIELD+1] = '1';
+            result[RTA_FIELD+1] = '1';
             break ;
         case 2:
             result[RTA_FIELD] = '1';
             result[RTA_FIELD+1] = '0';
             break ;
         case 3:
-            esult[RTA_FIELD] = '1';
+            result[RTA_FIELD] = '1';
             result[RTA_FIELD+1] = '1';
             break ;
     }
     /* right 2 bits are always set to 0 */
-    result[BIN_WORD_LEN-1] = '0'
-    result[i]BIN_WORD_LEN-2 = '0' ;
+    result[BIN_WORD_LEN-1] = '0';
+    result[i + BIN_WORD_LEN - 2] = '0' ;
     
-    result[BIN_WORD_LEN+1] = '\0'; // Null-terminate the string
+    result[BIN_WORD_LEN+1] = '\0'; 
     return result; 
 }
 
 /* this function gets a number. if it can be represented in 12 bits - return 0. otherwise, return 1.  */
 int rangeCheck(int num) {
-    // Ensure the num is within the valid range for 12-bit representation
+    
     if (num <= MIN_12BITS || num >= MAX_12BITS ) {
        return 1 ; /* number can't be represented in 12 bits. */
     }
@@ -595,17 +607,17 @@ int rangeCheck(int num) {
 
 /* this function gets a number and translate it to a 4 bit string */
 char *opcodeBinTranslation(int num) {
-    static char result[OPCODE_BIN_LEN +1]; // Making the result array static so it can be returned
+    static char result[OPCODE_BIN_LEN +1]; 
     int bit, i;
     int index = 0;
-    // Store the binary representation of num in the string
-    for (i = OPCODE_BIN_LEN-1; i >= 0; i--) { // Since you want 4 bits, the loop should run from 3 to 0
+    
+    for (i = OPCODE_BIN_LEN-1; i >= 0; i--) { 
         bit = (num >> i) & 1;
-        result[index] = bit + '0'; // Convert the bit to ASCII '0' or '1'
+        result[index] = bit + '0'; 
         index++;
     }
-    result[index] = '\0'; // Null-terminate the string
-    return result; // Returning the string
+    result[index] = '\0'; 
+    return result; 
 }
 
 /* this function gets 2 binary string and returns the OR bitwise string. */
@@ -626,7 +638,7 @@ char *combineRegBin(char *str1, char *str2) {
 }
 
 /* this function gets the cmd node and the input line copy. checks fer legal commas. returns 0 if valid. otherwose returns error number. */
-int commaCheck(cmd_node *new_cmd) {
+int commaCheck(cmd_node *new_cmd, char *input_copy) {
     int comma_count = 0 ; /* comma appereance counter */
     int consecutive_comma = 0 ; /* consecutive comma counter */
     char *input = input_copy + CMD_NAME_LEN ; /* jump over command name */

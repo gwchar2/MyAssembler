@@ -13,11 +13,12 @@
 #define NUM_OF_REGS 10
 #define MIN_ARGV 2
 #define FILE_NAME_LEN 50
+#define CMD_NAME_LEN 3
 #define MAX_LINE_LEN 81
 #define MAX_ENDING_LEN 11
 #define BIN_WORD_LEN 14
 #define FIRST_GROUP_VARS 2
-#define SECOMD_GROUP_VARS 1
+#define SECOND_GROUP_VARS 1
 #define THIRD_GROUP_VARS 0
 #define COMMA ','
 #define SPACE_COMMA_DEL ", \f\r\t\v\n"
@@ -65,8 +66,7 @@ typedef enum ErrorCode{
     ERR_ILLEGAL_ADDRESSING,
     ERR_IMM_OVERFLOW,
     ERR_SIZE_LEAK,
-    ERR_DUPLICATE_LABEL
-
+    ERR_DUPLICATE_LABEL,
 } ErrorCode; 
 
 typedef enum Label_Type{
@@ -134,6 +134,7 @@ typedef struct Cmd_node{
     char *cmd_binary;
     int sourceAdd;
     int targetAdd;
+    int cmd_num;
     char *source1_binary;
     char *source2_binary;
     char *target1_binary;
@@ -178,6 +179,8 @@ extern label_node *entry_head;                                                  
 extern label_node *extern_head;                                                         /* Extern list head */
 extern label_node *dc_head;                                                             /* Data segment list head */
 extern cmd_node *cmd_head;                                                              /* Instruction segment head */
+extern cmd_node *new_cmd; 
+extern char *rest_of_line;                                                              /* this pointer will always pont to the rest of the input line that wans't proccessed yet. */
 
 
 label_node *create_label(int line_init,int definedData,char *label_name,int entry_count,Label_Type label_type); /* This function creates a word_node according to the label name, type, initiated address and sets everything else to NULL */
@@ -247,10 +250,10 @@ int check_alpha(char *pointer); /* Checks if a string is all alphabetical letter
 /************************************
 ***** COMMAND PARSER FUNCTIONS ******
 *************************************/
-void check_command() ;
+void check_command(char *string);
 int valid_command_name(char *cmd);
 void getNumOfVars();
-int sourceOpCheck(char *token);
+int sourceOpCheck(char **token);
 int isIndex(char *input, int index, label_node *baseLabel) ;
 int targetOpCheck(char *token);
 int immProcessor(char *token, int *immNum);
@@ -264,7 +267,7 @@ char *cmdBinTranslation(int cmd_num, int sourceAdd, int targetAdd) ;
 int rangeCheck(int num);
 char *opcodeBinTranslation(int num) ;
 char *combineRegBin(char *str1, char *str2);
-int commaCheck(cmd_node *new_cmd)
+int commaCheck(cmd_node *new_cmd, char *input_copy);
 cmd_node *create_cmd_node(int cmd_num) ;
 
 
