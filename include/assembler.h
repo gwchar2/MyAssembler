@@ -35,12 +35,6 @@
 #define OPCODE_FIELD 4
 
 
-
-
-
-
-
-
 /* Checks if the memory for (C) was allocated properly */
 #define check_allocation(c)\
         if (c == NULL){\
