@@ -49,7 +49,7 @@ void check_command(char *input) { /* input is the full command line */
     if (new_cmd->total_vars == FIRST_GROUP_VARS) { /* 2 operands are required */
         
         error_num = sourceOpCheck(&rest_of_line) ; /* send to validation. return 0 if valid. otherwise if invalid. */
-        
+        printf("line: %d\tfunc: %s\terrornum: %d\n",__LINE__,__func__, error_num);
         if (error_num != 0){
             errorCode = error_num ;
             error_manager(errorCode) ;
@@ -162,7 +162,7 @@ int sourceOpCheck(char **rest_of_line) {
     
         
     /* Addressing method - 0 */
-    if (*op1 == 35) { /* source op is an immidiate number. */
+    if (*op1 == '#') { /* source op is an immidiate number. */
     
         if (new_cmd->cmd_num == 6 ) { /* lea command - Imm addressing is illegal */
         
@@ -181,9 +181,9 @@ int sourceOpCheck(char **rest_of_line) {
 
     }
     
-        
     /* Addressing method - 3 */
-    if ((reg_num = isReg(op1)) != -1 ) { /* source op is a register. */
+    reg_num = isReg(op1) ;
+    if (reg_num != -1 ) { /* source op is a register. */
         if (new_cmd->cmd_num == 6 )  /* lea command - Reg addressing is illegal */
             return 10 ;
         new_cmd->sourceAdd = 3 ;     
@@ -307,12 +307,19 @@ int targetOpCheck(char *rest_of_line) {
     char *lineCopy ;
     char *op2 = NULL ;
     char *extra = NULL ;
+    char *temp = NULL ;
     int reg_num, immNum , labelVal, index ;
     label_node *labelOp = NULL ;
+
     lineCopy = malloc(strlen(rest_of_line));
     check_allocation(lineCopy);
+    temp = malloc(BIN_WORD_LEN+1) ;
+    check_allocation(temp);
+
+
     strcpy(lineCopy, rest_of_line) ;
     op2 = strtok(NULL, SPACE_COMMA_DEL) ; /* cut 2 op */
+
     /* Addressing method - 0 */
     if (*op2 == '#') { /* source op is an immidiate number. */
         if ((new_cmd->cmd_num != 1) && (new_cmd->cmd_num != 12)) { /*  Imm addressing is legal only for cmp/prn commands.  */
@@ -328,12 +335,13 @@ int targetOpCheck(char *rest_of_line) {
         }
         else
             return error_num ; /* operand in undefined. */
-
+        extra = strtok(NULL,SPACE_COMMA_DEL) ;
+        return checkExtra(extra) ;
     }
     /* Addressing method - 3 */
     /* if source op was also a register. we need to combine the bin words. */
     if ((reg_num = isReg(op2)) != -1 ) { /* source op is a register. */
-        new_cmd->targetAdd = 3 ;  
+        new_cmd->targetAdd = 3 ; 
         if (new_cmd->sourceAdd != 3) {   
             (new_cmd->L)++ ; /* increase number of bin words by 1 */
             strcpy(new_cmd->target1_binary, RTBinTranslation(reg_num)) ;
@@ -342,11 +350,15 @@ int targetOpCheck(char *rest_of_line) {
         }
         else { /* both source and target ops are registers */
             strcpy(new_cmd->target1_binary, RTBinTranslation(reg_num)) ;
-            strcpy(new_cmd->target2_binary, '\0') ; /* for register source op, only 1 word required. */
-            strcpy(new_cmd->source1_binary, combineRegBin(&(new_cmd->source1_binary),new_cmd->target1_binary)) ;
-            strcpy(new_cmd->target1_binary, '\0') ;
+            temp = combineRegBin(new_cmd->source1_binary,new_cmd->target1_binary) ;
+            strcpy(new_cmd->source1_binary,temp) ;
+            new_cmd->target2_binary = '\0' ; /* for register source op, only 1 word required. */
+            new_cmd->target1_binary = '\0' ;
             /* source operand is a legal register. RSbin word was already translated. */
         }
+        /* target reg is valid. check extra text */
+        extra = strtok(NULL,SPACE_COMMA_DEL) ;
+        return checkExtra(extra) ;
     }
 
 
@@ -359,6 +371,8 @@ int targetOpCheck(char *rest_of_line) {
             strcpy(new_cmd->target1_binary,BinTranslation12Bit(labelVal,new_cmd->sourceAdd)) ; /* translate num to 12 bits. last 2 bit are 00 */
             strcpy(new_cmd->target2_binary, '\0') ; /* for label source op, only 1 word required. */
             /* source operand is a legal label. bin word was already translated. */
+            extra = strtok(NULL,SPACE_COMMA_DEL) ;
+            return checkExtra(extra) ;
         }
     }
 
@@ -395,21 +409,10 @@ int targetOpCheck(char *rest_of_line) {
                 strcpy(new_cmd->target2_binary, BinTranslation12Bit(index,new_cmd->targetAdd)) ; /* tranlate the index value */ 
                 /* index is valid. label doesnt exists. optioanl later defenition of label */
             }
+            extra = strtok(rest_of_line," \t") ;
+            return checkExtra(extra) ;
 
-    if (new_cmd -> targetAdd == 2){
-        extra = strtok(rest_of_line," \t") ;
-        if (extra != NULL)
-            return ERR_EXTRANEOUS_TEXT ;
-        else
-            return 0; 
-    }
-    else {
-        extra = strtok(NULL," \t") ;
-        if (extra != NULL)
-            return ERR_EXTRANEOUS_TEXT ;
-        else
-            return 0; 
-    }
+   
 }
 
 /* this function is called if the source op statrs with a '#'. validates the imm value. return 0 for valid. else error num */
@@ -471,7 +474,6 @@ char *BinTranslation12Bit(int num, int ARE) {
     static char result[BIN_WORD_LEN];
     int i, bit, index = 0 ;
     int negHandle = 1 << BITS_IN_INT ; /* for neg numbers, add 4096 to get the correct Two's complement bin representation */
-
     /* Handle negative numbers using Two's complement */
     if (num < 0) {
         num += negHandle ;
@@ -504,6 +506,7 @@ char *BinTranslation12Bit(int num, int ARE) {
             break ;
 
     }
+    printf("Current line: %d\nresult: %s\n", __LINE__, result);
     return result ;
 }
 
@@ -511,15 +514,15 @@ char *BinTranslation12Bit(int num, int ARE) {
 int isReg(char *token) {
     int i ;
     for (i=0; i<NUM_OF_REGS-2; i++) { /* last 2 registers are not allowed to be used on commands */
-        if (strcmp(token, registers[i]) == 0 )  /* register found */
-            return i ;
+        if (strcmp(token, registers[i]) == 0 ) /* register found */
+            return i ;    
     }
     return -1 ;
 }
 
 /* this function gets a reg number. translate to binary and sets the number in the RS bit field. */
 char *RSBinTranslation(int reg_num) {
-   static char result[BIN_WORD_LEN] ;
+    static char result[BIN_WORD_LEN] ;
     int num = reg_num << RS_SHIFT ; /* shifting left to get the RS number in the 5-7 bits */
     strcpy(result, BinTranslation12Bit(num,0)) ; /* use imm translation func */  
     return result ;
@@ -624,15 +627,13 @@ char *opcodeBinTranslation(int num) {
 char *combineRegBin(char *str1, char *str2) {
     int i;
     static char result[BIN_WORD_LEN+1] ;
-    for (i-0; i<RT_BIT_FIELD; i++) {
-        result[i] = *(str1+i) ;
+    for (i=0; i<=BIN_WORD_LEN; i++) {
+        if (*(str1+i) == '1' || *(str2+i) == '1')
+            result[i] = '1' ;
+        else
+            result[i] = '0' ;
     }
-    for (i=RT_BIT_FIELD; i<=RT_BIT_FIELD+2; i++) {
-        result[i] = *(str2+i) ;
-    }
-    result[BIN_WORD_LEN-2] = '0' ;
-    result[BIN_WORD_LEN-1] = '0' ;
-    result[BIN_WORD_LEN] = '\0';
+    result[BIN_WORD_LEN] = '\0' ;
     return result ;
 
 }
@@ -675,6 +676,13 @@ int commaCheck(cmd_node *new_cmd, char *input_copy) {
     else
         return 0 ; /* no error */
     
+}
+
+int checkExtra(char *extra) {
+        if (extra != NULL)
+            return ERR_EXTRANEOUS_TEXT ;
+        else
+            return 0; 
 }
     
 

@@ -12,7 +12,7 @@ char *commands[NUM_OF_CMDS] = {
 };    
 
 char *registers[NUM_OF_REGS] = {
-    "r1","r2","r3","r4","r5",
+    "r0", "r1","r2","r3","r4","r5",
     "r6","r7" ,"PSW","PC"
 };
 
