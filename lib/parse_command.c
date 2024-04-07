@@ -4,6 +4,94 @@
 #include <stdlib.h>
 #include "../include/assembler.h"
 
+
+cmd_node *new_cmd ; 
+char *rest_of_line = NULL ; /* this pointer will always pont to the rest of the input line that wans't proccessed yet. */
+
+/* this function is called only if first token of command line is NOT blank/.define/.data/.string/.extern/.entry/pottential LABEL */
+/* pointer - first token of comman dline
+   line - the whole command line 
+   inputCopy - copy of command line, starting after command name */
+void check_command(char *input) { /* input is the full command line */
+    char *inputCopy = NULL ;
+    int error_num = 0 ;
+    int cmd_num ; 
+    char *cmd_name = NULL ;
+    char *extra = NULL ;
+
+    strcpy(inputCopy, input) ;
+    cmdName = strtok(inputCopy," \t") ; /* cut the first word in input */
+
+    if (cmd_num = valid_command_name(cmd_name) == -1) {
+        errorCode = 1 ; /* undefined command */
+        error_manager(errorCode,curr_line_number) ;
+        return ;
+    }
+    /* command name is valid. new_cmd node is created. cmd_num is set. L=1 */
+    new_cmd = create_cmd_node(cmd_num) ; /* create a new command node with the matching command number */
+    
+    getNumOfVars() ; /* set num of required operands in totalVars */
+
+    /* check for illegal comma after command name ??????? */
+    /*if (*(line+CMD_NAME_LEN) == COMMA) {
+        errorCode = 5 ;
+        error_manager(errorCode, curr_line_number) ; /* illegal comma 
+        return ;
+    }
+    /* no illegal comma after command name. continue. */ 
+
+    rest_of_line = input+CMD_NAME_LEN ; /* rest of the line points to after command name */
+
+    /*token = strtok(NULL, SPACE_COMMA_DEL) ; /* cut #1 parmeter */
+
+    if (new_cmd->total_vars == FIRST_GROUP_VARS) { /* 2 operands are required */
+        error_num = sourceOpCheck(&rest_of_line) ; /* send to validation. return 0 if valid. otherwise if invalid. */
+        if (error_num != 0){
+            errorCode = error_num ;
+            error_manager(errorCode,curr_line_number) ;
+            return ;
+        }
+    }
+
+    if (new_cmd->total_vars == SECOND_GROUP_VARS){ /* 1 operand is required */
+        error_num = targetOpCheck(&rest_of_line) ; /* send to validation */
+        if (error_num != 0){
+            errorCode = error_num ;
+            error_manager(errorCode,curr_line_number) ;
+            return ;
+        }
+        token = strtok(NULL, SPACE_COMMA_DEL) ; /* cut #2 parmeter */
+        if (token != NULL ) {
+            errorCode = 2
+            error_manager(errorCode, curr_line_number) ; /* Extraneous text after end of command in line */
+        }
+    }
+
+    if (new_cmd->total_vars == THIRD_GROUP_VARS) { /* no operands required */
+        if (token != NULL ){
+            errorCode = 2
+            error_manager(errorCode, curr_line_number) ; /* Extraneous text after end of command in line */
+        }
+    }
+
+    /* if reached here, both source and target ops are valid. now we will translate the command line itself. */
+    eeror_num = commaCheck(&new_cmd) ; /* check for legal comma */
+    if (error_num != 0){
+            errorCode = error_num ;
+            error_manager(errorCode,curr_line_number) ;
+            return ;
+    }
+    strcpy(new_cmd->cmd_binary,cmdBinTranslation(&new_cmd)) ;
+
+
+}
+
+/* this function gets a word and checks if it is one of the legel commands  if yes - it creates a new command node with the mathing cmd_num. if not - error*/
+int valid_command_name(char *cmd) {
+    int cmd_num,i ;
+    if (strlen(cmd) != CMD_NAME_LEN+1) /* check valid len */
+        return -1 ; /* Error: undefined command */
+
 /* this function is called only if first token of command line is NOT blank/.define/.data/.string/.extern/.entry/pottential LABEL */
 void check_command() {
     int error_num = 0 ;
@@ -64,13 +152,10 @@ int valid_command_name(char *cmd) {
         for (i=0; i<NUM_OF_CMDS; i++) {
             if (strcmp(cmd, commands[i])==0) { /* if command name found */
                 cmd_num = i; /* save matching command number */
-                new_cmd = create_cmd_node(cmd_num) ; /* create a new command node with the matching command number */
-                new_cmd->cmd_num = cmd_num ; /* set command num in new_cmd */
                 break;
             } 
         }    
         if (i==NUM_OF_CMDS) /* command name not found */
-<<<<<<< Updated upstream
             return error_manager(1,curr_line_number); /* Error: undefined command */
         
 =======
@@ -302,13 +387,16 @@ int commaCheck(data *my_data) {
         return 8 ; /* Error: multiple consecutiva commas error */
 
     /* set required number of commas */
+    if (new_cmd->total_vars == SECOND_GROUP_VARS || new_cmd->total_vars == THIRD_GROUP_VARS) 
+        comma_req = 0 ;
+    if (new_cmd->total_vars == FIRST_GROUP_VARS) 
+        comma_req = 1 ;
     if (cmd_num == 1) /* print_mat */
         comma_req = 0 ;
     if (cmd_num == 6) /* tran_mat */
         comma_req = 1 ;
     if (cmd_num == 2 || cmd_num == 3 || cmd_num == 4 || cmd_num == 5) /* add,sub,mul,mul_scalar */
         comma_req = 2 ;
-
     if (comma_count < comma_req)
         return 7 ; /* Error: missing comma */
     if (comma_count > comma_req)
@@ -317,6 +405,7 @@ int commaCheck(data *my_data) {
         return 0 ; /* no error */
     
 }
+
 
 /*  This function checks if the comma apereances in the read_mat command line are valid. 
     The funciton gets my_data struct and the number of parms counted in readCheck function. 
@@ -332,6 +421,7 @@ int commaCheck(data *my_data) {
     @param len - rest of command line length. used in loop. 
     @param i - index
     @return int - the error number founded*/
+
 int read_commaCheck(data *my_data, int num_of_parms) {
     int comma_count = 0 ; /* comma appereance counter */
     int consecutive_comma = 0 ; /* consecutive comma counter */
@@ -367,7 +457,6 @@ int read_commaCheck(data *my_data, int num_of_parms) {
     /* comma_count == num_of_parms */
     return 0 ; /* no error */
 }
-    
     
 
 

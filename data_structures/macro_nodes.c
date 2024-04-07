@@ -3,6 +3,8 @@
 mac_text *createText (char *line) {
     mac_text *result = malloc(sizeof(mac_text)) ;
     result->text = malloc(sizeof(line)) ;
+    check_allocation(result) ;
+    check_allocation(result->text) ;
     strcpy(result->text,line) ;
     result->next = NULL ;
     return result ;
@@ -12,6 +14,8 @@ mac_text *createText (char *line) {
 macro *createMacro (char *name, char *line) {
     macro *result = malloc(sizeof(macro)) ;
     result->mac_name = malloc(sizeof(name)) ;
+    check_allocation(result) ;
+    check_allocation(result->mac_name) ;
     strcpy(result->mac_name,name) ;
     result->next = NULL ;
     result->text = createText(line);
@@ -19,9 +23,9 @@ macro *createMacro (char *name, char *line) {
 }
 
 /* this functions get's a string and the head of the list, and searches for it in the macros list. if founded, it returns a pointer to it's text. else, null. */
-macro *searchMcrList(char *word, macro *head) {
-    macro *macP = head ;
-    if (head == NULL) { /* list is empty */
+macro *searchMcrList(char *word, macro *mcr_head) {
+    macro *macP = mcr_head ;
+    if (mcr_head == NULL) { /* list is empty */
         return NULL ;
     }
     while (macP != NULL){
@@ -43,7 +47,7 @@ void copyMcrText(macro *cur_mac, FILE *newP) {
 }
 
 /* this functiond checks if the macro name is valid. returns 1 for valid. 0 for invalid. */
-int validateMcrName(char *mcr_name, macro *head) {
+int validateMcrName(char *mcr_name, macro *mac_head) {
     int i ;
     /* check the cmd name is not a command name */
     for (i=0; i<NUM_OF_CMDS; i++) {
@@ -51,16 +55,16 @@ int validateMcrName(char *mcr_name, macro *head) {
             return 0 ; 
     }
     /* check if mcr name was already defined */
-    if (searchMcrList(mcr_name, head) != NULL)
+    if (searchMcrList(mcr_name, mcr_head) != NULL)
         return 0; 
     return 1 ; /* valid name */
 }
 
 /* this functions adds a new macro defenition to the macro list. it returns when reaching endmcr or eof */
-void addMcr(char *name, FILE *fp, macro **head) {
+void addMcr(char *name, FILE *fp, macro **mcr_head) {
     char line[MAX_LINE_LEN] ; 
     macro *new_mac = NULL ;
-    macro *macP = *head ;
+    macro *macP = *mcr_head ;
 
 
     /* get the macro first line of content */
@@ -68,8 +72,8 @@ void addMcr(char *name, FILE *fp, macro **head) {
     check_allocation(line);
     new_mac = createMacro(name,line) ; /* create macro object with the first text line */
     /* connect the new nacro item to the list */
-    if (*head==NULL) { /* if list is empty */
-        *head = new_mac ;
+    if (*mcr_head==NULL) { /* if list is empty */
+        *mcr_head = new_mac ;
     }
     /* go to end of list */
     else {
