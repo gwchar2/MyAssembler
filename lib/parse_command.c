@@ -458,5 +458,3 @@ int read_commaCheck(data *my_data, int num_of_parms) {
     return 0 ; /* no error */
 }
     
-
-
