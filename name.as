@@ -6,6 +6,7 @@ test_macro
 mcr SIZE
 add r2, r3
 sub r4, r5
+.define sz=2
 endmcr
 command
 SIZE

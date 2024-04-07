@@ -69,10 +69,7 @@ void addMcr(char *name, FILE *fp, macro **mcr_head) {
 
     /* get the macro first line of content */
     fgets(line, MAX_LINE_LEN, fp) ;
-    if (line == NULL) { /* reached eof */
-        fprintf(stderr, "error: reached EOF before endmcr\n") ;
-        exit(1) ;
-    }
+    check_allocation(line);
     new_mac = createMacro(name,line) ; /* create macro object with the first text line */
     /* connect the new nacro item to the list */
     if (*mcr_head==NULL) { /* if list is empty */

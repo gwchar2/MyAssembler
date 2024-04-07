@@ -9,14 +9,17 @@ void scan_file(FILE *file){
     char line[MAX_LINE_LEN];
     char *inputCopy = NULL;
     char *pointer = NULL;
+    char *full_line = NULL;
     Label_Type label_type;
+    int flag;
     while (1) {
+        /* Grab the next line from the file */
         if (fgets(line, MAX_LINE_LEN, file) == NULL) {
             if (feof(file)) {
-                break;
+                free(inputCopy);
+                break; 
             }
         }
-
         inputCopy = (char *)malloc(strlen(line) + 1); 
         check_allocation(inputCopy);
         strcpy(inputCopy, line); 
@@ -47,109 +50,79 @@ void scan_file(FILE *file){
         if (strlen(line) == MAX_LINE_LEN - 1 && line[MAX_LINE_LEN - 2] != '\n') {           /* Checking to see if the array is full without \n */
             errorCode = ERR_SIZE_LEAK;
             error_manager(errorCode);
+        
+        /* Check to see if the file is shorter than 80 characters if it isnt, go next line, else, handle. */
+        if (strlen(line) == MAX_LINE_LEN - 1 && line[MAX_LINE_LEN - 2] != '\n') {                                       /* Checking to see if the array is full without \n */
+            error(ERR_SIZE_LEAK);
 
         }
-        else {
-            inputCopy = (char *)malloc(strlen(line) + 1); 
+
+        
+        /* First rotation */
+        else{
+            inputCopy = malloc(strlen(line) + 1); 
             check_allocation(inputCopy);
             strcpy(inputCopy, line); 
-
-            pointer = strtok(inputCopy, " \t\n");                                             /* Get the first word from the line */
-            printf("Line: %s",inputCopy);
-
+            /* Grab the first word in the line */
+            pointer = strtok(inputCopy, " \t\n\r\f\v");                                                                 
             switch (check_first_word(pointer)){
-                case 0:                                                                      
-                    break;                                                                  /* Blank or note line - ignore */ 
-                case 1:                                                                     
-                    /* .define .extern (entries not right now!!)*/
-                    label_type = getLabelType(pointer);  
-                    /* define sz=2
-                    1) is it extern
-                        if no -> it is a define...go to step 2
-                        if yes -> go to step 2.5
-                    2) strtok(" =\t\n")
-                    2.5) strtok(" \t\n")
-                    3) check if it is a valid label name (1 <= label <= 31) ######
-                        if yes -> go to step 4
-                        if no -> return error, go to step 7
-                    3) check if label exists in label tabel
-                        if yes -> return error, go to step 7
-                        if no -> go to step 4
-                    4) is it extern? 
-                        if yes -> add to label tabel, go to step 7
-                        if no -> go to step 5
-                    5) go to next word in the line strtok(" \t\n")
-                        confirm received an int that can fit into 14 binary
-                    6) check that the next word is a NULL (no extra text)
-                        if yes -> return error, go to step 7
-                        if no, go to step 7
-                    7) free() everything and next line
-
-                    ######
-                        all letters are alphabetic characters (small or big)
-	                    maximum number is 31 characters (if define or extern or entry, 1<=label<=31) (if data string or cmd label, 1<label<=32)
-	                    can not be a register / other name already in the program
-                    ######
-
-                    ######
-                        can use a manipulation of check_read_mat from maman22 for counting the commas and dealing with the numbers
-                        after every comma: + or - or nothing (nothing means +). (use atoi manipulation )
-                        after every +/- there is no whitespace!
-                        ask gpt: if i have a string such as "-57" is there a C function that can automaticaly check and transfer it to an int as -57 ?"
-                    ######
-                    */     
-                                 
+                /* Cases to ignore ( ; \n entry (at the moment))*/
+                case 0:                                                                                                
+                    break;   
+                /* define or externals */                                                                                           
+                case 1:                                                
+                    label_type = getLabelType(pointer); 
+                    if (label_type == EXTERN_LABEL){
+                        pointer = strtok(NULL, " \t\n\r\f\v");
+                        extern_handler(pointer,label_type); 
+                    }
+                    else {
+                        pointer = strtok(NULL, " \t\n\r\f\v");
+                        if (pointer == NULL){
+                            error(ERR_MISSING_ARGUMENT);
+                            curr_line_number++; 
+                            break; 
+                        }
+                        define_handler(pointer,label_type);
+                    }            
                     curr_line_number++;
                     break;
-                case 2:                                                                     /* potential command / data / string label */
-                    /* 
-                    1) check if first word is a correct label (1 < label <= 32)  ######
-                        if no, return error, go to step 8
-                        if yes, go to step 2.
-                    2) check if the label exists in the label tabel.
-                        if yes -> return error, go to step 8 (no need further checks because no entries yet!!)
-                        if no -> continue to step 3
-                    3) check if second word is a command
-                        if yes, add to label tabel with name,cmd_label,address=IC
-                            send the remainder to mihal
-                        if no, go to step 4
-                    4) check if second word is .data or .string
-                        if no, return error, go to step 8
-                        if yes, go to step 5
-                    5) get the remainder of the line. 
-                        if its string -> check if starts with "
-                            if no, return error invalid string go to step 8
-                            if yes, check if ends with "
-                                if no, check if there is a " inside the array.
-                                    if yes, return error extra_txt
-                                    if no, return error invalid string go to step 8
-                                if yes, create new node
-                                    go through the string from second char (after ") all the way to the end (when ") 
-                                    and create new data field for every value in ascii.
-                                    go to step 6.
-                        if its a data -> use check_read_mat from maman22 to extract the array while counting the commas
-                            create a new node and new data field for every value.
-                            after every comma: + or - or nothing (nothing means +). (use atoi manipulation) #######
-                                after every +/- there is no whitespace!
-                            go to step 6.
-                    6) add the label to label tabel with the correct data. address is current DC.
-                        after adding, increment DC+L
-                    7) check no remainding text
-                    8) free() everything next line
 
-                     */
-
-                    curr_line_number++;
+                /* .data .string or cmd labels */    
+                case 2:
+                    flag = dstring_handler(pointer);                                                                    
+                    if (flag == 0){
+                        curr_line_number++;
+                        break;
+                    }
+                    else if (flag == 1){
+                        curr_line_number++;
+                    }
+                    else if (flag == 2){
+                        int len;
+                        inputCopy = malloc(strlen(line) + 1); 
+                        check_allocation(inputCopy);
+                        strcpy(inputCopy, line);
+                        len = strlen(pointer)+1;
+                        full_line = inputCopy + len;
+                        /*printf("Line = %s\n",full_line);*/
+                        printf("%s %s r%d ~~SEND TO MIHAL full_line~~ \n",__FILE__,__FUNCTION__,__LINE__);
+                        printf("%s %s r%d It adds the label in dstring_handler/line_101, if cmd not correct, need to delete! \n",__FILE__,__FUNCTION__,__LINE__);
+                        curr_line_number++;
+                    }
                     break;
-                case 3: /* Everything else */
 
+                /* Everything else */
+                case 3: 
+                    printf("MIHAL PUTS HERE %s %s %d \n",__FILE__,__FUNCTION__,__LINE__);
                     curr_line_number++;
                     break;
                 default:
+                    error(ERR_UNDEFINED_COMMAND);
                     break;
+                
             }
-        }
-        free(inputCopy); 
+        }           
     }
 }
 
