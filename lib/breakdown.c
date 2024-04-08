@@ -9,7 +9,7 @@ void scan_file(FILE *file){
     char line[MAX_LINE_LEN];
     char *inputCopy = NULL;
     char *pointer = NULL;
-    /*char *full_line = NULL;*/
+    char *full_line = NULL;
     Label_Type label_type;
     int flag;    
     while ((IC + DC) <= RAM) {
@@ -72,27 +72,24 @@ void scan_file(FILE *file){
                         curr_line_number++;
                     }
                     else if (flag == 2){
-                        /*int len;
+                        int len;
                         inputCopy = malloc(strlen(line) + 1); 
                         check_allocation(inputCopy);
                         strcpy(inputCopy, line);
                         len = strlen(pointer)+1;
                         full_line = inputCopy + len;
-                        check_command(full_line);*/
-                        printf("%s %s r%d ~~SEND TO MIHAL full_line~~ \n",__FILE__,__FUNCTION__,__LINE__);
-                        printf("%s %s r%d It adds the label in dstring_handler/line_101, if cmd not correct, need to delete! \n",__FILE__,__FUNCTION__,__LINE__); 
-                        /*IC += (new_cmd -> L);*/
+                        check_command(full_line);
+                        IC += (new_cmd -> L);
                         curr_line_number++;
                     }
                     break;
 
                 /* Everything else */
                 case 3: 
-                    /*check_command(line);*/
-                    /*check_command(inputCopy);*/
-                    /*IC += (new_cmd -> L);*/
+                    check_command(line);
+                    check_command(inputCopy);
+                    IC += (new_cmd -> L);
                     curr_line_number++;
-                    printf("%s %s r%d ~~MIHAL COMMAND~~ \n",__FILE__,__FUNCTION__,__LINE__);
                     break;
                 default:
                     error(ERR_UNDEFINED_COMMAND);
