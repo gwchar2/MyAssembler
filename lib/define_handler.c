@@ -15,12 +15,14 @@ void define_handler(char *pointer, Label_Type label_type){
     p_copy = strtok(NULL,"\t\n\r\f\v");                                                 /* Increments the copy (pointer stays the same as before in father func) */
     /* If there is no remainder, gets sent to case 1*/
     if (p_copy == NULL){
+        
         def_case_1(pointer, label_type);
         return;
     }
     else if (p_copy != NULL){
         if (p_copy[0] == '='){
             if (strlen(p_copy) == 1){
+                
                 p_copy = strtok(NULL," \t\n\r\f\v");    
                 def_case_4(pointer,label_type,p_copy);                                  /* If = is at the begginning of the variable, case 4*/
             }
@@ -85,18 +87,36 @@ void def_case_1(char *pointer, Label_Type label_type){
     check_allocation(num);
     strcpy(num,p_copy);
 
-    /* If the array is equal to 0, it is int 0. else set the int to atoi value */
+    /* If the array is equal to 0, it is int 0. else set the int to strToInt value */
     if (*num == '0'){
-        add_label(curr_line_number,0,label_name,0,label_type);
+        int len = strlen(num);
+        int i;
+        /* Traverse in the list until we reach a character that is different than 0, or the end of the string */
+        for (i=0; i< len; i++){
+            if (*num != '0'){
+                if ((strToInt(num)) == 9000){
+                    error(ERR_UNDEFINED_ARGUMENT);
+                    return;
+                }
+                else
+                    break;
+            }
+            num++;
+        }
+        printf("%s %s %d\n",__FILE__,__FUNCTION__,__LINE__);
+        p_copy = malloc(strlen(num));
+        strcpy(p_copy,num);
+
         /* Check there is no more data */
-        p_copy = strtok(NULL," \t\n\r\f\v");
-        if (p_copy != NULL){
+        num = strtok(NULL," \t\n\r\f\v");
+        if (num != NULL){
             error(ERR_EXTRANEOUS_TEXT);
             return;
         }
+        add_label(curr_line_number,strToInt(p_copy),label_name,0,label_type);
         return;
     }
-    else if (atoi(num) == 0){
+    else if ((strToInt(num)) == 9000){
         error(ERR_UNDEFINED_ARGUMENT);
         return;
     }
@@ -144,13 +164,29 @@ void def_case_2(char *pointer, Label_Type label_type, char *pointer2){
 
     /* If the array is equal to 0, it is int 0. else set the int to strToInt value */
     if (*num == '0'){
+        int len = strlen(num);
+        int i;
+        for (i=0; i< len; i++){
+            if (*num != '0'){
+                if ((strToInt(num)) == 9000){
+                    error(ERR_UNDEFINED_ARGUMENT);
+                    return;
+                }
+                else
+                    break;
+            }
+            num++;
+        }
+        p_copy = malloc(strlen(num));
+        strcpy(p_copy,num);
         /* Check there is no more data */
-        p_copy = strtok(NULL," \t\n\r\f\v");
-        if (p_copy != NULL){
+        num = strtok(NULL," \t\n\r\f\v");
+        if (num != NULL){
+        printf("%d %s %d\n",curr_line_number,__FUNCTION__,__LINE__);
             error(ERR_EXTRANEOUS_TEXT);
             return;
         }
-        add_label(curr_line_number,0,label_name,0,label_type);
+        add_label(curr_line_number,strToInt(p_copy),label_name,0,label_type);
         return;
     }
     else if ((strToInt(num)) == 9000){
@@ -182,6 +218,7 @@ void def_case_3(char *pointer, Label_Type label_type ,char *pointer2){
     if (!check_label(p_copy,label_type)){
         return;    
     }
+    
     /* Save the label in label name variable */
     label_name = malloc(strlen(p_copy));
     check_allocation(label_name);
@@ -192,23 +229,37 @@ void def_case_3(char *pointer, Label_Type label_type ,char *pointer2){
     num = malloc(strlen(pointer2));
     check_allocation(num);
     strcpy(num,pointer2);
-    /* If the array is equal to 0, it is int 0. else set the int to atoi value */
+   /* If the array is equal to 0, it is int 0. else set the int to strToInt value */
     if (*num == '0'){
-        
+        int len = strlen(num);
+        int i;
+        for (i=0; i< len; i++){
+            if (*num != '0'){
+                if ((strToInt(num)) == 9000){
+                    error(ERR_UNDEFINED_ARGUMENT);
+                    return;
+                }
+                else
+                    break;
+            }
+            num++;
+        }
+        p_copy = malloc(strlen(num));
+        strcpy(p_copy,num);
         /* Check there is no more data */
-        pointer2 = strtok(pointer2," \t\n\r\f\v");
-        if (p_copy != NULL){
+        num = strtok(NULL," \t\n\r\f\v");
+        if (num != NULL){
             error(ERR_EXTRANEOUS_TEXT);
             return;
         }
-        else 
-            add_label(curr_line_number,0,label_name,0,label_type);
+        add_label(curr_line_number,strToInt(p_copy),label_name,0,label_type);
         return;
     }
-    else if (strToInt(num) == 9000){
+    else if ((strToInt(num)) == 9000){
         error(ERR_UNDEFINED_ARGUMENT);
         return;
     }
+
     /* Check there is no more data */
     p_copy = pointer2;
     p_copy = strtok(NULL," \t\n\r\f\v");
@@ -247,6 +298,13 @@ void def_case_4(char *pointer, Label_Type label_type ,char *pointer2){
 
     /* If the array is equal to 0, it is int 0. else set the int to atoi value */
     if (*num == '0'){
+        
+        /* Check there is no more data */
+        pointer2 = strtok(pointer2," \t\n\r\f\v");
+        if (p_copy != NULL){
+            error(ERR_EXTRANEOUS_TEXT);
+            return;
+        }
         add_label(curr_line_number,0,label_name,0,label_type);
         return;
     }
@@ -266,4 +324,3 @@ void def_case_4(char *pointer, Label_Type label_type ,char *pointer2){
     add_label(curr_line_number,strToInt(num),label_name,0,label_type);
     return;
 }
-
