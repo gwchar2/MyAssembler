@@ -270,7 +270,7 @@ char *cmdBinTranslation(int cmd_num, int sourceAdd, int targetAdd) ;
 int rangeCheck(int num);
 char *opcodeBinTranslation(int num) ;
 char *combineRegBin(char *str1, char *str2);
-int commaCheck(cmd_node *new_cmd, char *input_copy);
+int commaCheck(char *input_copy);
 cmd_node *create_cmd_node(int cmd_num) ;
 void *add_cmd(cmd_node *label_node); /* This function adds a cmd node to the cmd list */
 
