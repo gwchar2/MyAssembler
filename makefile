@@ -1,5 +1,5 @@
-MainAssembler: build/MainAssembler.o build/breakdown.o build/error_handler.o build/funcs.o build/main_functions.o build/label_nodes.o build/row_nodes.o build/macro_nodes.o build/data_nodes.o build/label_handler.o build/define_handler.o build/extern_handler.o build/dstring_handler.o build/parse_command.o build/command_nodes.o build/file_handler.o
-	gcc -g -ansi -Wall -pedantic build/MainAssembler.o build/breakdown.o build/error_handler.o build/funcs.o build/main_functions.o build/label_nodes.o build/row_nodes.o build/macro_nodes.o build/data_nodes.o build/label_handler.o build/define_handler.o build/extern_handler.o build/dstring_handler.o build/parse_command.o build/command_nodes.o build/file_handler.o -o MainAssembler
+MainAssembler: build/MainAssembler.o build/main_functions.o build/error_handler.o build/funcs.o build/label_nodes.o build/row_nodes.o build/macro_nodes.o build/data_nodes.o build/label_handler.o build/define_handler.o build/extern_handler.o build/dstring_handler.o build/parse_command.o build/command_nodes.o build/file_handler.o
+	gcc -g -ansi -Wall -pedantic build/MainAssembler.o build/main_functions.o build/error_handler.o build/funcs.o build/label_nodes.o build/row_nodes.o build/macro_nodes.o build/data_nodes.o build/label_handler.o build/define_handler.o build/extern_handler.o build/dstring_handler.o build/parse_command.o build/command_nodes.o build/file_handler.o -o MainAssembler
 
 build/MainAssembler.o: src/mainAssembler.c include/assembler.h | build
 	gcc -ansi -Wall -pedantic -c src/mainAssembler.c -o build/MainAssembler.o

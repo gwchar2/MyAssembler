@@ -88,7 +88,7 @@ void scan_file(FILE *file){
         if (strlen(line) == MAX_LINE_LEN - 1 && line[MAX_LINE_LEN - 2] != '\n') {                                       /* Checking to see if the array is full without \n */
             error(ERR_SIZE_LEAK);
 
-            /* Keeps grabbing the remainder of the line  */
+            /* Keeps grabbing the remainder of the line so that we skip to the next one!  */
             while (strlen(line) == MAX_LINE_LEN - 1 && line[MAX_LINE_LEN - 2] != '\n'){
                 /* If we reach EOF or NULL just break. */
                 if (fgets(line, MAX_LINE_LEN, file) == NULL) {
