@@ -12,7 +12,7 @@ void scan_file(FILE *file){
     char *full_line = NULL;
     Label_Type label_type;
     int flag;
-    while (1) {
+    while ((IC + DC) <= RAM) {
         /* Grab the next line from the file */
         if (fgets(line, MAX_LINE_LEN, file) == NULL) {
             if (feof(file)) {
@@ -23,8 +23,6 @@ void scan_file(FILE *file){
         inputCopy = (char *)malloc(strlen(line) + 1); 
         check_allocation(inputCopy);
         strcpy(inputCopy, line); 
-
-        pointer = strtok(inputCopy, " \t"); /* Get the first word from the line */
 
         /* Check to see if the file is shorter than 80 characters if it isnt, go next line, else, handle. */
         if (strlen(line) == MAX_LINE_LEN - 1 && line[MAX_LINE_LEN - 2] != '\n') {                                       /* Checking to see if the array is full without \n */
@@ -100,6 +98,9 @@ void scan_file(FILE *file){
                 
             }
         }           
+    }
+    if ((IC + DC) > RAM){
+        error(ERR_SIZE_LEAK);
     }
 }
 
