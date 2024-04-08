@@ -33,6 +33,7 @@
 #define RTA_FIELD 10
 #define OPCODE_BIN_LEN 4
 #define OPCODE_FIELD 4
+#define RAM 4096
 /* Checks if the memory for (C) was allocated properly */
 #define check_allocation(c)\
         if (c == NULL){\
