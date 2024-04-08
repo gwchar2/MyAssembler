@@ -164,6 +164,9 @@ void printList(int num){
     switch (num){
         case 1: /* label list */
             print_label_guide();
+            printf("********************************************\n");
+            printf("\t\tPrinting label tabel\n");
+            printf("********************************************\n");
             temp = lbl_head;
             while (temp != NULL){
                 switch (temp -> label_type){
@@ -190,7 +193,7 @@ void printList(int num){
                         printf("[%s]-[%d]-[%d]\n",temp -> label_name,temp -> label_type,temp -> entry_count);
                         break;
                     case CMD_LABEL:
-                        printf("[%s]-[%d]-[%d]\n\n",temp -> label_name,temp -> label_type,temp -> line_init);
+                        printf("[%s]-[%d]-[%d]\n",temp -> label_name,temp -> label_type,temp -> line_init);
                         break;
                     default:
                         printf("[%s]-[%d]-[%d]-",temp -> label_name,temp -> label_type,temp -> line_init);
@@ -213,6 +216,9 @@ void printList(int num){
             break;
         case 2: /* dc list */
             dc_temp = dc_head;
+            printf("********************************************\n");
+            printf("\t\tPrinting DC list\n");
+            printf("********************************************\n");
             while (dc_temp != NULL){
                 printf("[%s]-[%d]-[%d]-",dc_temp -> label_name,dc_temp -> label_type,dc_temp -> line_init);
                 data_temp = dc_temp -> data_node;
@@ -233,10 +239,13 @@ void printList(int num){
             break;
         case 3: /* cmd list */
             cmd_temp = cmd_head;
+            printf("********************************************\n");
+            printf("\t\tPrinting CMD list\n");
+            printf("********************************************\n");
             while (cmd_temp != NULL){
                 if (cmd_temp -> next_cmd == NULL){
                    printf("[%d]-[%d]\n",cmd_temp -> sourceAdd ,cmd_temp -> targetAdd); 
-                   printf("  |\n");
+                   printf("  |");
                 }
                 else 
                     printf("[%d]-[%d]-",cmd_temp -> sourceAdd ,cmd_temp -> targetAdd);
