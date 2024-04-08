@@ -1,3 +1,4 @@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 ABCDEFGHIJABCDEFGHIJABCDEFGHIJkkk: .data -1,2,3
 ABCDEFGHIJABCDEFGHIJA: .data ,1,2,3
 ABCDEFGHIJABCDEFGHIJAB: .data ,1,2,3,
@@ -39,3 +40,13 @@ american cheese
 .define
         hello: .data 1,2,3
 hello: .data -1,2,3
+;
+;;;;;;;;;;;;;
+::: ;;;;
+       ;;;
+        ;
+
+
+                ;;
+        .data 
+        thisWorks: .data 69,69,69

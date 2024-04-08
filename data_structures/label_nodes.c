@@ -54,9 +54,10 @@ void *add_label (int line_init,int definedData,char *label_name,int entry_count,
         add_entry(new_label);
     else if (new_label -> label_type == DATA_LABEL || new_label -> label_type == STRING_LABEL)
         add_dc(new_label);
-    else if (new_label -> label_type == CMD_LABEL);
+    else if (new_label -> label_type == CMD_LABEL)
         add_cmd_label(new_label);    
-    return;
+    
+    return new_label;
 }
 
 
@@ -65,10 +66,10 @@ void *add_label (int line_init,int definedData,char *label_name,int entry_count,
 */
 label_node *label_exists(char *curr_label) {
     char *copy = NULL;
+    label_node *temp = NULL;
     copy = malloc(strlen(curr_label));
     check_allocation(copy);
     strcpy(copy,curr_label);
-    label_node *temp = NULL;
     temp = lbl_head;
     if (lbl_head==NULL)
         return NULL;                                                                          /* Returns if the list is empty */
@@ -95,6 +96,7 @@ void *add_entry(label_node *some_node) {
         }  
         temp -> next_entry = some_node;
     }
+    return temp;
 }
 
 /*
@@ -111,6 +113,7 @@ void *add_extern(label_node *some_node) {
         }  
         temp -> next_extern = some_node;
     }
+    return temp;
 }
 
 /*
@@ -127,6 +130,7 @@ void *add_dc(label_node *some_node){
         }  
         temp -> next_dc = some_node;
     }
+    return (void*)temp;
 }
 
 /*
@@ -143,6 +147,7 @@ void *add_cmd_label(label_node *some_node){
         }  
         temp -> next_cmd_label = some_node;
     }
+    return temp;
 }
 
 /*

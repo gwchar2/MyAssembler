@@ -47,30 +47,3 @@ void extern_handler(char *pointer,Label_Type label_type){
     }
 
 }
-/*
-*   This function changes the entry count to '1' for the desired label name and type.
-*/
-void change_count(char *label_name,Label_Type label_type){
-    label_node *temp;
-    if (label_type == ENTRY_LABEL)
-        temp = entry_head;
-    else if (label_type == EXTERN_LABEL)
-        temp = extern_head;
-    else if (label_type == CMD_LABEL)
-        temp = lbl_head;
-    else 
-        temp = dc_head;
-    
-    while (temp != NULL){
-        if (temp -> label_name == label_name){
-            if (label_type == CMD_LABEL != temp -> label_type == CMD_LABEL)
-                continue;
-            else{
-                temp -> entry_count = 1;
-                return;
-            }
-        }
-        temp = temp -> next_label;
-    }
-    return;
-}

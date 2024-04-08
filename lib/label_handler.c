@@ -112,7 +112,6 @@ int check_label(char *p_copy, Label_Type label_type){
     /* If the label is for a data/cmd/string */
     else if (label_type == CMD_LABEL || label_type == DATA_LABEL || label_type == STRING_LABEL){
         if (strlen(p_copy) < 1 || strlen(p_copy) > 32){
-            printf("p_copy = %s plen = %ld\n",p_copy,strlen(p_copy));
             error(ERR_INVALID_LABEL);
             return 0;
         }

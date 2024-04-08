@@ -77,7 +77,7 @@ int main(int argc,char *argv[]) {
     }*/
     
     /*printf("\nENTRY HEAD NAME: %s\n",entry_head -> label_name);*/
-    /*printf("EXTERN HEAD NAME: %d\n",extern_head -> label_name);
+    /*printf("EXTERN HEAD NAME: %d\n",extern_head -> label_name);*/
     /*printf("\CMD HEAD NAME: %s\n",cmd_label_head -> label_name);*/
     return 0;
 }
