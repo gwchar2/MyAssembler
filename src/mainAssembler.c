@@ -65,8 +65,8 @@ int main(int argc,char *argv[]) {
     if (lbl_head != NULL)
         printList(1);
     if (extern_head != NULL)
-        printf("Extern head is: [%p] [%s]\n",(void*)extern_head,extern_head->label_name);
-    printf("Next DC is: %d\n",DC);
+        printf("\n\nExtern head is: [%p] [%s]\n",(void*)extern_head,extern_head->label_name);
+    printf("Next DC is: %d\n\n",DC);
     if (dc_head != NULL){
         printf("DC head is: [%p] [%s] printing list: \n",(void*)dc_head,dc_head->label_name);
         printList(2);
