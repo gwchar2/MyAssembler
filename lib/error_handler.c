@@ -1,6 +1,13 @@
 #include "../include/assembler.h"
-
+ 
 void error_manager(ErrorCode errorCode) {
+    if (err_flag == 0){
+        fprintf(stderr, "Printing errors for file: %s\n",curr_file);
+    }
+    if(errorCode == ERR_ERR_FLAG){
+        fprintf(stderr, "You have [%d] errors in file [%s], continuing to next file!\n\n",err_flag,curr_file);
+        return;
+    }
     err_flag++;
     switch (errorCode) {
         case ERR_UNDEFINED_REGISTER:
@@ -51,8 +58,21 @@ void error_manager(ErrorCode errorCode) {
         case ERR_INVALID_LABEL:
             fprintf(stderr, "Error: Invalid Label name in line %d\n", curr_line_number);
             break;
+        case ERR_FILE_NAME:
+            fprintf(stderr, "Error: No such file %s to open!\n",curr_file);
+            break;
+        case ERR_FILE_ARGS:
+            fprintf(stderr, "Error: Please input file names to read from!");
+            break;
+        case ERR_LBL_PARTNER:
+            fprintf(stderr, "Error: Entry in line %d Does not have a decleration in the file!\n",curr_line_number);
+            break;
+        case ERR_UNDEFINED_LBL_USE:
+            fprintf(stderr, "Error: Undefined Label is used in line %d\n",curr_line_number);
+            break;
         default:
             fprintf(stderr, "Error: Unknown error in line %d\n", curr_line_number);
             break;
     }
 }
+   

@@ -1,8 +1,3 @@
-#include <stddef.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <errno.h>
 #include "../include/assembler.h"
 
 
@@ -150,6 +145,8 @@ void *add_cmd_label(label_node *some_node){
     return temp;
 }
 
+
+
 /*
 *   This function receives a variable and prints the coresponding list. 
 *   Enter 1 for label list, 2 for dc list, and 3 for instruction list.
@@ -262,14 +259,14 @@ void printList(int num){
 *   This function frees the dynamicaly allocated nodes in the list.
 *   Enter 1 for label list, 2 for dc list, and 3 for instruction list.
 */
-void free_list(int num) {
+/*void freeLists() {
     label_node *current_label = lbl_head;
     label_node *temp_label = NULL;
     row_node *current_row = NULL;
     row_node *temp_row = NULL;
     data_node *current_data = NULL;
     data_node *temp_data = NULL;
-    cmd_node *current_cmd = NULL;
+    cmd_node *current_cmd = cmd_head;
     cmd_node *temp_cmd = NULL;
     switch(num){
         case 1:
@@ -320,7 +317,7 @@ void free_list(int num) {
                 temp_label = current_label->next_label;
                 free(current_label);
                 current_label = temp_label;
-            }*/
+            }
             break;
         case 3:     
             current_cmd = cmd_head;
@@ -336,7 +333,7 @@ void free_list(int num) {
     }
     return;
 
-}
+}*/
 
 
 void print_label_guide() {
