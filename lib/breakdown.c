@@ -12,6 +12,7 @@ void scan_file(FILE *file){
     /*char *full_line = NULL;*/
     Label_Type label_type;
     int flag;
+    while ((IC + DC) <= RAM) {
     
     while ((IC + DC) <= RAM) {
         /* Grab the next line from the file */
@@ -101,6 +102,9 @@ void scan_file(FILE *file){
                 
             }
         }           
+    }
+    if ((IC + DC) > RAM){
+        error(ERR_SIZE_LEAK);
     }
     if ((IC + DC) > RAM){
         error(ERR_SIZE_LEAK);

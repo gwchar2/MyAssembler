@@ -49,6 +49,19 @@ void preAssembler(FILE *fp, char* clean_file_name) {
                 continue;
             }
         }
+        if (token != NULL){
+            if (strcmp(token,"mcr") == 0){
+                token = strtok(NULL," \n\t"); /* cut macro name */
+                if (validateMcrName(token, head)) {/* return 1 if name is new and legal. else, returns 0;  */
+                    addMcr(token,fp,&head) ; /* add macro to list with it's content. return after endmcr */
+                    continue ;
+                }
+                else {
+                    error(ERR_REDEFINITION_MACRO);
+                }
+                continue;
+            }
+        }
         /* no macro defenition or use. copy line as is */
         
         fputs(cur_line,newP) ;
