@@ -55,7 +55,7 @@ int validateMcrName(char *mcr_name, macro *mcr_head) {
             return 0 ; 
     }
     /* check if mcr name was already defined */
-    if (searchMcrList(mcr_name, mac_head) != NULL)
+    if (searchMcrList(mcr_name, mcr_head) != NULL)
         return 0; 
     return 1 ; /* valid name */
 }

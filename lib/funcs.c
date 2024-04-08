@@ -103,15 +103,14 @@ int strToInt(char *string){
     if (string[0] == '-'){
         flag = -1;
     }
-    else if (string[i] == '+'){
+    else if (string[0] == '+'){
         flag = 1;
     }
-    len = strlen(string);
     if (flag != 0)
         string = string+1;
     else 
         flag = 1;
-
+    len = strlen(string);
     for (i = 0; i < len; i++){
         if (string[i] > 57 || string[i] < 48)
             return 9000;
@@ -131,12 +130,13 @@ int strToInt(char *string){
 FILE *openFile(char *clean_file_name, int num) {
     char *file_name = NULL;
     char *temp_name = NULL; 
+    FILE *file = NULL; 
     temp_name = addFileEnding(clean_file_name,num);
     file_name = malloc(strlen(temp_name)+1);
     check_allocation(file_name);
     strcpy(file_name,temp_name);
     free(temp_name);
-    FILE *file = fopen(file_name, "r"); 
+    file = fopen(file_name, "r"); 
     check_allocation(file);
     return file;
 }

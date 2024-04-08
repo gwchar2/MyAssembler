@@ -624,7 +624,7 @@ char *opcodeBinTranslation(int num) {
 char *combineRegBin(char *str1, char *str2) {
     int i;
     static char result[BIN_WORD_LEN+1] ;
-    for (i-0; i<RT_BIT_FIELD; i++) {
+    for (i=0; i<RT_BIT_FIELD; i++) {
         result[i] = *(str1+i) ;
     }
     for (i=RT_BIT_FIELD; i<=RT_BIT_FIELD+2; i++) {

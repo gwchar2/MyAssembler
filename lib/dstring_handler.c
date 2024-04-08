@@ -12,7 +12,7 @@
 int dstring_handler(char *pointer){
     char *label_name = NULL;                                            /* Copies the pointer */
     char *p_copy = NULL;
-    int i = 0,flag = 0;
+    int i = 0;
     Label_Type label_type;
     label_node *temp_node = NULL;
     label_name = pointer;
@@ -34,14 +34,16 @@ int dstring_handler(char *pointer){
     
     else{
         label_type = getLabelType(pointer);
-        /* Check the label */
-        if (!check_label(label_name,label_type)){
-            return 0;
-        }
         /* If LABEL: .entry or LABEL: .extern we ignore */
         if (strcmp(pointer,".entry") == 0 || strcmp(pointer,".extern") == 0){
             return 0;
         }
+
+        /* Check the label */
+        if (!check_label(label_name,label_type)){
+            return 0;
+        }
+
 
         /* Check the remainding text */
         pointer = strtok(NULL,"\n\r\f\v"); 
@@ -62,27 +64,16 @@ int dstring_handler(char *pointer){
             }
             /* If a label doesnt exist, add a new one */
             temp_node = label_exists(label_name);
-            if (temp_node != NULL){
-                if (((temp_node -> label_type) == ENTRY_LABEL || (temp_node -> label_type) == EXTERN_LABEL) && temp_node -> entry_count == 0){
-                    temp_node -> entry_count = 1;
-                    flag = 1;
-                }
-                else{    
-                    error(ERR_DUPLICATE_LABEL);
-                    return 0;
-                }
-            }
-            add_label(DC,DC,label_name,0,label_type);
+            if (temp_node != NULL)
+                add_label(DC,DC,label_name,1,label_type);
+            else
+                add_label(DC,DC,label_name,1,label_type);
+            
 
             /* search & grab the new node */
-            temp_node = lbl_head;
+            temp_node = dc_head;
             while (temp_node != NULL && !((temp_node -> label_type) == label_type && strcmp((temp_node -> label_name),label_name) == 0)){
                 temp_node = temp_node -> next_label;
-            }
-
-            /* If we flagged it for having an extern/entry partner */
-            if (flag == 1){
-                temp_node -> entry_count = 1;
             }
            
             /* Fetch data according to label type */
@@ -99,7 +90,10 @@ int dstring_handler(char *pointer){
 
         }
         else if (label_type == CMD_LABEL){
-            add_label(IC,0,label_name,0,label_type);
+            if (temp_node != NULL)
+                add_label(IC,0,label_name,1,label_type);
+            else 
+                add_label(IC,0,label_name,0,label_type);
             return 2;
         }
         else if (label_type == INVALID){
@@ -175,15 +169,14 @@ int check_data(char *pointer,Label_Type label_type){
         check_allocation(remainder_copy);
         strcpy(remainder_copy,pointer);                                               /* Copies the input */ 
         size_remainder = strlen(remainder_copy); 
-
         pp = strtok(string," ,\t\n\r\f\v");
+        
         /* As long as we have not reached the end of the input */
         while (pp != NULL ){     
             
             /* If the current pointer string is all alphabetical letters, it must be a define! */                    
             if (check_alpha(pp)) {
                 temp = label_exists(pp);
-                
                 /* If no such define exists, or if a label exists but its NOT a define! */
                 if (temp == NULL || ((temp -> label_type) != DEF_LABEL) ){
                     error(ERR_UNDEFINED_ARGUMENT);
