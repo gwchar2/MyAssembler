@@ -248,7 +248,7 @@ void printList(int num){
                    printf("  |");
                 }
                 else 
-                    printf("[%d]-[%d]-",cmd_temp -> sourceAdd ,cmd_temp -> targetAdd);
+                    printf("[%d]-[%d]-",cmd_temp -> sourceAdd,cmd_temp -> targetAdd);
                 cmd_temp = cmd_temp -> next_cmd;
             }
             break;
