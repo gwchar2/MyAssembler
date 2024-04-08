@@ -119,7 +119,7 @@ int check_label(char *p_copy, Label_Type label_type){
         }
         /* Checks to see that no pointer exists */
         if (label_exists(pointer) != NULL){                                                                                                        /* checks to see if the label exists. Entries do not exist yet */
-            error(ERR_INVALID_LABEL);
+            error(ERR_DUPLICATE_LABEL);
             free(pointer);
             return 0;
         }
