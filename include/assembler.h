@@ -33,10 +33,12 @@
 #define RTA_FIELD 10
 #define OPCODE_BIN_LEN 4
 #define OPCODE_FIELD 4
+#define RAM 4096
 /* Checks if the memory for (C) was allocated properly */
 #define check_allocation(c)\
         if (c == NULL){\
-            fprintf(stderr, "Error allocating memory %s",strerror(errno));\
+            errorCode = ERR_SIZE_LEAK; \
+            error_manager(errorCode); \
             exit(EXIT_FAILURE);\
         }
 #define WHITESPACE(c) ((c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '\f' || c == '\v'))     /* Checks if a character is a whitespace */
@@ -66,7 +68,7 @@ typedef enum ErrorCode{
     ERR_ILLEGAL_ADDRESSING,
     ERR_IMM_OVERFLOW,
     ERR_SIZE_LEAK,
-    ERR_DUPLICATE_LABEL,
+    ERR_DUPLICATE_LABEL
 } ErrorCode; 
 
 typedef enum Label_Type{
@@ -160,7 +162,8 @@ typedef struct Label_node{
     struct Label_node *prev_label;                                                      /* Prev label */
     struct Label_node *next_entry;
     struct Label_node *next_extern;
-    struct Label_node *next_dc;                                                   
+    struct Label_node *next_dc;    
+    struct Label_node *next_cmd_label;                                               
 } label_node;
 
 typedef struct Data_node{                                                               /* For string, we put in ascii values */
@@ -178,6 +181,7 @@ extern label_node *lbl_head;                                                    
 extern label_node *entry_head;                                                          /* Entry list head */
 extern label_node *extern_head;                                                         /* Extern list head */
 extern label_node *dc_head;                                                             /* Data segment list head */
+extern label_node *cmd_label_head;                                                          
 extern cmd_node *cmd_head;                                                              /* Instruction segment head */
 extern cmd_node *new_cmd; 
 extern char *rest_of_line;                                                              /* this pointer will always pont to the rest of the input line that wans't proccessed yet. */
@@ -197,14 +201,13 @@ void *add_row(label_node *cur_label, int address); /* This function adds an addr
 
 void *add_data(int data,label_node *label_node); /* This function adds a data node to the data list in a label */
 
+void *add_cmd_label(label_node *some_node); /* This function adds a cmd label node to the cmd label list */
 
 void *add_entry(label_node *label_node);  /* This function adds a an entry node to the entry list */
 
 void *add_extern(label_node *label_node); /* This function adds a an extern node to the extern list */
 
-void *add_cmd(cmd_node *some_node); /* This function adds a cmd node to the cmd list */
-
-/*void *add_entry(label_node *label_node); */ /* This function adds a an entry node to the entry list */
+void *add_entry(label_node *label_node);  /* This function adds a an entry node to the entry list */
 
 void *add_extern(label_node *label_node); /* This function adds a an extern node to the extern list */
 
@@ -270,6 +273,7 @@ char *combineRegBin(char *str1, char *str2);
 int commaCheck(char *input_copy);
 int checkExtra(char *extra) ;
 cmd_node *create_cmd_node(int cmd_num) ;
+void *add_cmd(cmd_node *label_node); /* This function adds a cmd node to the cmd list */
 
 
 /*************************************

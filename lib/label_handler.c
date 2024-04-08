@@ -11,7 +11,6 @@
 */
 int check_first_word (char *word){
     Label_Type type;
-    
     /* We completely ignore notes / empty lines */
     if (word == NULL || *word == '\n' || *word == ';' || word[0] == ';'){                                                     /* Blank or note line - ignore */
         return 0; 
@@ -20,9 +19,9 @@ int check_first_word (char *word){
     else if (word[0] == '.'){
         
         type = getLabelType(word);
-        if (type == ENTRY_LABEL){  
-            curr_line_number++;                                                                        /* ignore entry labels in the first lap */
-            return 0;
+        
+        if (type == ENTRY_LABEL){                                                                         /* ignore entry labels in the first lap */
+            return 1;
         }
         if (type == DEF_LABEL || type == EXTERN_LABEL)
             return 1;                                                                                       /* .define or .extern line */
@@ -83,28 +82,38 @@ int check_label(char *p_copy, Label_Type label_type){
             error(ERR_INVALID_LABEL);
             return 0;
         }
-        temp = label_exists(p_copy);
+
+        temp = label_exists(p_copy);   
         /* If there is a duplicate */
         if (temp != NULL){   
-            /* If its we are checking an entry, and its a duplicate with entry/extern/entry_val = 1 */
+        
+            /* If we are checking an entry, and its a duplicate with entry/extern/entry_val = 1 */
             if (label_type == ENTRY_LABEL && (temp -> label_type == ENTRY_LABEL || temp -> label_type == EXTERN_LABEL || temp -> entry_count == 1)){
-                error(ERR_DUPLICATE_LABEL);                                                                                                 
-                return 0;
-                }
-            else {
-                error(ERR_DUPLICATE_LABEL);                                                                                                 
+                error(ERR_DUPLICATE_LABEL);                                                                                               
                 return 0;
             }
+            /* If we are checking an entry, and temp is not one of the 'bad' types, edit the entry country to 1.*/
+            else if (label_type == ENTRY_LABEL){
+                 temp -> entry_count = 1;
+                 return 1;
+            }     
+            /* If we are not checking an entry, but our duplicate IS an entry with entry_count = 0 */                                                                               
+            else if ((label_type != ENTRY_LABEL) && (temp -> label_type == ENTRY_LABEL) && (label_type != EXTERN_LABEL) && (temp -> entry_count == 0)){
+                temp -> entry_count = 1;
+                return 1;
+            }
+            else{
+                error(ERR_DUPLICATE_LABEL);                                                                                              
+                return 0;
+            } 
         }
-        /* If the string is equal to .define .data or .string - illegal */
-        if (strcmp(p_copy,".define") == 0 || strcmp(p_copy,".data") == 0 || strcmp(p_copy,".string") == 0 || (strcmp(p_copy,".entry") == 0 || strcmp(p_copy,".extern") == 0)){
-            error(ERR_INVALID_LABEL);
-            return 0;
-        }
+        return 1;
     }
-    /* If there label is for a data/cmd/string */
+
+
+    /* If the label is for a data/cmd/string */
     else if (label_type == CMD_LABEL || label_type == DATA_LABEL || label_type == STRING_LABEL){
-        if (strlen(p_copy) < 2 || strlen(p_copy) > 32){
+        if (strlen(p_copy) < 1 || strlen(p_copy) > 32){
             error(ERR_INVALID_LABEL);
             return 0;
         }
@@ -117,15 +126,24 @@ int check_label(char *p_copy, Label_Type label_type){
             free(pointer);                     
             return 0;
         }
-        /* Checks to see that no pointer exists */
-        if (label_exists(pointer) != NULL){                                                                                                        /* checks to see if the label exists. Entries do not exist yet */
-            error(ERR_INVALID_LABEL);
-            free(pointer);
-            return 0;
+
+        temp = label_exists(p_copy);
+        /* If there is a duplicate */
+        if (temp != NULL){    
+            /* If we are not checking an entry, but our duplicate IS an entry with entry_count = 0 */                                                                               
+            if ((temp -> label_type == ENTRY_LABEL)  && (temp -> entry_count == 0)){
+                temp -> entry_count = 1;
+                return 1;
+            }
+            else{
+                error(ERR_DUPLICATE_LABEL);                                                                                                 
+                return 0;
+            } 
         }
     }
     return 1;
 }
+    
 
 /* 
 *   Checks if a string is all alphabetical letters

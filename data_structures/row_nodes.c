@@ -25,12 +25,14 @@ void *add_row(label_node *cur_label, int address) {
     row_node *cur_row = cur_label -> row_list;
 
     if (cur_row -> address == address ) 
-            return;
+            return (void*)new_row;
     while (cur_row -> next_row != NULL ){
         if (cur_row -> next_row -> address == address ) 
-            return;
+            return (void*)new_row;
         else
             cur_row = cur_row -> next_row;
     }
     cur_row -> next_row = new_row;
+
+    return (void*)new_row;
 }

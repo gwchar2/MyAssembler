@@ -35,4 +35,5 @@ void *add_data (int data,label_node *label_node){
 
     (label_node -> data_count)++;
     
+    return (void*)new_data;
 }

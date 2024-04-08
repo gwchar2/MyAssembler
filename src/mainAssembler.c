@@ -21,6 +21,7 @@ int curr_line_number = 1;
 int IC = 1;
 int DC = 1;
 int err_flag = 0;
+label_node *cmd_label_head = NULL;
 label_node *lbl_head = NULL;                                                        /* Label table head */
 cmd_node *cmd_head = NULL;                                                          /* Instruction segment head */
 label_node *entry_head = NULL;                                                      /* Entry list head */
@@ -36,6 +37,7 @@ int main(int argc,char *argv[]) {
     char *clean_file_name = (char*)malloc(FILE_NAME_LEN) ;                          /* string to hold the name as recieved in command line. no endings. */
     int file_count = 0 ;                                                            /* pointer to argv index */
     check_allocation(clean_file_name);
+    
     
     /* checking arguments */
     if (argc < MIN_ARGV){                                                           /* no arguments */ 
@@ -56,27 +58,27 @@ int main(int argc,char *argv[]) {
     Note lines ( ';' ) and empty lines in the file, will not be counted toward IC, DC or as lines in the file!!! */
     
     fp = openFile(clean_file_name,1);
+    
     scan_file(fp);
 
 
-    
-    printList(1);
+    if (lbl_head != NULL)
+        printList(1);
     if (extern_head != NULL)
-        printf("Extern head is: [%p] [%s]\n",(void*)extern_head,extern_head->label_name);
-    printf("Next DC is: %d\n",DC);
+        printf("\n\nExtern head is: [%p] [%s]\n",(void*)extern_head,extern_head->label_name);
+    printf("Next DC is: %d\n\n",DC);
     if (dc_head != NULL){
         printf("DC head is: [%p] [%s] printing list: \n",(void*)dc_head,dc_head->label_name);
         printList(2);
     }
-    if (cmd_head != NULL){
+    /*if (cmd_head != NULL){
         printf("CMD head is: [%p] printing list: \n",(void*)cmd_head);
         printList(3);
-    }
+    }*/
     
-    printf("Need to go a second time for labels. in label_handler->check_label->line 122 ->need to edit the case(maybe?)\n ");
-    printf("| Add to entry list via add_label() cmd!! |\n");
     /*printf("\nENTRY HEAD NAME: %s\n",entry_head -> label_name);*/
-    /*printf("\CMD HEAD NAME: %s\n",cmd_head ____);*/
+    /*printf("EXTERN HEAD NAME: %d\n",extern_head -> label_name);*/
+    /*printf("\CMD HEAD NAME: %s\n",cmd_label_head -> label_name);*/
     return 0;
 }
 

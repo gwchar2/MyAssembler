@@ -24,7 +24,6 @@ void error_manager(ErrorCode errorCode) {
         case ERR_MISSING_COMMA:
             fprintf(stderr, "Error: Missing comma in line %d\n", curr_line_number);
             break;
-            break;
         case ERR_MISSING_PARENTHESES:
             fprintf(stderr, "Error: Missing parentheses in line %d\n", curr_line_number);
             break;
