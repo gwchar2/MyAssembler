@@ -1,9 +1,8 @@
-.define sz=0001001 1
-.define sz=0001001
-.entry sz
-jk: add r1, r2
-.extern jk
-hello: .data 69, 69,69
-Stringuu: .string "69 69 69"
-.entry jk
-.entry Stringuu
+add r1,r2
+.entry LIST
+.extern W
+.define sz = 2
+.define len = 4
+STR: .string "abcdef"
+LIST: .data 6,-9,len
+K: .data 22

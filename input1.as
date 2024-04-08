@@ -31,7 +31,6 @@ nooooo:
 .extern ThisShouldWork
 ABCDEFGHIJABCDEFGHIJABCDE: .data ,1,,2,3
 .entry ThisShouldWork
-cmd hello
 hello: jmp
 hello: jmp something something
 .define sz=0001001 1

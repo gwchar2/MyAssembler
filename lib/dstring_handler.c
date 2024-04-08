@@ -1,9 +1,3 @@
-#include <stddef.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <errno.h>
-#include <ctype.h>
 #include "../include/assembler.h"
 
 /*
@@ -16,15 +10,18 @@ int dstring_handler(char *pointer){
     Label_Type label_type;
     label_node *temp_node = NULL;
     label_name = pointer;
+
+    /* Replace the ':' with \0 */
     while (pointer[i] != ':'){
         i++;
     }
     pointer[i] = '\0';
+
+    /* Save the label_name and increment pointer */
     label_name = malloc(strlen(pointer)+1);
     check_allocation(label_name);
     strcpy(label_name,pointer);
-
-    pointer = strtok(NULL," \t\n\r\f\v");                              /* Increments the copy (pointer stays the same as before in father func) */
+    pointer = strtok(NULL," \t\n\r\f\v");                              
     
     /* Check to see if missing argument */
     if (pointer == NULL){
