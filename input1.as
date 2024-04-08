@@ -35,15 +35,6 @@ hello: jmp
 hello: jmp something something
 .define sz=0001001 1
 .define sz=0001001
-                 
-                 ;
-                 accessible 
-                 ;;
-;
-;;;;
-
-
-;
 american cheese
 .define
         hello: .data 1,2,3

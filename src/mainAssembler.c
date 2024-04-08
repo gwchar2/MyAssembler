@@ -71,18 +71,14 @@ int main(int argc,char *argv[]) {
         printf("DC head is: [%p] [%s] printing list: \n",(void*)dc_head,dc_head->label_name);
         printList(2);
     }
-    if (cmd_head != NULL){
+    /*if (cmd_head != NULL){
         printf("CMD head is: [%p] printing list: \n",(void*)cmd_head);
         printList(3);
-    }
+    }*/
     
-    printf("Need to go a second time for labels. in label_handler->check_label->line 122 ->need to edit the case(maybe?)\n ");
-    printf("| Add to entry list via add_label() cmd!! |\n");
-    printf("\nENTRY HEAD NAME: %s\n",entry_head -> label_name);
-    printf("DATA ENTRY COUNT: %d\n",dc_head -> entry_count);
-    /*printf("ENTRY ENTRY COUNT: %d\n",entry_head -> entry_count);
-    /*printf("EXTERN ENTRY COUNT: %d\n",extern_head -> entry_count);
-    /*printf("\CMD HEAD NAME: %s\n",cmd_head ____);*/
+    /*printf("\nENTRY HEAD NAME: %s\n",entry_head -> label_name);*/
+    /*printf("EXTERN HEAD NAME: %d\n",extern_head -> label_name);
+    /*printf("\CMD HEAD NAME: %s\n",cmd_label_head -> label_name);*/
     return 0;
 }
 

@@ -195,7 +195,7 @@ void printList(int num){
                                 printf("[%d]\n",data_temp -> data);
                             else
                                 printf("[%d]-",data_temp -> data);
-                        data_temp = data_temp -> next_data;
+                            data_temp = data_temp -> next_data;
                         }
                         break;
                 }
@@ -224,6 +224,7 @@ void printList(int num){
                     printf("\n");
                 dc_temp = dc_temp -> next_dc;
             }
+            
             break;
         case 3: /* cmd list */
             cmd_temp = cmd_head;

@@ -3,7 +3,6 @@
 void error_manager(ErrorCode errorCode) {
     err_flag++;
     switch (errorCode) {
-    switch (errorCode) {
         case ERR_UNDEFINED_REGISTER:
             fprintf(stderr, "Error: Undefined register name in line %d\n", curr_line_number);
             break;
@@ -24,7 +23,6 @@ void error_manager(ErrorCode errorCode) {
             break;
         case ERR_MISSING_COMMA:
             fprintf(stderr, "Error: Missing comma in line %d\n", curr_line_number);
-            break;
             break;
         case ERR_MISSING_PARENTHESES:
             fprintf(stderr, "Error: Missing parentheses in line %d\n", curr_line_number);

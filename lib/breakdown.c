@@ -11,9 +11,7 @@ void scan_file(FILE *file){
     char *pointer = NULL;
     /*char *full_line = NULL;*/
     Label_Type label_type;
-    int flag;
-    while ((IC + DC) <= RAM) {
-    
+    int flag;    
     while ((IC + DC) <= RAM) {
         /* Grab the next line from the file */
         if (fgets(line, MAX_LINE_LEN, file) == NULL) {
@@ -102,9 +100,6 @@ void scan_file(FILE *file){
                 
             }
         }           
-    }
-    if ((IC + DC) > RAM){
-        error(ERR_SIZE_LEAK);
     }
     if ((IC + DC) > RAM){
         error(ERR_SIZE_LEAK);

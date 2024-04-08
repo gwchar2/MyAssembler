@@ -104,14 +104,12 @@ int strToInt(char *string){
         flag = -1;
     }
     else if (string[0] == '+'){
-    else if (string[0] == '+'){
         flag = 1;
     }
     if (flag != 0)
         string = string+1;
     else 
         flag = 1;
-    len = strlen(string);
     len = strlen(string);
     for (i = 0; i < len; i++){
         if (string[i] > 57 || string[i] < 48)
