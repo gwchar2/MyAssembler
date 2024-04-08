@@ -1,1 +1,1 @@
-hello: add r1 ,r2
+X: .data 23

@@ -267,7 +267,8 @@ char *cmdBinTranslation(int cmd_num, int sourceAdd, int targetAdd) ;
 int rangeCheck(int num);
 char *opcodeBinTranslation(int num) ;
 char *combineRegBin(char *str1, char *str2);
-int commaCheck(cmd_node *new_cmd, char *input_copy);
+int commaCheck(char *input_copy);
+int checkExtra(char *extra) ;
 cmd_node *create_cmd_node(int cmd_num) ;
 
 

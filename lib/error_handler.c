@@ -2,7 +2,7 @@
 
 void error_manager(ErrorCode errorCode) {
     err_flag++;
-    switch (errorCode-1) {
+    switch (errorCode) {
         case ERR_UNDEFINED_REGISTER:
             fprintf(stderr, "Error: Undefined register name in line %d\n", curr_line_number);
             break;
