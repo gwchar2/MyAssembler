@@ -30,7 +30,6 @@ void check_command(char *input) { /* input is the full command line */
 
     /* command name is valid. new_cmd node is created. cmd_num is set. L=1 */
     new_cmd = create_cmd_node(cmd_num) ; /* create a new command node with the matching command number */
-    
     getNumOfVars() ; /* set num of required operands in totalVars */
     /* check for illegal comma after command name ??????? */
     /*if (*(line+CMD_NAME_LEN) == COMMA) {
@@ -72,7 +71,6 @@ void check_command(char *input) { /* input is the full command line */
             }
         }
 
-
     /* if reached here, both source and target ops are valid. now we will translate the command line itself. */
     error_num = commaCheck(input) ; /* check for legal comma */
     if (error_num != 0){
@@ -81,7 +79,8 @@ void check_command(char *input) { /* input is the full command line */
             return ;
     }
     strcpy(new_cmd->cmd_binary,cmdBinTranslation(new_cmd -> cmd_num , new_cmd -> sourceAdd, new_cmd -> targetAdd)) ;
-    printf("line: %d\t func: %s\tcmdBin: %s\n", __LINE__,__func__,new_cmd->cmd_binary);
+    printf("line: %d\t func: %s\tcommand line: %s", __LINE__,__func__,input);
+    printf("cmdBin: %s\nsource1: %s\nsource2: %s\ntarget1: %s\ntarget2: %s\n",new_cmd->cmd_binary,new_cmd->source1_binary,new_cmd->source2_binary,new_cmd->target1_binary,new_cmd->target2_binary);
 
 }
 
@@ -166,6 +165,7 @@ int sourceOpCheck(char **rest_of_line) {
             return ERR_ILLEGAL_ADDRESSING ;
         }
         error_num = immProcessor(op1,&immNum) ; /* validation. if valid, immNum will be the imm to tranlate */
+
         if (error_num == 0){
             new_cmd->sourceAdd = 0 ;
             (new_cmd->L)++ ; /* increase number of bin words by 1 */
@@ -320,7 +320,6 @@ int targetOpCheck(char *rest_of_line) {
             return ERR_ILLEGAL_ADDRESSING ;
         }
         error_num = immProcessor(op2,&immNum) ; /* validation. if valid, immNum will be the imm to tranlate */
-        printf("line: %d\t func: %s\terror number: %d\n", __LINE__,__func__,error_num);
 
         if (error_num == 0){
             new_cmd->targetAdd = 0 ;
@@ -421,14 +420,14 @@ int immProcessor(char *token, int *immNum) {
         if (lblP->label_type != DEF_LABEL)
             return ERR_UNDEFINED_ARGUMENT ; 
         /* label found, type is define. */
-        immNum = lblP->definedData ;
+        *immNum = lblP->definedData ;
 
     }
     else if (isNumber(immP, &immNum) == 1 ) {/* imm is a valid number */
         return ERR_UNDEFINED_ARGUMENT ; 
     }
     /* valis number saved in immNum. check range */
-    if (rangeCheck(immNum) == 1)
+    if (rangeCheck(*immNum) == 1)
         return ERR_IMM_OVERFLOW ; /* can't be represented in 12 bits. */
 
     /* imm is legal. the value is saved in num. continue to bin-tranlation */
@@ -475,7 +474,6 @@ char *BinTranslation12Bit(int num, int ARE) {
     if (num < 0) {
         num += negHandle ;
     }
-
     /* Store the binary representation of num in the string */
     for (i = BITS_IN_INT - 1; i >= 0; i--) {
         bit = (num >> i) & 1;
@@ -530,8 +528,7 @@ char *RSBinTranslation(int reg_num) {
 /* this function gets a reg number. translate to binary and sets the number in the RT bit field. */
 char *RTBinTranslation(int reg_num) {
    static char result[BIN_WORD_LEN] ;
-    int num = reg_num << RT_SHIFT ; /* shifting left to get the RS number in the 5-7 bits */
-    strcpy(result, BinTranslation12Bit(num,0)) ; /* use imm translation func */  
+    strcpy(result, BinTranslation12Bit(reg_num,0)) ; /* use imm translation func */  
     return result ;
 }
 
@@ -599,8 +596,6 @@ char *cmdBinTranslation(int cmd_num, int sourceAdd, int targetAdd) {
 
 /* this function gets a number. if it can be represented in 12 bits - return 0. otherwise, return 1.  */
 int rangeCheck(int num) {
-    printf("line: %d\t func: %s\tnum = %d\n", __LINE__,__func__,num);
-
     if (num <= MIN_12BITS || num >= MAX_12BITS ) {
        return 1 ; /* number can't be represented in 12 bits. */
     }
@@ -645,7 +640,6 @@ int commaCheck(char *input_copy) {
     /*int cmd_num = my_data->cmd_num ;*/
     int len = strlen(input_copy) ;
     int i , comma_req ; /* num of commas required for each command type */
-
     if (*input==COMMA)
         return 6; /* Error: illegal comma after command */
     for (i=0; i<len; i++){
@@ -661,12 +655,14 @@ int commaCheck(char *input_copy) {
     }
     if (consecutive_comma > 1)
         return 8 ; /* Error: multiple consecutiva commas error */
-
+    printf("line: %d\t func: %s\tcommand line: %s", __LINE__,__func__,input_copy);
     /* set required number of commas */
     if (new_cmd->total_vars == SECOND_GROUP_VARS || new_cmd->total_vars == THIRD_GROUP_VARS) 
         comma_req = 0 ;
-    if (new_cmd->total_vars == FIRST_GROUP_VARS) 
+    else if (new_cmd->total_vars == FIRST_GROUP_VARS) 
         comma_req = 1 ;
+    printf("line: %d\t func: %s\tcomma req: %d\tcomma count: %d\n", __LINE__,__func__,comma_req,comma_count);
+
     if (comma_count < comma_req)
         return 7 ; /* Error: missing comma */
     if (comma_count > comma_req)
