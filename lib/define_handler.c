@@ -118,7 +118,7 @@ void def_case_1(char *pointer, Label_Type label_type){
         if (temp != NULL)
             add_label(curr_line_number,strToInt(p_copy),label_name,1,label_type);
         else
-            add_label(curr_line_number,strToInt(p_copy),label_name,1,label_type);
+            add_label(curr_line_number,strToInt(p_copy),label_name,0,label_type);
         return;
     }
 

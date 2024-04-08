@@ -67,7 +67,7 @@ int dstring_handler(char *pointer){
             if (temp_node != NULL)
                 add_label(DC,DC,label_name,1,label_type);
             else
-                add_label(DC,DC,label_name,1,label_type);
+                add_label(DC,DC,label_name,0,label_type);
             
 
             /* search & grab the new node */

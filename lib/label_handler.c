@@ -83,12 +83,13 @@ int check_label(char *p_copy, Label_Type label_type){
             return 0;
         }
 
-        temp = label_exists(p_copy);
+        temp = label_exists(p_copy);   
         /* If there is a duplicate */
         if (temp != NULL){   
+        
             /* If we are checking an entry, and its a duplicate with entry/extern/entry_val = 1 */
             if (label_type == ENTRY_LABEL && (temp -> label_type == ENTRY_LABEL || temp -> label_type == EXTERN_LABEL || temp -> entry_count == 1)){
-                error(ERR_DUPLICATE_LABEL);                                                                                                 
+                error(ERR_DUPLICATE_LABEL);                                                                                               
                 return 0;
             }
             /* If we are checking an entry, and temp is not one of the 'bad' types, edit the entry country to 1.*/
@@ -102,10 +103,11 @@ int check_label(char *p_copy, Label_Type label_type){
                 return 1;
             }
             else{
-                error(ERR_DUPLICATE_LABEL);                                                                                                 
+                error(ERR_DUPLICATE_LABEL);                                                                                              
                 return 0;
             } 
         }
+        return 1;
     }
 
 
