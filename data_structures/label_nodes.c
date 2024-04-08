@@ -182,7 +182,7 @@ void printList(int num){
                         printf("[%s]-[%d]-[%d]\n",temp -> label_name,temp -> label_type,temp -> entry_count);
                         break;
                     case CMD_LABEL:
-                        printf("[%s]-[%d]-[%d]",temp -> label_name,temp -> label_type,temp -> line_init);
+                        printf("[%s]-[%d]-[%d]\n",temp -> label_name,temp -> label_type,temp -> line_init);
                         break;
                     default:
                         printf("[%s]-[%d]-[%d]-",temp -> label_name,temp -> label_type,temp -> line_init);
