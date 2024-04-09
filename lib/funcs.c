@@ -95,3 +95,4 @@ char *BinTranslation14Bit(int num) {
     }
     return result;
 }
+
