@@ -14,7 +14,6 @@ void check_command(char *input) { /* input is the full command line */
     int error_num = 0 ;
     int cmd_num ,i      ; 
     char *cmd_name = NULL ;
-    char *extra = NULL ;
     char *token = NULL;
 
     /* inputCopy will hold a copy of the full input  every strtok will be cuting inputCopy */
@@ -63,6 +62,7 @@ void check_command(char *input) { /* input is the full command line */
     }
 
     else if (new_cmd->total_vars == SECOND_GROUP_VARS){ /* 1 operand is required */
+        new_cmd-> sourceAdd = 0 ; /* erelevant */
         error_num = targetOpCheck() ; /* send to validation */
         if (error_num != 0){
             errorCode = error_num ;
@@ -72,6 +72,8 @@ void check_command(char *input) { /* input is the full command line */
     }
 
         else if (new_cmd->total_vars == THIRD_GROUP_VARS) { /* no operands required */
+            new_cmd-> sourceAdd = 0 ; /* erelevant */
+            new_cmd-> targetAdd = 0 ; /* erelevant */
             token = strtok(rest_of_line, SPACE_COMMA_DEL);
             if (token != NULL ){
                 errorCode = 2;
@@ -89,8 +91,9 @@ void check_command(char *input) { /* input is the full command line */
     }
     strcpy(new_cmd->cmd_binary,cmdBinTranslation(new_cmd -> cmd_num , new_cmd -> sourceAdd, new_cmd -> targetAdd)) ;
     
-    printf("\nline: %d\t finishing func: %s\t with command line: %s", __LINE__,__func__,input);
+    printf("\nline: %d\t finishing command check with command line: %s", __LINE__,input);
     printf("\ncmdBin: %s\nsource1: %s\nsource2: %s\ntarget1: %s\ntarget2: %s\n",new_cmd->cmd_binary,new_cmd->source1_binary,new_cmd->source2_binary,new_cmd->target1_binary,new_cmd->target2_binary);
+    printf("source label name: %s \t | target label name: %s\n", new_cmd->source_label, new_cmd->target_label);
     return ;
 }
 
@@ -158,11 +161,13 @@ int sourceOpCheck() {
     int i;
     char *lineCopy = NULL ;
     char *op1 = NULL ;
+    char *labelName = malloc(MAX_LABEL_NAME);
     size_t len ;
     int reg_num, immNum , labelVal, index ;
     label_node *labelOp = NULL ;
     lineCopy = malloc(strlen(rest_of_line));
     check_allocation(lineCopy);
+    check_allocation(labelName);
     strcpy(lineCopy, rest_of_line) ;
     op1 = strtok(lineCopy, SPACE_COMMA_DEL) ; /* cut first op */
     len = strlen(op1) ;    
@@ -227,7 +232,7 @@ int sourceOpCheck() {
             new_cmd->source2_binary = '\0' ; /* for label source op, only 1 word required. */
             /* update rest of line until after first op */
             new_cmd->source2_binary = '\0'; /* for register source op, only 1 word required. */\
-        for (i=0; (isspace(*(rest_of_line+i))!= 0 || (*(rest_of_line+i) == COMMA)) && *(rest_of_line+i) != '\n'; i++);
+            for (i=0; (isspace(*(rest_of_line+i))!= 0 || (*(rest_of_line+i) == COMMA)) && *(rest_of_line+i) != '\n'; i++){}
             rest_of_line = rest_of_line+i+len ; 
             printf("line: %d | rest of line is: |%s|\n",__LINE__,rest_of_line);
             return targetOpCheck() ;
@@ -237,7 +242,8 @@ int sourceOpCheck() {
     /* return 0 if source op is an array_index. */
     /* return 1 for error. return -1 for unrecognized label, but valid index. */
     /* Addressing method - 2 */
-    error_num = isIndex(&index, &labelOp)  ; /* if valid, rest of line is updated */
+    error_num = isIndex(&index, &labelOp, &labelName)  ; /* if valid, rest of line is updated */
+    strcpy(new_cmd-> source_label, labelName);
     if (error_num == 1)  /* error found */
         return ERR_UNDEFINED_ARGUMENT; 
     else if (error_num == -3)
@@ -250,6 +256,10 @@ int sourceOpCheck() {
             return targetOpCheck(); 
         }
             else if (error_num == -1) { /* not an index method  still possible it is a label undefined yet. */
+                    for (i=0; (isspace(*(rest_of_line+i))!= 0 || (*(rest_of_line+i) == COMMA)) && *(rest_of_line+i) != '\n' ; i++);
+                    rest_of_line = rest_of_line+i+len ; 
+                    new_cmd-> sourceAdd = 1 ; 
+                    strcpy(new_cmd-> source_label, op1); /* not index method. op2 supposed to be the whole label name */
                     strcpy(new_cmd->source1_binary,"??????????????") ; /* optional label  */
                     new_cmd->source1_binary = '\0' ; /* for addressing method 1 - only 1 word required.  \0 */
                     (new_cmd->L)++ ; /* increase word count */
@@ -271,7 +281,7 @@ int sourceOpCheck() {
     return -1 if no ] found, still possible that op1 is a label not defined yet. 
     return -2 for unrecognized label, but valid index. 
     return -3 if there is a seg fault */
-int isIndex(int *index, label_node *baseLabel) {
+int isIndex(int *index, label_node **baseLabel, char **labelName) {
     int i, j, k, s,temp;
     char baseLabelName[32] ; /* assuming label name is no longer than 32 chars*/
     char indexS[32] ;
@@ -279,10 +289,10 @@ int isIndex(int *index, label_node *baseLabel) {
     size_t len = strlen(rest_of_line) ;
 
     /* get index */
-    for (i=0; (*(rest_of_line+i) != ']') && i <= len ; i++) {
-    }
-    if (i==len-1 && *(rest_of_line+i) != ']') /*  reach end of input */
+    for (i=0; (*(rest_of_line+i) != ']') && i <= len ; i++) ;
+    if (i==len+1 && *(rest_of_line+i) != ']') /*  reach end of input */
         return -1; /* no ] found. not addressing method 2. still possible that it's a label not defined yet. */
+    
     /* ] found. look for [ opener */
     for (j=i; *(rest_of_line+j)!='[' && j >= 0 ; j--) ;
     if (j==0) /* [ opener not found */
@@ -317,7 +327,7 @@ int isIndex(int *index, label_node *baseLabel) {
         }
     /* if reached here - index is valid. continue to check label validation. */
     /* copy string up to j to the labelBaseName[] */
-    /*rest_of_line = rest_of_line+i+1 ; /* this is the point where the cur operand ends in the command line */
+    
     for (k=0, s=0 ; k<j; k++) {
         if ((isspace(*(rest_of_line+k))) != 0 || *(rest_of_line+k) == COMMA)
             continue ;
@@ -325,10 +335,11 @@ int isIndex(int *index, label_node *baseLabel) {
         s++ ;
     }
     baseLabelName[s] = '\0';
-    baseLabel = label_exists(baseLabelName) ;
+    strcpy(*labelName,baseLabelName);
+    *baseLabel = label_exists(baseLabelName) ;
     /* checking that index is not out of the array bounderies */
     if (baseLabel != NULL ) { /* valid array[index] addressing method. the base address will be calulated later. */
-        if (baseLabel-> data_count <= *index)
+        if ((*baseLabel)-> data_count <= *index)
             return -3 ; 
         rest_of_line = rest_of_line+i+1; /* update rest of line to point after ] */
         return 0; 
@@ -346,20 +357,22 @@ int isIndex(int *index, label_node *baseLabel) {
 
 int targetOpCheck() {
     int error_num = 0 ;
-    char *lineCopy ;
+    char *lineCopy  = NULL ;
     char *op2 = NULL ;
     char *extra = NULL ;
     char *temp = NULL ;
-    int reg_num, immNum , labelVal, index ,i;
+    char *labelName = malloc(MAX_LABEL_NAME);
+    int reg_num, immNum , labelVal, index ;
     size_t len ;
     label_node *labelOp = NULL ;
     lineCopy = malloc(strlen(rest_of_line));
     check_allocation(lineCopy);
+    check_allocation(labelName);
     temp = malloc(BIN_WORD_LEN+1) ;
     check_allocation(temp);
     strcpy(lineCopy, rest_of_line) ;
     op2 = strtok(lineCopy, SPACE_COMMA_DEL) ; /* cut 2 opFimm */
-    len - strlen(op2);
+    len = strlen(op2);
 
 
     /* Addressing method - 0 */
@@ -439,11 +452,11 @@ int targetOpCheck() {
         /* return 0 if source op is an array_index. */
         /* return 1 for error. return -1 for unrecognized label, but valid index. */
         /* Addressing method - 2 */
-        error_num = isIndex(&index, &labelOp)  ; /* if valid, rest of line is up to date */
+        error_num = isIndex(&index, &labelOp, &labelName)  ; /* if valid, rest of line is up to date */
         /* rest_of_line has moved to after op2 */
-
+        strcpy(new_cmd-> target_label, labelName);
         if (error_num == 1)  /* error found */
-            return ERR_UNDEFINED_ARGUMENT; /* undefined op */
+            return ERR_UNDEFINED_ARGUMENT;
         else if (error_num == -3)
             return ERR_SEGMENTATION_FAULT ;
             else if (error_num == 0) { 
@@ -456,10 +469,15 @@ int targetOpCheck() {
                 /* source operand is a legal label[index]. */
                 }
                 else if (error_num == -1) { /* not an index method  still possible it is a label undefined yet. */
+                    new_cmd-> targetAdd = 1 ; 
+                    strcpy(new_cmd-> target_label, op2); /* not index method. op2 supposed to be the whole label name */
                     strcpy(new_cmd->target1_binary,"??????????????") ; /* optional label  */
-                    new_cmd->target1_binary = '\0' ; /* for addressing method 1 - only 1 word required.  \0 */
+                    new_cmd->target2_binary = '\0' ; /* for addressing method 1 - only 1 word required.  \0 */
                     (new_cmd->L)++ ; /* increase word count */
                     /* optional label will be defined later */
+                    extra = strtok(rest_of_line, SPACE_COMMA_DEL);
+                    extra = strtok (NULL, op2);
+                    return checkExtra(extra);
                 }
                     else {/* error_num == -2. index found  label not  */
                         if ((new_cmd->cmd_num == 9) || (new_cmd->cmd_num == 10) || (new_cmd->cmd_num == 13)) { /*  index addressing is illegal for jmp/bne/jsr commands.  */
@@ -471,10 +489,9 @@ int targetOpCheck() {
                         strcpy(new_cmd->target2_binary, BinTranslation12Bit(index,0)) ; /* tranlate the index value */ 
                         /* index is valid. label doesnt exists. optioanl later defenition of label */
                     }
-        return checkExtra(rest_of_line) ;
-
-   
     }
+    return checkExtra(rest_of_line) ;
+
 }
 
 /* this function is called if the source op statrs with a '#'. validates the imm value. return 0 for valid. else error num */
@@ -490,9 +507,8 @@ int immProcessor(char *token, int *immNum) {
         *immNum = lblP->definedData ;
 
     }
-    else if (isNumber(immP, &immNum) == 1 ) {/* imm is a valid number */
+    else if (isNumber(immP, immNum) == 1 ) /* imm is a valid number */
         return ERR_UNDEFINED_ARGUMENT ; 
-    }
     /* valis number saved in immNum. check range */
     if (rangeCheck(*immNum) == 1)
         return ERR_IMM_OVERFLOW ; /* can't be represented in 12 bits. */
@@ -723,7 +739,7 @@ int commaCheck(char *input_copy) {
 }
 
 int checkExtra(char *extra) {
-    char *temp = strtok(extra," \t\n");
+    char *temp = strtok(extra," \f\r\t\v\n");
         if (temp != NULL)
             return ERR_EXTRANEOUS_TEXT ;
         else

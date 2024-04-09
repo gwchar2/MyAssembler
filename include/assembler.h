@@ -37,6 +37,7 @@
 #define OPCODE_BIN_LEN 4
 #define OPCODE_FIELD 4
 #define RAM 4096
+#define MAX_LABEL_NAME 32
 /* Checks if the memory for (C) was allocated properly */
 #define check_allocation(c)\
         if (c == NULL){\
@@ -125,6 +126,8 @@ typedef struct Cmd_node{
     char *source2_binary;
     char *target1_binary;
     char *target2_binary; 
+    char *source_label;
+    char *target_label;
     struct Cmd_node *next_cmd;                                                          /* Next cmd */
     struct Label_node *next_label;                                                      /* Next label (null until merging with DC ) */
 } cmd_node;
@@ -347,7 +350,7 @@ void getNumOfVars();
 
 int sourceOpCheck();
 
-int isIndex(int *index, label_node *baseLabel);
+int isIndex(int *index, label_node **baseLabel, char **labelName);
 
 int targetOpCheck();
 
@@ -375,6 +378,7 @@ int commaCheck(char *input_copy);
 
 void *add_cmd(cmd_node *label_node);                                                        /* This function adds a cmd node to the cmd list */
 
+int checkExtra(char *extra) ;
 
 
 

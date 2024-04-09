@@ -13,11 +13,15 @@ cmd_node *create_cmd_node(int cmd_num) {
     result-> source2_binary = malloc(BIN_WORD_LEN+1);
     result-> target1_binary = malloc(BIN_WORD_LEN+1);
     result-> target2_binary = malloc(BIN_WORD_LEN+1);
+    result-> source_label = malloc(MAX_LABEL_NAME) ;
+    result-> target_label = malloc(MAX_LABEL_NAME) ;
     check_allocation(result->cmd_binary);
     check_allocation(result->source1_binary);
     check_allocation(result->source2_binary);
     check_allocation(result->target1_binary);
     check_allocation(result->target2_binary);
+    check_allocation(result->target_label);
+    check_allocation(result->source_label);
     /* connect new cmd to the end of the cmd list */
     if (cmd_head == NULL ){/* list is empty */
         cmd_head = result;    

@@ -168,11 +168,7 @@ void scan_file(char *clean_file_name){
 
                 /* Everything else */
                 case 3: 
-<<<<<<< HEAD
                     check_command(line);
-=======
-                    check_command(inputCopy);
->>>>>>> a0e5d3ecdc2eac23934c2a3ccfa5a851c52d2052
                     IC += (new_cmd -> L);
                     curr_line_number++;
                     break;

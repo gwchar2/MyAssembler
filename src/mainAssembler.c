@@ -101,8 +101,8 @@ freeLists() */
         IC = 1;
         DC = 1;*
         err_flag = 0;
-        /* We will free everything here using the official heads of lists    
-        free_lists();   */
+        /* We will free everything here using the official heads of lists    */
+        /*free_lists();   */
 
 /***********************************************************/
 /* DELETE THIS SECTION !!!! */
