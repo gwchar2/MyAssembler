@@ -56,20 +56,16 @@ int main(int argc,char *argv[]) {
 
             /* Before we begin, we must note the following:
             Note lines ( ';' ) and empty lines in the file, will not be counted toward IC, DC or as lines in the file!!! */
-            
-            /* Try to read the .am file */
-            fp = openFile(clean_file_name,1);
-            if (fp == NULL)
-                continue;
-            else {
-                /* Handling and translating the code */
-                scan_file(fp);
 
-                /* Fix the entry labels to hold the correct addresses */
-                fixEntrys();
+            /* Handling and translating the code */
+            scan_file(clean_file_name);
+            fclose(fp);
 
-                 /* Fix the addresses in the Data segment & Labels used in Instruction segment, and lastly, make the files. */
-                mergeSegments();
+            /* Fix the entry labels to hold the correct addresses */
+            fixEntrys();
+
+             /* Fix the addresses in the Data segment & Labels used in Instruction segment, and lastly, make the files. */
+            mergeSegments();
 
                 /*if (!fixCMDs()){ 
                     continue;
@@ -85,16 +81,17 @@ int main(int argc,char *argv[]) {
 לעדכן הדפסת פקודות לקובץ אובגקט שורות 138-165 ב
 file_handler
 freeLists() */
-                /* If we have errors, dont create files, continue to translate next file given by user! */
-                if (err_flag != 0){
-                    error(ERR_ERR_FLAG);
-                    continue;
-                }
-                else {
-                    makefiles(clean_file_name);
-                }
+            /* If we have errors, dont create files, continue to translate next file given by user! */
+            if (err_flag != 0){
+                error(ERR_ERR_FLAG);
+                continue;
+            }
+            else {
+                makefiles(clean_file_name);
+                fclose(fp);
             }
         }
+    }
         /* The following are just semi-lists (pointers to lists in lists) */
         /*cmd_label_head = NULL;                                           
         entry_head = NULL;                                                     
@@ -106,7 +103,7 @@ freeLists() */
         err_flag = 0;
         /* We will free everything here using the official heads of lists    
         free_lists();   */
-    }
+
 /***********************************************************/
 /* DELETE THIS SECTION !!!! */
 /**********************************************************/

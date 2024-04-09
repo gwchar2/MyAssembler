@@ -255,7 +255,7 @@ void *add_row(label_node *cur_label, int address);                              
 
 void preAssembler(FILE *fp, char* clean_file_name);                                     /* Inputs all macros */ 
 
-void scan_file(FILE *file);                                                             /* Scans the .am file for the first time */
+void scan_file(char *clean_file_name);                                                                       /* Scans the .am file for the first time */
 
 void makefiles(char *clean_file_name);                                                  /* Makes the required files */
 
