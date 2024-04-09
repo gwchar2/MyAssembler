@@ -88,7 +88,6 @@ freeLists() */
             }
             else {
                 makefiles(clean_file_name);
-                fclose(fp);
             }
         }
     }
