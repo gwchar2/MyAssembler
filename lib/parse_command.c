@@ -16,7 +16,7 @@ void check_command(char *input) { /* input is the full command line */
     char *cmd_name = NULL ;
     char *extra = NULL ;
     char *token = NULL;
-    printf("line: %d\t func: %s\tcommand line: %s", __LINE__,__func__,input);
+    printf("line: %d\t starting func: %s\t with command line: %s", __LINE__,__func__,input);
 
     inputCopy = malloc(strlen(input)+1);
     check_allocation(inputCopy);
@@ -45,7 +45,6 @@ void check_command(char *input) { /* input is the full command line */
 /* לתקן מעבר / דילוג על רווחים */
     rest_of_line = input+CMD_NAME_LEN+1 ; /* rest of the line points to after command name */
 
-    /*token = strtok(NULL, SPACE_COMMA_DEL) ; /* cut #1 parmeter */
     
     if (new_cmd->total_vars == FIRST_GROUP_VARS) { /* 2 operands are required */
         
@@ -83,7 +82,7 @@ void check_command(char *input) { /* input is the full command line */
     }
     strcpy(new_cmd->cmd_binary,cmdBinTranslation(new_cmd -> cmd_num , new_cmd -> sourceAdd, new_cmd -> targetAdd)) ;
     
-    printf("line: %d\t func: %s\tcommand line: %s", __LINE__,__func__,input);
+    printf("line: %d\t finishing func: %s\t with command line: %s", __LINE__,__func__,input);
     printf("cmdBin: %s\nsource1: %s\nsource2: %s\ntarget1: %s\ntarget2: %s\n",new_cmd->cmd_binary,new_cmd->source1_binary,new_cmd->source2_binary,new_cmd->target1_binary,new_cmd->target2_binary);
     return ;
 }
@@ -644,7 +643,7 @@ int commaCheck(char *input_copy) {
     /*int cmd_num = my_data->cmd_num ;*/
     int len = strlen(input) ;
     int i , comma_req ; /* num of commas required for each command type */
-
+    printf("in func: %s\tline: %d\t called with input: %s\n",__func__,__LINE__,input_copy);
     if (*input==COMMA)
         return 6; /* Error: illegal comma after command */
     for (i=0; i<len; i++){
