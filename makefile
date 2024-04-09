@@ -4,9 +4,6 @@ MainAssembler: build/MainAssembler.o build/main_functions.o build/error_handler.
 build/MainAssembler.o: src/mainAssembler.c include/assembler.h | build
 	gcc -ansi -Wall -pedantic -c src/mainAssembler.c -o build/MainAssembler.o
 
-build/breakdown.o: lib/breakdown.c | build
-	gcc -ansi -Wall -pedantic -c lib/breakdown.c -o build/breakdown.o
-
 build/error_handler.o: lib/error_handler.c | build
 	gcc -ansi -Wall -pedantic -c lib/error_handler.c -o build/error_handler.o
 
