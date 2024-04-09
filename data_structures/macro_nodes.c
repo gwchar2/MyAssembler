@@ -106,3 +106,4 @@ void addText(macro *cur_mac, char *line) {
     textP->next = new_text;
 
 }
+
