@@ -28,8 +28,8 @@
 #define BITS_IN_INT 12
 #define MAX_12BITS 2047
 #define MIN_12BITS -2048
-#define RS_SHIFT 3
-#define RT_SHIFT 0
+#define RS_SHIFT 5
+#define RT_SHIFT 2
 #define RT_BIT_FIELD 9
 #define LSB 13
 #define RSA_FIELD 8
@@ -211,27 +211,42 @@ void freeLists();                                                               
 /************************************
 ************* DATA NODES ************
 *************************************/
-void check_command(char *string) ;
-int valid_command_name(char *cmd);
-void getNumOfVars();
-int sourceOpCheck(char **token);
-int isIndex(char *input, int index, label_node *baseLabel) ;
-int targetOpCheck(char *token);
-int immProcessor(char *token, int *immNum);
-int labelPrecessor(label_node *labelOp, int *labelVal) ;
-int isNumber(char *imm, int *num);
-char *BinTranslation12Bit(int num, int ARE) ;
-int isReg(char *token) ;
-char *RSBinTranslation(int reg_num) ;
-char *RTBinTranslation(int reg_num);
-char *cmdBinTranslation(int cmd_num, int sourceAdd, int targetAdd) ;
-int rangeCheck(int num);
-char *opcodeBinTranslation(int num) ;
-char *combineRegBin(char *str1, char *str2);
-int commaCheck(char *input_copy);
-int checkExtra(char *extra) ;
-cmd_node *create_cmd_node(int cmd_num) ;
-void *add_cmd(cmd_node *label_node); /* This function adds a cmd node to the cmd list */
+
+data_node *create_data(int data, label_node *label_node);                               /* This function creates a data_node */
+
+void *add_data(int data,label_node *label_node);                                        /* This function adds a data node to the data list in a label */
+
+/************************************
+************ COMMAND NODES **********
+*************************************/
+
+cmd_node *create_cmd_node(int cmd_num);
+
+/************************************
+************ MACRO NODES ************
+*************************************/
+
+mac_text *createText (char *line);                                                      /* creating a new mac_text struct and setting line in it's text member */
+
+macro *createMacro (char *name, char *line);                                            /* This function recieves a word and a number and creates a new Word struct with that word number and sets the next pointer to null */
+
+macro *searchMcrList(char *word, macro *head);                                          /* this functions get's a string and the head of the list, and searches for it in the macros list. if founded, it returns a pointer to it's text. else, null. */
+
+void copyMcrText(macro *cur_mac, FILE *newP);                                           /* this functions copies a given macro content to the new file */
+
+int validateMcrName(char *mcr_name, macro *head);                                       /* this functiond checks if the macro name is valid. returns 1 for valid. 0 for invalid. */
+
+void addMcr(char *name, FILE *fp, macro **head);                                        /* this functions adds a new macro defenition to the macro list. it returns when reaching endmcr or eof */
+
+void addText(macro *cur_mac, char *line);                                                           
+
+/*************************************
+************* ROW NODES **************
+*************************************/
+
+row_node *create_row(int address);                                                      /* This function creates a row_node */
+
+void *add_row(label_node *cur_label, int address);                                      /* This function adds an address to the specific label node  */
 
 
 /*************************************
