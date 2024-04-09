@@ -8,7 +8,7 @@ char *commands[NUM_OF_CMDS] = {
 };    
 
 char *registers[NUM_OF_REGS] = {
-    "r1","r2","r3","r4","r5",
+    "r0", "r1","r2","r3","r4","r5",
     "r6","r7" ,"PSW","PC"
 };
 
@@ -35,7 +35,8 @@ int main(int argc,char *argv[]) {
     char *clean_file_name = (char*)malloc(FILE_NAME_LEN);                          /* string to hold the name as recieved in command line. no endings. */
     int file_count = 0;                                                             
     check_allocation(clean_file_name);
-    
+    rest_of_line = malloc(MAX_LINE_LEN);
+    check_allocation(rest_of_line);
     
     /* Checking if we received files to read from! */
     if (argc < MIN_ARGV){                                                        

@@ -124,7 +124,7 @@ void scan_file(char *clean_file_name){
                 case 0:                                                                             
                     break;   
                 /* define or externals */                                                                                           
-                case 1:                                              
+                case 1:   
                     label_type = getLabelType(pointer);  
                     if (label_type == EXTERN_LABEL || label_type == ENTRY_LABEL){
                         
@@ -145,7 +145,7 @@ void scan_file(char *clean_file_name){
 
                 /* .data .string or cmd labels */    
                 case 2:
-                    flag = dstring_handler(pointer);                                                                    
+                    flag = dstring_handler(pointer); 
                     if (flag == 0){
                         curr_line_number++;
                         break;
@@ -169,7 +169,6 @@ void scan_file(char *clean_file_name){
                 /* Everything else */
                 case 3: 
                     check_command(line);
-                    check_command(inputCopy);
                     IC += (new_cmd -> L);
                     curr_line_number++;
                     break;

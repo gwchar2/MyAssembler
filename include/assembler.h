@@ -28,8 +28,8 @@
 #define BITS_IN_INT 12
 #define MAX_12BITS 2047
 #define MIN_12BITS -2048
-#define RS_SHIFT 5
-#define RT_SHIFT 2
+#define RS_SHIFT 3
+#define RT_SHIFT 0
 #define RT_BIT_FIELD 9
 #define LSB 13
 #define RSA_FIELD 8
@@ -345,15 +345,13 @@ int valid_command_name(char *cmd);
 
 void getNumOfVars();
 
-int sourceOpCheck(char **token);
+int sourceOpCheck();
 
-int isIndex(char *input, int index, label_node *baseLabel);
+int isIndex(int *index, label_node *baseLabel);
 
-int targetOpCheck(char *token);
+int targetOpCheck();
 
 int immProcessor(char *token, int *immNum);
-
-int labelPrecessor(label_node *labelOp, int *labalVal);
 
 int isNumber(char *imm, int *num);
 

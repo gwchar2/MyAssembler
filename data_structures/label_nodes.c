@@ -241,11 +241,11 @@ void printList(int num){
             printf("********************************************\n");
             while (cmd_temp != NULL){
                 if (cmd_temp -> next_cmd == NULL){
-                   printf("[%d]-[%d]\n",cmd_temp -> sourceAdd ,cmd_temp -> targetAdd); 
+                   printf("cmd num: %d | RSadd-[%d]-RTadd-[%d]\n",cmd_temp -> cmd_num ,cmd_temp -> sourceAdd ,cmd_temp -> targetAdd); 
                    printf("  |");
                 }
                 else 
-                    printf("[%d]-[%d]-",cmd_temp -> sourceAdd,cmd_temp -> targetAdd);
+                   printf("cmd num: %d | RSadd-[%d]-RTadd-[%d]\n",cmd_temp -> cmd_num ,cmd_temp -> sourceAdd ,cmd_temp -> targetAdd); 
                 cmd_temp = cmd_temp -> next_cmd;
             }
             break;
