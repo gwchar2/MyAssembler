@@ -1,9 +1,3 @@
-#include <stddef.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <errno.h>
-#include <ctype.h>
 #include "../include/assembler.h"
 
 /* 
@@ -76,7 +70,6 @@ int check_label(char *p_copy, Label_Type label_type){
     char *pointer;
     label_node *temp;
     if (label_type == DEF_LABEL || label_type == EXTERN_LABEL || label_type == ENTRY_LABEL){
-        
         /* Checks to see if 1 <= label <= 31, if the label is a reg / cmd name, if its all alphabetical letters*/
         if (strlen(p_copy) < 1 || strlen(p_copy) > 31 || checkWordInArray(registers,p_copy) == 1 || checkWordInArray(commands,p_copy) == 1 || check_alpha(p_copy) == 0){
             error(ERR_INVALID_LABEL);
