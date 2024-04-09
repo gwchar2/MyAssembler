@@ -23,26 +23,26 @@ void scan_file(FILE *file){
         inputCopy = (char *)malloc(strlen(line) + 1); 
         check_allocation(inputCopy);
         strcpy(inputCopy, line); 
-
         /* Check to see if the file is shorter than 80 characters if it isnt, go next line, else, handle. */
         if (strlen(line) == MAX_LINE_LEN - 1 && line[MAX_LINE_LEN - 2] != '\n') {                                       /* Checking to see if the array is full without \n */
             error(ERR_SIZE_LEAK);
         }
 
-        
+
         /* First rotation */
         else{
+
             inputCopy = malloc(strlen(line) + 1); 
             check_allocation(inputCopy);
             strcpy(inputCopy, line); 
             /* Grab the first word in the line */
-            pointer = strtok(inputCopy, " \t\n\r\f\v");                                                               
+            pointer = strtok(inputCopy, " \t\n\r\f\v");    
             switch (check_first_word(pointer)){
                 /* Cases to ignore ( ; \n entry (at the moment))*/
-                case 0:                                                                                                
+                case 0:             
                     break;   
                 /* define or externals */                                                                                           
-                case 1:                                              
+                case 1:                         
                     label_type = getLabelType(pointer);  
                     if (label_type == EXTERN_LABEL || label_type == ENTRY_LABEL){
                         
@@ -86,8 +86,9 @@ void scan_file(FILE *file){
 
                 /* Everything else */
                 case 3: 
+                    printf("line: %d\tin case 3. command line: %s", __LINE__,line);
                     check_command(line);
-                    check_command(inputCopy);
+                    /*check_command(inputCopy);*/
                     IC += (new_cmd -> L);
                     curr_line_number++;
                     break;

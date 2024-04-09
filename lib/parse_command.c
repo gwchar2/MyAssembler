@@ -16,9 +16,12 @@ void check_command(char *input) { /* input is the full command line */
     char *cmd_name = NULL ;
     char *extra = NULL ;
     char *token = NULL;
+    printf("line: %d\t func: %s\tcommand line: %s", __LINE__,__func__,input);
+
     inputCopy = malloc(strlen(input)+1);
     check_allocation(inputCopy);
     strcpy(inputCopy, input) ;    
+
 
     cmd_name = strtok(inputCopy," \t") ; /* cut the first word in input */
     cmd_num = valid_command_name(cmd_name);
@@ -79,9 +82,10 @@ void check_command(char *input) { /* input is the full command line */
             return ;
     }
     strcpy(new_cmd->cmd_binary,cmdBinTranslation(new_cmd -> cmd_num , new_cmd -> sourceAdd, new_cmd -> targetAdd)) ;
+    
     printf("line: %d\t func: %s\tcommand line: %s", __LINE__,__func__,input);
     printf("cmdBin: %s\nsource1: %s\nsource2: %s\ntarget1: %s\ntarget2: %s\n",new_cmd->cmd_binary,new_cmd->source1_binary,new_cmd->source2_binary,new_cmd->target1_binary,new_cmd->target2_binary);
-
+    return ;
 }
 
 /* this function gets a word and checks if it is one of the legel commands  if yes - it creates a new command node with the mathing cmd_num. if not - error*/
@@ -636,10 +640,11 @@ char *combineRegBin(char *str1, char *str2) {
 int commaCheck(char *input_copy) {
     int comma_count = 0 ; /* comma appereance counter */
     int consecutive_comma = 0 ; /* consecutive comma counter */
-    char *input = input_copy + CMD_NAME_LEN+1 ; /* jump over command name */
+    char *input = input_copy + CMD_NAME_LEN ; /* jump over command name */
     /*int cmd_num = my_data->cmd_num ;*/
-    int len = strlen(input_copy) ;
+    int len = strlen(input) ;
     int i , comma_req ; /* num of commas required for each command type */
+
     if (*input==COMMA)
         return 6; /* Error: illegal comma after command */
     for (i=0; i<len; i++){
@@ -655,13 +660,11 @@ int commaCheck(char *input_copy) {
     }
     if (consecutive_comma > 1)
         return 8 ; /* Error: multiple consecutiva commas error */
-    printf("line: %d\t func: %s\tcommand line: %s", __LINE__,__func__,input_copy);
     /* set required number of commas */
     if (new_cmd->total_vars == SECOND_GROUP_VARS || new_cmd->total_vars == THIRD_GROUP_VARS) 
         comma_req = 0 ;
     else if (new_cmd->total_vars == FIRST_GROUP_VARS) 
         comma_req = 1 ;
-    printf("line: %d\t func: %s\tcomma req: %d\tcomma count: %d\n", __LINE__,__func__,comma_req,comma_count);
 
     if (comma_count < comma_req)
         return 7 ; /* Error: missing comma */
