@@ -306,6 +306,8 @@ char *addFileEnding(char *file_name, int type);                                 
 
 FILE *openFile(char *clean_file_name, int num);                                         /* Opens a file with a specific ending. */
 
+void *findNotEntry(char *name);                                                         /* This function finds the first label with the same name as received, that is not an entry. */
+
 void make_extern();                                                                     /* This function makes the extern file */
 
 void make_entry();                                                                      /* This function makes the entry file */

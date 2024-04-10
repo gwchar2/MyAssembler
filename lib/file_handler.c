@@ -42,6 +42,24 @@ char *addFileEnding(char *file_name, int type) {
 }
 
 /*
+*   This function finds the first label with the same name as received, that is not an entry.
+*/
+void *findNotEntry(char *name){
+    label_node *label_temp = NULL;
+    if(lbl_head == NULL)
+        return NULL;
+    else {
+        label_temp = lbl_head;
+        while (label_temp != NULL){
+            if (strcmp(label_temp->label_name,name) == 0 && label_temp -> label_type != ENTRY_LABEL)
+                return label_temp;
+            label_temp = label_temp -> next_label;
+        }
+    }
+    return NULL;
+}
+
+/*
 *   Opens a file with a specific ending in read mode.
 */
 FILE *openFile(char *clean_file_name, int num) {
