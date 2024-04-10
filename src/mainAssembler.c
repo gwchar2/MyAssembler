@@ -68,8 +68,8 @@ int main(int argc,char *argv[]) {
              /* Fix the addresses in the Data segment & Labels used in Instruction segment, and lastly, make the files. */
             mergeSegments();
 
-                /*if (!fixCMDs()){ 
-                    continue;
+            fixCMDs(); 
+                    /*continue;
                     If there is a label that is used, but it has no label node --> error(ERR_LBL_USE)!!!;
                  }; 
                  In this stage: we do the following:

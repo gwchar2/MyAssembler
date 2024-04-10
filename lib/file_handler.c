@@ -229,3 +229,38 @@ void mergeSegments(){
         dc_temp = dc_temp -> next_dc;
     }
 }
+
+
+void fixCMDs() {
+    cmd_node *temp = cmd_head ;
+    label_node *label_temp ;
+    int count ,error_num ,val ;
+    while (temp != NULL) {
+        printf("cmd number is: %d\n", temp->cmd_num);
+        
+        if (temp->source1_binary != NULL) {
+            if (strcmp(temp->source1_binary,"??????????????") == 0) {
+                printf("source1 bin is: %s\nsource label is: %s\n",temp->source1_binary,temp->source_label);
+                label_temp = findNotEntry(temp->source_label) ;
+                if (label_temp == NULL)
+                    error_num = ERR_INVALID_LABEL ;
+                else if(label_temp-> label_type == EXTERN_LABEL) {
+                    /* for extern label: value is 0, ARE is 01 */
+                    strcpy(temp->source1_binary,BinTranslation12Bit(0,1)) ;
+                    return ;
+                }
+                    else {
+                        val = label_temp-> line_init ;
+                        strcpy(temp->source1_binary,BinTranslation12Bit(val,2)) ;
+                        return ;
+                    }
+            }
+        }
+        
+        if (temp->target1_binary != NULL) {
+            if (strcmp(temp->target1_binary,"??????????????") == 0) 
+                printf("target1 bin is: %s\ntarget label is: %s\n",temp->target1_binary,temp->target_label);
+        }
+        temp = temp->next_cmd ;
+    }
+}

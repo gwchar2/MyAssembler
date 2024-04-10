@@ -91,9 +91,9 @@ void check_command(char *input) { /* input is the full command line */
     }
     strcpy(new_cmd->cmd_binary,cmdBinTranslation(new_cmd -> cmd_num , new_cmd -> sourceAdd, new_cmd -> targetAdd)) ;
     
-    printf("\nline: %d\t finishing command check with command line: %s", __LINE__,input);
+    /*printf("\nline: %d\t finishing command check with command line: %s", __LINE__,input);
     printf("\ncmdBin: %s\nsource1: %s\nsource2: %s\ntarget1: %s\ntarget2: %s\n",new_cmd->cmd_binary,new_cmd->source1_binary,new_cmd->source2_binary,new_cmd->target1_binary,new_cmd->target2_binary);
-    printf("source label name: %s \t | target label name: %s\n", new_cmd->source_label, new_cmd->target_label);
+    printf("source label name: %s \t | target label name: %s\n", new_cmd->source_label, new_cmd->target_label);*/
     return ;
 }
 
