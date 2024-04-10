@@ -168,7 +168,6 @@ void scan_file(char *clean_file_name){
 
                 /* Everything else */
                 case 3: 
-                    check_command(line);
                     check_command(inputCopy);
                     IC += (new_cmd -> L);
                     curr_line_number++;
