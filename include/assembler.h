@@ -345,15 +345,13 @@ int valid_command_name(char *cmd);
 
 void getNumOfVars();
 
-int sourceOpCheck(char **token);
+int sourceOpCheck();
 
-int isIndex(char *input, int index, label_node *baseLabel);
+int isIndex(int *index, label_node *baseLabel);
 
-int targetOpCheck(char *token);
+int targetOpCheck();
 
 int immProcessor(char *token, int *immNum);
-
-int labelPrecessor(label_node *labelOp, int *labalVal);
 
 int isNumber(char *imm, int *num);
 
@@ -375,7 +373,7 @@ char *combineRegBin(char *str1, char *str2);
 
 int commaCheck(char *input_copy);
 
-void *add_cmd(cmd_node *label_node);                                                    /* This function adds a cmd node to the cmd list */
+void *add_cmd(cmd_node *label_node);                                                        /* This function adds a cmd node to the cmd list */
 
 
 
