@@ -373,7 +373,7 @@ char *combineRegBin(char *str1, char *str2);
 
 int commaCheck(char *input_copy);
 
-void *add_cmd(cmd_node *label_node);                                                    /* This function adds a cmd node to the cmd list */
+void *add_cmd(cmd_node *label_node);                                                        /* This function adds a cmd node to the cmd list */
 
 
 
