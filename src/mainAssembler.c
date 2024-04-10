@@ -91,8 +91,6 @@ freeLists() */
                 makefiles(clean_file_name);
             }
         }
-    }
-        /* The following are just semi-lists (pointers to lists in lists) */
         /*cmd_label_head = NULL;                                           
         entry_head = NULL;                                                     
         extern_head = NULL;                                                    
@@ -100,9 +98,11 @@ freeLists() */
         curr_line_number = 1;
         IC = 1;
         DC = 1;*
-        err_flag = 0;
+        err_flag = 0;*/
         /* We will free everything here using the official heads of lists    */
-        /*free_lists();   */
+      
+    }
+      /* free_lists();  */   
 
 /***********************************************************/
 /* DELETE THIS SECTION !!!! */
