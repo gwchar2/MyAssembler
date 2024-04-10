@@ -259,7 +259,8 @@ void printList(int num){
 *   This function frees the dynamicaly allocated nodes in the list.
 *   Enter 1 for label list, 2 for dc list, and 3 for instruction list.
 */
-/*void freeLists() {
+
+void freeLists() {
     label_node *current_label = lbl_head;
     label_node *temp_label = NULL;
     row_node *current_row = NULL;
@@ -268,72 +269,38 @@ void printList(int num){
     data_node *temp_data = NULL;
     cmd_node *current_cmd = cmd_head;
     cmd_node *temp_cmd = NULL;
-    switch(num){
-        case 1:
-            current_label = lbl_head;
-            temp_label = NULL;
-            current_row = NULL;
-            temp_row = NULL;
-            current_data = NULL;
-            temp_data = NULL;
-            while (current_label != NULL) {
-                current_row = current_label->row_list;
-                current_data = current_label -> data_node;
-                while (current_row != NULL) {
-                    temp_row = current_row->next_row;
-                    free(current_row);
-                    current_row = temp_row;
-                }
-                while (current_data != NULL) {
-                    temp_data = current_data->next_data;
-                    free(current_data);
-                    current_data = temp_data;
-                }
-                temp_label = current_label->next_label;
-                free(current_label);
-                current_label = temp_label;
+    /* Free the label tabel */
+    while (current_label != NULL){
+        /* If we have a data or string label, we need to free the data nodes */
+        if (current_label -> label_type == DATA_LABEL || current_label -> label_type == STRING_LABEL){
+            current_data = current_label -> data_node;
+            while (current_data != NULL){
+                temp_data = current_data -> next_data;
+                free(current_data);
+                current_data = temp_data;
             }
-            break;
-        case 2:/*
-            current_label = dc_head;
-            temp_label = NULL;
-            current_row = NULL;
-            temp_row = NULL;
-            current_data = NULL;
-            temp_data = NULL;
-            while (current_label != NULL) {
-                current_row = current_label -> row_list;
-                current_data = current_label -> data_node;
-                while (current_row != NULL) {
-                    temp_row = current_row -> next_row;
-                    free(current_row);
-                    current_row = temp_row;
-                }
-                while (current_data != NULL) {
-                    temp_data = current_data->next_data;
-                    free(current_data);
-                    current_data = temp_data;
-                }
-                temp_label = current_label->next_label;
-                free(current_label);
-                current_label = temp_label;
+        }
+        /* If we have an external label, we need to free the row nodes */
+        else if (current_label -> label_type == EXTERN_LABEL){
+            current_row = current_label -> row_node;
+            while (current_row != NUL){
+                temp_row = current_row -> next_row;
+                free(current_row);
+                current_row = temp_row;
             }
-            break;
-        case 3:     
-            current_cmd = cmd_head;
-            temp_cmd = NULL;
-            while (current_cmd != NULL && current_cmd->next_label == NULL) {
-                temp_cmd = current_cmd->next_cmd;
-                free(current_cmd);
-                current_cmd = temp_cmd;
-            }
-            break;
-        default:
-            break;
+        }
+        temp_label = current_label->next_label;
+        free(temp_label);
+        current_label = temp_label;
     }
-    return;
+    /* Free the command nodes */
+    while (current_cmd != NULL){
+        temp_cmd = current_cmd->next_cmd;
+        free(current_label);
+        current_label = temp_label;
+    }
+}
 
-}*/
 
 
 void print_label_guide() {
