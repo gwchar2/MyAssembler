@@ -91,23 +91,23 @@ freeLists() */
                 makefiles(clean_file_name);
             }
         }
-        /*cmd_label_head = NULL;                                           
+        cmd_label_head = NULL;                                           
         entry_head = NULL;                                                     
         extern_head = NULL;                                                    
         dc_head = NULL; 
         curr_line_number = 1;
         IC = 1;
         DC = 1;*
-        err_flag = 0;*/
+        err_flag = 0;
         /* We will free everything here using the official heads of lists    */
       
     }
-      /* free_lists();  */   
+      free_lists();     
 
 /***********************************************************/
 /* DELETE THIS SECTION !!!! */
 /**********************************************************/
-    printf("IC: %d\t DC: %d\n",IC,DC);
+  /*  printf("IC: %d\t DC: %d\n",IC,DC);
     if (lbl_head != NULL)
         printList(1);
     printf("********************************************\n");
@@ -120,7 +120,7 @@ freeLists() */
     if (cmd_head != NULL){
         printf("CMD head is: [%p] printing list: \n",(void*)cmd_head);
         printList(3);
-    }
+    }*/
     
     return 0;
 }
