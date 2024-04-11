@@ -154,7 +154,7 @@ void make_object(){
         error(ERR_FILE_NAME);
     }
     else {
-        fprintf(fp, "\t%d\t%d\n",IC,(DC-1));
+        fprintf(fp, "\t%d\t%d\n",(IC-1),(DC-1));
         cmd_temp = cmd_head;
         /* Add the Instruction segment to the file */
         /*while (cmd_temp != NULL){
