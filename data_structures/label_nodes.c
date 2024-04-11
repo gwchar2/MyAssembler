@@ -259,7 +259,6 @@ void printList(int num){
 *   This function frees the dynamicaly allocated nodes in the list.
 *   Enter 1 for label list, 2 for dc list, and 3 for instruction list.
 */
-
 void freeLists() {
     label_node *current_label = lbl_head;
     label_node *temp_label = NULL;
@@ -282,8 +281,8 @@ void freeLists() {
         }
         /* If we have an external label, we need to free the row nodes */
         else if (current_label -> label_type == EXTERN_LABEL){
-            current_row = current_label -> row_node;
-            while (current_row != NUL){
+            current_row = current_label -> row_list;
+            while (current_row != NULL){
                 temp_row = current_row -> next_row;
                 free(current_row);
                 current_row = temp_row;
@@ -300,8 +299,6 @@ void freeLists() {
         current_label = temp_label;
     }
 }
-
-
 
 void print_label_guide() {
     printf("-----------------------------------------------------------------\n");
