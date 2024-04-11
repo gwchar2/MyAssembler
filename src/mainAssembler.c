@@ -102,7 +102,7 @@ freeLists() */
         /* We will free everything here using the official heads of lists    */
       
     }
-      free_lists();     
+     /* free_lists(); */     
 
 /***********************************************************/
 /* DELETE THIS SECTION !!!! */
