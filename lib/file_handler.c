@@ -157,10 +157,10 @@ void make_object(){
         fprintf(fp, "\t%d\t%d\n",(IC-1),(DC-1));
         cmd_temp = cmd_head;
         /* Add the Instruction segment to the file */
-        /*while (cmd_temp != NULL){
+        while (cmd_temp != NULL){
             fprintf(fp, "%d\t", cmd_temp -> address);
             binToFour(fp,cmd_temp -> cmd_binary);
-            L = 1;
+            L += 1;
             if (cmd_temp -> source1_binary != NULL){
                fprintf(fp, "%d\t", (cmd_temp -> address)+L);
                 binToFour(fp,cmd_temp -> source1_binary);
@@ -181,9 +181,9 @@ void make_object(){
                 binToFour(fp,cmd_temp -> target2_binary);
                 L+=1;
             }
-            L=0;
+            L=99;
             cmd_temp = cmd_temp -> next_cmd;
-        }*/
+        }
         
         dc_temp = dc_head;
         /* Add the Data segment to the file */
