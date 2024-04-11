@@ -146,6 +146,7 @@ void make_object(){
     label_node *dc_temp = NULL;
     FILE *fp;
     char *string;                            /* 14 bits binary */
+    int L;
     int i=99;
 
     /* Open the .ext file */
@@ -158,16 +159,17 @@ void make_object(){
         cmd_temp = cmd_head;
         /* Add the Instruction segment to the file */
         while (cmd_temp != NULL){
-            fprintf(fp, "%d\t", cmd_temp -> address);
+            L=99;
+            fprintf(fp, "%d\t",(cmd_temp -> address)+L);
             binToFour(fp,cmd_temp -> cmd_binary);
             L += 1;
             if (cmd_temp -> source1_binary != NULL){
-               fprintf(fp, "%d\t", (cmd_temp -> address)+L);
+                fprintf(fp, "%d\t", (cmd_temp -> address)+L);
                 binToFour(fp,cmd_temp -> source1_binary);
                 L+=1;
             }
             if (cmd_temp -> source2_binary != NULL){
-               fprintf(fp, "%d\t", (cmd_temp -> address)+L);
+                fprintf(fp, "%d\t", (cmd_temp -> address)+L);
                 binToFour(fp,cmd_temp -> source2_binary);
                 L+=1;
             }
@@ -181,7 +183,6 @@ void make_object(){
                 binToFour(fp,cmd_temp -> target2_binary);
                 L+=1;
             }
-            L=99;
             cmd_temp = cmd_temp -> next_cmd;
         }
         
@@ -195,8 +196,6 @@ void make_object(){
                 fprintf(fp, "%d\t", (dc_temp -> line_init)+i);
                 /* Translate the int to string and than to encrypted binary */
                 string = BinTranslation14Bit(data_temp -> data);
-                fprintf(fp, "%d\t", data_temp -> data);
-                fprintf(fp, "%s\t", string);
                 binToFour(fp,string);
                 i+=1;
                 data_temp = data_temp -> next_data;
