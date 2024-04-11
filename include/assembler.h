@@ -318,6 +318,7 @@ void mergeSegments();                                                           
 
 void fixEntrys();                                                                       /* This function fixes the addresses in entries, and also makes sure every entry has a 'partner' */
 
+void fixCMDs();
 /*************************************
 ************* FUNCTIONS **************
 *************************************/
