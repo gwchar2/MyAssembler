@@ -97,7 +97,7 @@ freeLists() */
         dc_head = NULL; 
         curr_line_number = 1;
         IC = 1;
-        DC = 1;*
+        DC = 1;
         err_flag = 0;
         /* We will free everything here using the official heads of lists    */
       
