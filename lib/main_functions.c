@@ -83,7 +83,7 @@ void scan_file(char *clean_file_name){
     }
 
     /* Go through the file as long as there is enough RAM */
-    while ((IC + DC) <= RAM) {
+    while (((IC + DC)-2) <= RAM) {
         /* Grab the next line from the file */
         if (fgets(line, MAX_LINE_LEN, fp) == NULL) {
             if (feof(fp)) {
