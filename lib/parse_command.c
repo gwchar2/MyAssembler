@@ -1,3 +1,7 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+#include <stdlib.h>
 #include "../include/assembler.h"
 
 
@@ -210,29 +214,16 @@ int sourceOpCheck() {
 
     /* Addressing method - 1 */
     if ((labelOp = label_exists(op1)) != NULL) { /* source op is a label. */
-        if (labelOp->label_type == EXTERN_LABEL) {
-                labelVal = 0 ; /* external label, we cant know the label value */
-                error_num = 0 ;
-            }
-            else {
-                labelVal = labelOp->data_node->data ;
-                if (rangeCheck(labelVal) == 1) 
-                    error_num =  ERR_IMM_OVERFLOW ; /* can't be represented in 12 bits. */
-                else
-                    error_num = 0 ;
-            }
-            if (error_num == 0) {
-            new_cmd->sourceAdd = 1; /* set addressing method */
-            (new_cmd->L)++ ; /* increase number of bin words by 1 */
-            strcpy(new_cmd->source1_binary,BinTranslation12Bit(labelVal,new_cmd->sourceAdd)) ; /* translate num to 12 bits. last 2 bit are 00 */
+        strcpy(new_cmd-> source_label, labelOp-> label_name) ; /* save label name for later translation */
+        new_cmd->sourceAdd = 1; /* set addressing method */
+        (new_cmd->L)++ ; /* increase number of bin words by 1 */
+        strcpy(new_cmd->source1_binary,"??????????????") ; /* mark for later translation */
             new_cmd->source2_binary = '\0' ; /* for label source op, only 1 word required. */
             /* update rest of line until after first op */
-            new_cmd->source2_binary = '\0'; /* for register source op, only 1 word required. */\
             for (i=0; (isspace(*(rest_of_line+i))!= 0 || (*(rest_of_line+i) == COMMA)) && *(rest_of_line+i) != '\n'; i++){}
             rest_of_line = rest_of_line+i+len ; 
             printf("line: %d | rest of line is: |%s|\n",__LINE__,rest_of_line);
             return targetOpCheck() ;
-            }
     }
 
     /* return 0 if source op is an array_index. */
@@ -422,27 +413,16 @@ int targetOpCheck() {
 
         /* Addressing method - 1 */
         else if ((labelOp = label_exists(op2)) != NULL) { /* source op is a label. */
-            if (labelOp->label_type == EXTERN_LABEL) {
-                labelVal = 0 ; /* external label, we cant know the label value */
-                error_num = 0 ;
-            }
-            else {
-                labelVal = labelOp->data_node->data ;
-                if (rangeCheck(labelVal) == 1) 
-                    return ERR_IMM_OVERFLOW ; /* can't be represented in 12 bits. */
-                else
-                    error_num = 0 ;
-            }
-            if (error_num == 0) {
-                new_cmd->targetAdd = 1; /* set addressing method */
-                (new_cmd->L)++ ; /* increase number of bin words by 1 */
-                strcpy(new_cmd->target1_binary,BinTranslation12Bit(labelVal,new_cmd->sourceAdd)) ; /* translate num to 12 bits. last 2 bit are 00 */
-                new_cmd->target2_binary = '\0' ; /* for label source op, only 1 word required. */
-                /* source operand is a legal label. bin word was already translated. */
-                extra = strtok(rest_of_line, SPACE_COMMA_DEL);
-                extra = strtok (NULL, op2);
-                return checkExtra(extra) ;         
-            }
+            strcpy(new_cmd-> target_label, labelOp-> label_name) ; /* save label name for later translation */
+            new_cmd->targetAdd = 1; /* set addressing method */
+            (new_cmd->L)++ ; /* increase number of bin words by 1 */
+            strcpy(new_cmd->target1_binary,"??????????????") ; /* translate num to 12 bits. last 2 bit are 00 */
+            new_cmd->target2_binary = '\0' ; /* for label source op, only 1 word required. */
+            /* source operand is a legal label. bin word was already translated. */
+            extra = strtok(rest_of_line, SPACE_COMMA_DEL);
+            extra = strtok (NULL, op2);
+            return checkExtra(extra) ;         
+            
         }
         else {
         /* return 0 if source op is an array_index. */
