@@ -295,8 +295,8 @@ void freeLists() {
     /* Free the command nodes */
     while (current_cmd != NULL){
         temp_cmd = current_cmd->next_cmd;
-        free(current_label);
-        current_label = temp_label;
+        free(current_cmd);
+        current_cmd = temp_cmd;
     }
 }
 

@@ -1,51 +1,12 @@
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-ABCDEFGHIJABCDEFGHIJABCDEFGHIJkkk: .data -1,2,3
-ABCDEFGHIJABCDEFGHIJA: .data ,1,2,3
-ABCDEFGHIJABCDEFGHIJAB: .data ,1,2,3,
-ABCDEFGHIJABCDEFGHIJABC: .data 1,2,3,
-TaKeen: .data 1,2,3 
-ABCDEFGHIJABCDEFGHIJABCDEF: .data 1,2,3 4
-ABCDEFGHIJABCDEFGHIJABCDEFG: .string abcd"
-ABCDEFGHIJABCDEFGHIJABCDEFGH: ".string abcd"
-ABCDEFGHIJABCDEFGHIJABCDEFGHI: .string ""abcd
-ABCDEFGHIJABCDEFGHIJABCDEFGHIJ: .string "abcd
-this: .string ""abcd"
-should: .string ""abcd"""""""
-absolutely: .string """""""""""""
-work: .string """""""""""""
-work: .string """""""""""""
-nooo: .string 
-noooo: .data 
-nooooo:
-.define sz= 0 0
-.define szz =0 0
-.define szzz = 0 0
-.define szzzz=0 0
-.define szzzzz= i
-.define szzzzzz = #
-.define szzzzzzz =#
-.define szzzzzzzz = #
-.define szzzzzzzzz = 
-.define szzzzzzzzzz=
-.extern ThisShouldWork3
-.extern ThisShouldWork
-ABCDEFGHIJABCDEFGHIJABCDE: .data ,1,,2,3
-.entry ThisShouldWork
-hello: jmp
-hello: jmp something something
-.define sz=0001001 1
-.define sz=0001001
-american cheese
-.define
-        hello: .data 1,2,3
-hello: .data -1,2,3
-;
-;;;;;;;;;;;;;
-::: ;;;;
-       ;;;
-        ;
-
-
-                ;;
-        .data 
-        thisWorks: .data 69,69,69
+add r5, r4
+.define X = 2
+   add #X ,r4
+y: .data 8
+dec y
+dec W
+LIST: .data 6, -9, 5
+mov LIST[1] , r3
+mov r3 , LIST[X]
+.entry HELLO
+HELLO: .data 17
+.extern W

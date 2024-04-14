@@ -246,8 +246,7 @@ void addText(macro *cur_mac, char *line);
 /*************************************
 ************* ROW NODES **************
 *************************************/
-
-row_node *create_row(int address);                                                      /* This function creates a row_node */
+row_node *create_row(int address,label_node *label_node);                               /* This function creates a row_node */
 
 void *add_row(label_node *cur_label, int address);                                      /* This function adds an address to the specific label node  */
 

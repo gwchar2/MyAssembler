@@ -46,7 +46,6 @@ build/parse_command.o: lib/parse_command.c | build
 build/file_handler.o: lib/file_handler.c | build
 	gcc -ansi -Wall -pedantic -c lib/file_handler.c -o build/file_handler.o
 
-
 build:
 	mkdir -p build
 
