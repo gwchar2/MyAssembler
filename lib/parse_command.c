@@ -63,6 +63,8 @@ void check_command(char *input) { /* input is the full command line */
 
     else if (new_cmd->total_vars == SECOND_GROUP_VARS){ /* 1 operand is required */
         new_cmd-> sourceAdd = 0 ; /* erelevant */
+        new_cmd-> source1_binary = NULL ;
+        new_cmd-> source2_binary = NULL ;
         error_num = targetOpCheck() ; /* send to validation */
         if (error_num != 0){
             errorCode = error_num ;

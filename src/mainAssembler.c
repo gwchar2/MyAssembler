@@ -32,6 +32,7 @@ macro *head = NULL;
 int main(int argc,char *argv[]) {
     
     FILE *fp;
+    label_node *dc_temp = NULL;
     char *clean_file_name = (char*)malloc(FILE_NAME_LEN);                          /* string to hold the name as recieved in command line. no endings. */
     int file_count = 0;                                                             
     check_allocation(clean_file_name);
@@ -67,7 +68,12 @@ int main(int argc,char *argv[]) {
 
              /* Fix the addresses in the Data segment & Labels used in Instruction segment, and lastly, make the files. */
             mergeSegments();
+            dc_temp = dc_head;
+            while (dc_temp != NULL){
+                printf("%s\t", (dc_temp -> label_name));
+                dc_temp = dc_temp -> next_dc;
 
+            }
             fixCMDs(); 
                     /*continue;
                     If there is a label that is used, but it has no label node --> error(ERR_LBL_USE)!!!;

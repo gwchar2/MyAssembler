@@ -195,13 +195,15 @@ void make_object(){
             while (data_temp != NULL){
                 fprintf(fp, "%d\t", (dc_temp -> line_init)+i);
                 /* Translate the int to string and than to encrypted binary */
-                string = BinTranslation14Bit(data_temp -> data);
+                string = malloc(BIN_WORD_LEN+1);
+                check_allocation(string);
+                strcpy(string,BinTranslation14Bit(data_temp -> data));
                 binToFour(fp,string);
                 i+=1;
                 data_temp = data_temp -> next_data;
             }
             i=99;
-            dc_temp = dc_temp -> next_label;
+            dc_temp = dc_temp -> next_dc;
         }
     } 
     fclose(fp);
@@ -238,7 +240,7 @@ void fixEntrys(){
 */
 void mergeSegments(){
     label_node *dc_temp = dc_head;
-    int IC_TEMP = IC;
+    int IC_TEMP = IC-1;
     IC_TEMP +=1;
     while (dc_temp != NULL){
         dc_temp -> line_init = IC_TEMP;
@@ -247,16 +249,13 @@ void mergeSegments(){
     }
 }
 
-
 void fixCMDs() {
     cmd_node *temp = cmd_head ;
     label_node *label_temp ;
     int error_num ,val, count = 1 ;
     while (temp != NULL) {
-        printf("cmd number is: %d\n", temp->cmd_num);
         if (temp->source1_binary != NULL) {
             if (strcmp(temp->source1_binary,"??????????????") == 0) {
-                printf("source1 bin is: %s\nsource label is: %s\n",temp->source1_binary,temp->source_label);
                 label_temp = findNotEntry(temp->source_label) ;
                 if (label_temp == NULL)
                     error(ERR_INVALID_LABEL) ;
@@ -264,14 +263,13 @@ void fixCMDs() {
                     /* for extern label: value is 0, ARE is 01 */
                     strcpy(temp->source1_binary,BinTranslation12Bit(0,1)) ;
                     add_row(label_temp,temp-> address+1) ; /* add row for extern appereance file */
-                    printf("new source1: %s\n", temp->source1_binary);
                     temp = temp->next_cmd ;
                     continue ;
                 }
                     else {
                         val = label_temp-> line_init ;
                         strcpy(temp->source1_binary,BinTranslation12Bit(val,2)) ;
-                        printf("new source1: %s\n", temp->source1_binary);
+                        printf("line init: %s\n\n",temp->source1_binary);
                         temp = temp->next_cmd ;
                         continue ;
                     }
@@ -280,36 +278,29 @@ void fixCMDs() {
         
         if (temp->target1_binary != NULL) {
             if (strcmp(temp->target1_binary,"??????????????") == 0) 
-                printf("target1 bin is: %s\ntarget label is: %s\n",temp->target1_binary,temp->target_label);
                 label_temp = findNotEntry(temp->target_label) ;
                 if (label_temp == NULL)
                     error_num = ERR_INVALID_LABEL ;
                 else if(label_temp-> label_type == EXTERN_LABEL) {
 
                     /* get the exact IC of the extern use */
-                    if ((temp-> source1_binary == NULL) || strcmp(temp-> source1_binary, "") == 0 || strcmp(temp-> source1_binary, "\0") == 0) 
-                        printf("NO source1\n");
+                    if ((temp-> source1_binary == NULL) || strcmp(temp-> source1_binary, "") == 0 || strcmp(temp-> source1_binary, "\0") == 0){} 
                     else    
                         count ++ ;
-                    if ((temp-> source2_binary == NULL) || strcmp(temp-> source2_binary, "") == 0 || strcmp(temp-> source2_binary, "\0") == 0) 
-                        printf("NO source2\n");
+                    if ((temp-> source2_binary == NULL) || strcmp(temp-> source2_binary, "") == 0 || strcmp(temp-> source2_binary, "\0") == 0) {}
                     else    
                         count ++ ;
                     
-                    printf("EXTERN label found: %s\t ic+L is: %d\n", label_temp-> label_name, count);
                     add_row(label_temp,temp-> address + count) ; /* add row for extern appereance file */
-                    printf("back from adding a row \n");
                     
                     /* for extern label: value is 0, ARE is 01 */
                     strcpy(temp->target1_binary,BinTranslation12Bit(0,1)) ;
-                    printf("new target1: %s\n", temp->target1_binary);
                     temp = temp->next_cmd ;
                     continue ;
                 }
                     else {
                         val = label_temp-> line_init ;
                         strcpy(temp->target1_binary,BinTranslation12Bit(val,2)) ;
-                        printf("new target1: %s\n", temp->target1_binary);
                         temp = temp->next_cmd ;
                         continue ;
                     }

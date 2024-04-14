@@ -88,7 +88,7 @@ char *BinTranslation14Bit(int num) {
     }
 
     /* Store the binary representation of num in the string */
-    for (i = BIN_WORD_LEN; i >= 0; i--) {
+    for (i = BIN_WORD_LEN-1; i >= 0; i--) {
         bit = (num >> i) & 1;
         result[index] = bit + '0'; 
         index++;
