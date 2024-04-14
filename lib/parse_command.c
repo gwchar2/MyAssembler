@@ -1,7 +1,3 @@
-#include <stdio.h>
-#include <string.h>
-#include <ctype.h>
-#include <stdlib.h>
 #include "../include/assembler.h"
 
 
@@ -31,7 +27,6 @@ void check_command(char *input) { /* input is the full command line */
         error_manager(errorCode) ;
         return ;
     }
-
     /* command name is valid. new_cmd node is created. cmd_num is set. L=1 */
     new_cmd = create_cmd_node(cmd_num) ; /* create a new command node with the matching command number */
     getNumOfVars() ; /* set num of required operands in totalVars */
@@ -165,7 +160,7 @@ int sourceOpCheck() {
     char *op1 = NULL ;
     char *labelName = malloc(MAX_LABEL_NAME);
     size_t len ;
-    int reg_num, immNum , labelVal, index ;
+    int reg_num, immNum, index ;
     label_node *labelOp = NULL ;
     lineCopy = malloc(strlen(rest_of_line));
     check_allocation(lineCopy);
@@ -196,7 +191,6 @@ int sourceOpCheck() {
             return error_num ; /* operand in undefined. */
 
     }
-    
     /* Addressing method - 3 */
     reg_num = isReg(op1) ;
     if (reg_num != -1 ) { /* source op is a register. */
@@ -224,7 +218,6 @@ int sourceOpCheck() {
             /* update rest of line until after first op */
             for (i=0; (isspace(*(rest_of_line+i))!= 0 || (*(rest_of_line+i) == COMMA)) && *(rest_of_line+i) != '\n'; i++){}
             rest_of_line = rest_of_line+i+len ; 
-            printf("line: %d | rest of line is: |%s|\n",__LINE__,rest_of_line);
             return targetOpCheck() ;
     }
 
@@ -232,37 +225,40 @@ int sourceOpCheck() {
     /* return 1 for error. return -1 for unrecognized label, but valid index. */
     /* Addressing method - 2 */
     error_num = isIndex(&index, &labelOp, &labelName)  ; /* if valid, rest of line is updated */
+    
     strcpy(new_cmd-> source_label, labelName);
+
     if (error_num == 1)  /* error found */
         return ERR_UNDEFINED_ARGUMENT; 
     else if (error_num == -3)
         return ERR_SEGMENTATION_FAULT ;    
-        else if (error_num == 0) { 
-            new_cmd->sourceAdd = 2; /* set addressing method */
-            (new_cmd->L) = (new_cmd->L) + 2 ; /* increase number of bin words by 2 */
-            strcpy(new_cmd->source1_binary,"??????????????") ; /* mark later translation of label address */
-            strcpy(new_cmd->source2_binary, BinTranslation12Bit(index,0)) ; /*  tranlate the index value. */
-            return targetOpCheck(); 
-        }
-            else if (error_num == -1) { /* not an index method  still possible it is a label undefined yet. */
-                    for (i=0; (isspace(*(rest_of_line+i))!= 0 || (*(rest_of_line+i) == COMMA)) && *(rest_of_line+i) != '\n' ; i++);
-                    rest_of_line = rest_of_line+i+len ; 
-                    new_cmd-> sourceAdd = 1 ; 
-                    strcpy(new_cmd-> source_label, op1); /* not index method. op2 supposed to be the whole label name */
-                    strcpy(new_cmd->source1_binary,"??????????????") ; /* optional label  */
-                    new_cmd->source1_binary = '\0' ; /* for addressing method 1 - only 1 word required.  \0 */
-                    (new_cmd->L)++ ; /* increase word count */
-                    return 0;
-            }
-                else {/* error_num == -2. index found  label not  */
-                    new_cmd->sourceAdd = 2; /* set addressing method */
-                    (new_cmd->L) = (new_cmd->L) + 2 ; /* increase number of bin words by 2 */
-                    strcpy(new_cmd->source1_binary,"??????????????") ; /* mark for optional label defining later */
-                    strcpy(new_cmd->source2_binary, BinTranslation12Bit(index,0)) ; /* tranlate the index value */ 
-                    return targetOpCheck();
-                }
-
+    else if (error_num == 0) { 
+        new_cmd->sourceAdd = 2; /* set addressing method */
+        (new_cmd->L) = (new_cmd->L) + 2 ; /* increase number of bin words by 2 */
+        strcpy(new_cmd->source1_binary,"??????????????") ; /* mark later translation of label address */
+        strcpy(new_cmd->source2_binary, BinTranslation12Bit(index,0)) ; /*  tranlate the index value. */
+        return targetOpCheck(); 
+    }
+    else if (error_num == -1) { /* not an index method  still possible it is a label undefined yet. */
+            for (i=0; (isspace(*(rest_of_line+i))!= 0 || (*(rest_of_line+i) == COMMA)) && *(rest_of_line+i) != '\n' ; i++);
+            rest_of_line = rest_of_line+i+len ; 
+            new_cmd-> sourceAdd = 1 ; 
+            strcpy(new_cmd-> source_label, op1); /* not index method. op2 supposed to be the whole label name */
+            strcpy(new_cmd->source1_binary,"??????????????") ; /* optional label  */
+            new_cmd->source2_binary = '\0' ; /* for addressing method 1 - only 1 word required.  \0 */
+            (new_cmd->L)++ ; /* increase word count */
+            return 0;
+    }
+    else {/* error_num == -2. index found  label not  */
+        new_cmd->sourceAdd = 2; /* set addressing method */
+        (new_cmd->L) = (new_cmd->L) + 2 ; /* increase number of bin words by 2 */
+        strcpy(new_cmd->source1_binary,"??????????????") ; /* mark for optional label defining later */
+        strcpy(new_cmd->source2_binary, BinTranslation12Bit(index,0)) ; /* tranlate the index value */ 
+        return targetOpCheck();
+    }
+    
     return ERR_UNDEFINED_ARGUMENT ; /* if source op doesnt fit the prior options, it is undefined. */
+    
 }
 
 /* return 0 if source op is a valid array_index. 
@@ -316,7 +312,6 @@ int isIndex(int *index, label_node **baseLabel, char **labelName) {
         }
     /* if reached here - index is valid. continue to check label validation. */
     /* copy string up to j to the labelBaseName[] */
-    
     for (k=0, s=0 ; k<j; k++) {
         if ((isspace(*(rest_of_line+k))) != 0 || *(rest_of_line+k) == COMMA)
             continue ;
@@ -325,11 +320,16 @@ int isIndex(int *index, label_node **baseLabel, char **labelName) {
     }
     baseLabelName[s] = '\0';
     strcpy(*labelName,baseLabelName);
-    *baseLabel = label_exists(baseLabelName) ;
+    baseLabel = label_exists(baseLabelName) ;
     /* checking that index is not out of the array bounderies */
-    if (baseLabel != NULL ) { /* valid array[index] addressing method. the base address will be calulated later. */
-        if ((*baseLabel)-> data_count <= *index)
-            return -3 ; 
+    if (baseLabel != NULL) { /* valid array[index] addressing method. the base address will be calulated later. */
+        if (((*baseLabel) -> label_type == DATA_LABEL || (*baseLabel) -> label_type == STRING_LABEL)){
+            if ((*baseLabel)-> data_count <= *index || *index <= 0){
+                return -3 ; 
+            }
+            rest_of_line = rest_of_line+i+1;
+            return 0;
+        }
         rest_of_line = rest_of_line+i+1; /* update rest of line to point after ] */
         return 0; 
     }
@@ -344,15 +344,15 @@ int isIndex(int *index, label_node **baseLabel, char **labelName) {
 }
 
 
-int targetOpCheck() {
+int targetOpCheck() {    
+    int reg_num, immNum , index ;
+    int len ;
     int error_num = 0 ;
     char *lineCopy  = NULL ;
     char *op2 = NULL ;
     char *extra = NULL ;
     char *temp = NULL ;
     char *labelName = malloc(MAX_LABEL_NAME);
-    int reg_num, immNum , labelVal, index ;
-    size_t len ;
     label_node *labelOp = NULL ;
     lineCopy = malloc(strlen(rest_of_line));
     check_allocation(lineCopy);
@@ -431,6 +431,7 @@ int targetOpCheck() {
         /* return 1 for error. return -1 for unrecognized label, but valid index. */
         /* Addressing method - 2 */
         error_num = isIndex(&index, &labelOp, &labelName)  ; /* if valid, rest of line is up to date */
+        
         /* rest_of_line has moved to after op2 */
         strcpy(new_cmd-> target_label, labelName);
         if (error_num == 1)  /* error found */
@@ -498,7 +499,7 @@ int immProcessor(char *token, int *immNum) {
 /* this function gets a string and a pointer to int  if the string is a number, it saves it in *num and returns 0. else, return 1*/
 int isNumber(char *imm, int *num) {
     char *end_P = NULL ;
-    double temp_num = strtod(imm,&end_P); /* convret string to number */
+    double temp_num = strtod(imm,&end_P); /* convert string to number */
     if (strcmp(end_P,"")!=0) /* chars that are not numbers */
         return 1 ; /* not a real number */
     /* real number. check if integer */ 

@@ -226,8 +226,9 @@ void fixEntrys(){
         /* Find the entrys partner in the label tabel */
         while (label_temp != NULL){
             /* If we find the entrys partner, update to the correct address */
-            if (entry_temp -> label_name == label_temp->label_name && label_temp->label_type != ENTRY_LABEL)
+            if (strcmp(entry_temp -> label_name,label_temp->label_name) == 0 && label_temp->label_type != ENTRY_LABEL){
                 entry_temp -> line_init = label_temp -> line_init;
+            }
             label_temp = label_temp -> next_label;
         }
         label_temp = lbl_head;
@@ -257,8 +258,9 @@ void fixCMDs() {
         if (temp->source1_binary != NULL) {
             if (strcmp(temp->source1_binary,"??????????????") == 0) {
                 label_temp = findNotEntry(temp->source_label) ;
-                if (label_temp == NULL)
+                if (label_temp == NULL){
                     error(ERR_INVALID_LABEL) ;
+                }
                 else if(label_temp-> label_type == EXTERN_LABEL) {
                     /* for extern label: value is 0, ARE is 01 */
                     strcpy(temp->source1_binary,BinTranslation12Bit(0,1)) ;
@@ -269,7 +271,6 @@ void fixCMDs() {
                     else {
                         val = label_temp-> line_init ;
                         strcpy(temp->source1_binary,BinTranslation12Bit(val,2)) ;
-                        printf("line init: %s\n\n",temp->source1_binary);
                         temp = temp->next_cmd ;
                         continue ;
                     }
@@ -279,8 +280,9 @@ void fixCMDs() {
         if (temp->target1_binary != NULL) {
             if (strcmp(temp->target1_binary,"??????????????") == 0) 
                 label_temp = findNotEntry(temp->target_label) ;
-                if (label_temp == NULL)
-                    error_num = ERR_INVALID_LABEL ;
+                if (label_temp == NULL){
+                    error(ERR_INVALID_LABEL);
+                }
                 else if(label_temp-> label_type == EXTERN_LABEL) {
 
                     /* get the exact IC of the extern use */
@@ -308,3 +310,4 @@ void fixCMDs() {
         temp = temp->next_cmd ;
         }
     }
+

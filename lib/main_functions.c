@@ -84,6 +84,7 @@ void scan_file(char *clean_file_name){
 
     /* Go through the file as long as there is enough RAM */
     while (((IC + DC)-2) <= RAM) {
+        
         /* Grab the next line from the file */
         if (fgets(line, MAX_LINE_LEN, fp) == NULL) {
             if (feof(fp)) {
@@ -127,7 +128,6 @@ void scan_file(char *clean_file_name){
                 case 1:   
                     label_type = getLabelType(pointer);  
                     if (label_type == EXTERN_LABEL || label_type == ENTRY_LABEL){
-                        
                         pointer = strtok(NULL, " \t\n\r\f\v");
                         extern_handler(pointer,label_type); 
                     }
@@ -169,7 +169,8 @@ void scan_file(char *clean_file_name){
                 /* Everything else */
                 case 3: 
                     check_command(line);
-                    IC += (new_cmd -> L);
+                    if (new_cmd != NULL)
+                        IC += (new_cmd -> L);
                     curr_line_number++;
                     break;
                 default:

@@ -62,7 +62,7 @@ void error_manager(ErrorCode errorCode) {
             fprintf(stderr, "Error: No such file %s to open!\n",curr_file);
             break;
         case ERR_FILE_ARGS:
-            fprintf(stderr, "Error: Please input file names to read from!");
+            fprintf(stderr, "Error: Please input file names to read from!\n");
             break;
         case ERR_LBL_PARTNER:
             fprintf(stderr, "Error: Entry in line %d Does not have a decleration in the file!\n",curr_line_number);

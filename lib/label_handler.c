@@ -145,8 +145,10 @@ int check_label(char *p_copy, Label_Type label_type){
 int check_alpha(char *pointer){
     int len = strlen(pointer);
     int i;
-    for (i = 0; i < len; i++){
-        if (!isalpha(pointer[i]))
+    if (!isalpha(*pointer))
+            return 0;
+    for (i = 1; i < len; i++){
+        if (!isalpha(*pointer) && !isdigit(*pointer))
             return 0;
     }
     return 1;

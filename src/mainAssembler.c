@@ -32,7 +32,6 @@ macro *head = NULL;
 int main(int argc,char *argv[]) {
     
     FILE *fp;
-    label_node *dc_temp = NULL;
     char *clean_file_name = (char*)malloc(FILE_NAME_LEN);                          /* string to hold the name as recieved in command line. no endings. */
     int file_count = 0;                                                             
     check_allocation(clean_file_name);
@@ -62,32 +61,16 @@ int main(int argc,char *argv[]) {
             /* Handling and translating the code */
             scan_file(clean_file_name);
             fclose(fp);
+            
+            /* Fix the addresses in the Data segment & Labels used in Instruction segment, and lastly, make the files. */
+            mergeSegments();
 
             /* Fix the entry labels to hold the correct addresses */
             fixEntrys();
 
-             /* Fix the addresses in the Data segment & Labels used in Instruction segment, and lastly, make the files. */
-            mergeSegments();
-            dc_temp = dc_head;
-            while (dc_temp != NULL){
-                printf("%s\t", (dc_temp -> label_name));
-                dc_temp = dc_temp -> next_dc;
-
-            }
+            
             fixCMDs(); 
-                    /*continue;
-                    If there is a label that is used, but it has no label node --> error(ERR_LBL_USE)!!!;
-                 }; 
-                 In this stage: we do the following:
-                 if label used is external -> we add a row to the specific external in extern_list
-                 switch label values with updated values from DC + label table. (i think only data segment and command labels matter?)
-                 */
-/* משימות להמשך 
-לעדכן הוספת שורה ללייבלים של אקסטרנל
-לעדכן סימני שאלה ברשימת פקודות
-לעדכן הדפסת פקודות לקובץ אובגקט שורות 138-165 ב
-file_handler
-freeLists() */
+                   
             /* If we have errors, dont create files, continue to translate next file given by user! */
             if (err_flag != 0){
                 error(ERR_ERR_FLAG);
@@ -105,29 +88,10 @@ freeLists() */
         IC = 1;
         DC = 1;
         err_flag = 0;
-        /* We will free everything here using the official heads of lists    */
-      
+ 
     }
      /* free_lists(); */     
 
-/***********************************************************/
-/* DELETE THIS SECTION !!!! */
-/**********************************************************/
-  /*  printf("IC: %d\t DC: %d\n",IC,DC);
-    if (lbl_head != NULL)
-        printList(1);
-    printf("********************************************\n");
-    if (extern_head != NULL)
-        printf("\n\nExtern head is: [%p] [%s]\n",(void*)extern_head,extern_head->label_name);
-    if (dc_head != NULL){
-        printf("DC head is: [%p] [%s] printing list: \n",(void*)dc_head,dc_head->label_name);
-        printList(2);
-    }
-    if (cmd_head != NULL){
-        printf("CMD head is: [%p] printing list: \n",(void*)cmd_head);
-        printList(3);
-    }*/
-    
     return 0;
 }
 

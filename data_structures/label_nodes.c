@@ -62,7 +62,7 @@ void *add_label (int line_init,int definedData,char *label_name,int entry_count,
 label_node *label_exists(char *curr_label) {
     char *copy = NULL;
     label_node *temp = NULL;
-    copy = malloc(strlen(curr_label));
+    copy = malloc(strlen(curr_label)+1);
     check_allocation(copy);
     strcpy(copy,curr_label);
     temp = lbl_head;
