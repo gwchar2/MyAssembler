@@ -31,7 +31,7 @@ Before we kick it off, there are a few things you must know..
     All outputs were ran on MAC M1 , Ubuntu 16.04 and Windows 10 (x64)
 
 To see our work progress on github, you can click here.
-[Github][https://github.com/gwchar2/MyAssembler]
+[https://github.com/gwchar2/MyAssembler]
 
 Scroll down more for a detailed project flow.
 
@@ -66,7 +66,7 @@ Scroll down more for a detailed project flow.
 
 ## Project Flow
 For a brief explanation about the project flow, you can take a look at the following figma graph.
-[Figma][https://www.figma.com/file/vnuBfEvpOJfwIhQHCc1v6Q/Assembler?type=whiteboard&node-id=0%3A1&t=YEHNED1LrLzBxb0X-1]
+[https://www.figma.com/file/vnuBfEvpOJfwIhQHCc1v6Q/Assembler?type=whiteboard&node-id=0%3A1&t=YEHNED1LrLzBxb0X-1]
 
 The project consists of 3 major phases.
 Before we get into the different phases, we 'grab' the user inputted file names from argv.
