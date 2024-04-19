@@ -11,7 +11,8 @@ Before we kick it off, there are a few things you must know..
     Furthermore, they will not be handled within the code (An error will be prompted if you pass the 80 characters).
 
 2) It is stricly prohibited to parse in a string or data with the address of a different label (other than a .define)!
-   for example:
+
+   For example:
 
 ```c
     Illegal:
