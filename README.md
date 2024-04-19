@@ -24,6 +24,7 @@ Before we kick it off, there are a few things you must know..
         add label[3], label[sz]
         add #3, label[3]
 ```
+    
     is illegal FOR EVERY COMMAND! and will be returned as an error.
 
 3) All build files are constructed into the 'build' folder. So dont worry if you cant see them!
