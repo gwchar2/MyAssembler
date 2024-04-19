@@ -2,7 +2,9 @@
 
 
 /*
-*   This function creates a row_node
+*   Creates a row node for external labels
+*   @address - The address the external label appeared
+*   @label_node - The external node we are adding a row to
 */
 row_node *create_row(int address,label_node *label_node){
     row_node *new_row = malloc(sizeof(row_node));                           /* Allocates memory for the new node */
@@ -13,7 +15,9 @@ row_node *create_row(int address,label_node *label_node){
 }
 
 /*
-*   This function adds a row to the specific label node 
+*   Adds a row node to an external labels
+*   @address - The address the external label appeared
+*   @label_node - The external node we are adding a row to
 */
 void *add_row(label_node *label_node, int address) {
     row_node *new_row = create_row(address,label_node); 

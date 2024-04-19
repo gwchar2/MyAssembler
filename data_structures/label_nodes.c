@@ -2,7 +2,12 @@
 
 
 /*
-*   This function creates a word_node according to the label name, type, initiated address and sets everything else to NULL
+*   This function creates a label_node according to the label name, type, initiated address and sets everything else to NULL
+*   @line_init - Holds the line it as initiated in the file.
+*   @definedData - Holds the data of a .define
+*   @label_name - Holds the name of the label.
+*   @entry_count - A flag for entry labels.
+*   @label_type - An enum holding the value corresponding to the type of label we are reciving.
 */
 label_node *create_label(int line_init,int definedData,char *label_name,int entry_count,Label_Type label_type){
     label_node *new_label = malloc(sizeof(label_node));                        /* Initialize room for a new label node */
@@ -28,10 +33,15 @@ label_node *create_label(int line_init,int definedData,char *label_name,int entr
 }
 
 /*
-*   This function adds a label to the list
+*   This function adds a label_node according to the label name, type, initiated address and sets everything else to NULL
+*   @line_init - Holds the line it as initiated in the file.
+*   @definedData - Holds the data of a .define
+*   @label_name - Holds the name of the label.
+*   @entry_count - A flag for entry labels.
+*   @label_type - An enum holding the value corresponding to the type of label we are reciving.
 */
 void *add_label (int line_init,int definedData,char *label_name,int entry_count,Label_Type label_type) {
-    label_node *new_label = create_label(line_init, definedData, label_name, entry_count, label_type);                           /* Creates a new node */
+    label_node *new_label = create_label(line_init+99, definedData, label_name, entry_count, label_type);                           /* Creates a new node */
     label_node *temp = lbl_head; 
     if (lbl_head == NULL) {                                                   /* If the list is empty, add the new node to the top of the list */
         lbl_head = new_label;
@@ -57,13 +67,15 @@ void *add_label (int line_init,int definedData,char *label_name,int entry_count,
 
 
 /*
-*   This function checks if a label exists in the data list 
+*   This function checks if a label exists in the data list.
+*   @curr_label - The name of a label we are looking for.
 */
 label_node *label_exists(char *curr_label) {
     char *copy = NULL;
     label_node *temp = NULL;
     copy = malloc(strlen(curr_label)+1);
     check_allocation(copy);
+    add_ptr(copy);
     strcpy(copy,curr_label);
     temp = lbl_head;
     if (lbl_head==NULL)
@@ -76,9 +88,28 @@ label_node *label_exists(char *curr_label) {
     return NULL;
 }
 
+/*
+*   This function checks if a label exists in the data list & it is not an entry!
+*   @name - The name of a label we are looking for.
+*/
+void *findNotEntry(char *name){
+    label_node *label_temp = NULL;
+    if(lbl_head == NULL)
+        return NULL;
+    else {
+        label_temp = lbl_head;
+        while (label_temp != NULL){
+            if (strcmp(label_temp->label_name,name) == 0 && label_temp -> label_type != ENTRY_LABEL)
+                return label_temp;
+            label_temp = label_temp -> next_label;
+        }
+    }
+    return NULL;
+}
 
 /*
-*   This function adds a an entry node to the entry list
+*   This function adds an entry node to the sub-entry list.
+*   @some_node - The label node from an entry type we are adding.
 */
 void *add_entry(label_node *some_node) {
     label_node *temp = entry_head;
@@ -95,7 +126,8 @@ void *add_entry(label_node *some_node) {
 }
 
 /*
-*   This function adds a an external node to the extern list
+*   This function adds an external node to the sub-external list.
+*   @some_node - The label node from an external type we are adding.
 */
 void *add_extern(label_node *some_node) {
     label_node *temp = extern_head; 
@@ -112,7 +144,8 @@ void *add_extern(label_node *some_node) {
 }
 
 /*
-*   This function adds a dc node to the dc list
+*   This function adds a data segment node to the sub-data segment list.
+*   @some_node - The label node from an entry type we are adding.
 */
 void *add_dc(label_node *some_node){
     label_node *temp = dc_head; 
@@ -129,7 +162,8 @@ void *add_dc(label_node *some_node){
 }
 
 /*
-*   This function adds a cmd node to the cmd list
+*   This function adds a cmd label node to the sub - cmd list
+*   @some_node - A label node from a command type.
 */
 void *add_cmd_label(label_node *some_node){
     label_node *temp = cmd_label_head; 
@@ -150,17 +184,18 @@ void *add_cmd_label(label_node *some_node){
 /*
 *   This function receives a variable and prints the coresponding list. 
 *   Enter 1 for label list, 2 for dc list, and 3 for instruction list.
+*   This is specificaly for private use.
 */
 void printList(int num){
     label_node *temp = NULL;
-    cmd_node *cmd_temp = NULL;
+    cmd_node *some_cmd = NULL;
     data_node *data_temp = NULL; 
     row_node *row_temp = NULL; 
     label_node *dc_temp = NULL;
+    reg_node *some_reg = NULL;
     printf("\n");
     switch (num){
         case 1: /* label list */
-            print_label_guide();
             printf("********************************************\n");
             printf("\t\tPrinting label tabel\n");
             printf("********************************************\n");
@@ -217,7 +252,7 @@ void printList(int num){
             printf("\t\tPrinting DC list\n");
             printf("********************************************\n");
             while (dc_temp != NULL){
-                printf("[%s]-[%d]-[%d]-",dc_temp -> label_name,dc_temp -> label_type,dc_temp -> line_init);
+                printf("[Name: %s]-[Type: %d]-[Line INIT: %d]-",dc_temp -> label_name,dc_temp -> label_type,dc_temp -> line_init);
                 data_temp = dc_temp -> data_node;
                 while (data_temp != NULL){
                     if (data_temp -> next_data == NULL)
@@ -235,18 +270,29 @@ void printList(int num){
             
             break;
         case 3: /* cmd list */
-            cmd_temp = cmd_head;
-            printf("********************************************\n");
-            printf("\t\tPrinting CMD list\n");
-            printf("********************************************\n");
-            while (cmd_temp != NULL){
-                if (cmd_temp -> next_cmd == NULL){
-                   printf("cmd num: %d | RSadd-[%d]-RTadd-[%d]\n",cmd_temp -> cmd_num ,cmd_temp -> sourceAdd ,cmd_temp -> targetAdd); 
-                   printf("  |");
+            some_cmd = cmd_head;
+            while (some_cmd != NULL){
+                some_reg = some_cmd -> next_reg;
+                printf("[IC: %d] -- [INSTRUCTION: %d] -- [TOTAL: %d] ",some_cmd -> address, some_cmd -> instruction,some_cmd -> total_len);
+                printf("-- [StyleRS: %d] ",some_cmd -> addressStyleRS);
+                printf("-- [StyleRT: %d] ",some_cmd -> addressStyleRT);
+                printf("-- [CMDBIN: %s] ",some_cmd -> bin_value);
+                printf("\n");
+                while (some_reg != NULL){
+                    printf("[ARE: %d] -- [REG TYPE: %d] -- [REG VAL: %d] ",some_reg -> ARE,some_reg -> reg_type,some_reg -> data);
+                    if (some_reg -> label_name != NULL)
+                        printf("-- [LBL NAME: %s] ",some_reg -> label_name);
+                    if (some_reg -> RS == 1)
+                        printf("-- [TYPE: RS] ");
+                    if (some_reg -> RT == 1)
+                        printf("-- [TYPE: RT] ");
+                    
+                    printf("-- [BINVAL: %s] ",some_reg -> bin_value);
+                    printf("\n");
+                    some_reg = some_reg -> next_reg;
                 }
-                else 
-                   printf("cmd num: %d | RSadd-[%d]-RTadd-[%d]\n",cmd_temp -> cmd_num ,cmd_temp -> sourceAdd ,cmd_temp -> targetAdd); 
-                cmd_temp = cmd_temp -> next_cmd;
+                printf("--------------\n");
+                some_cmd = some_cmd -> next_cmd;
             }
             break;
         default:
@@ -254,62 +300,3 @@ void printList(int num){
     }
     return;
 }
-
-/*
-*   This function frees the dynamicaly allocated nodes in the list.
-*   Enter 1 for label list, 2 for dc list, and 3 for instruction list.
-*/
-void freeLists() {
-    label_node *current_label = lbl_head;
-    label_node *temp_label = NULL;
-    row_node *current_row = NULL;
-    row_node *temp_row = NULL;
-    data_node *current_data = NULL;
-    data_node *temp_data = NULL;
-    cmd_node *current_cmd = cmd_head;
-    cmd_node *temp_cmd = NULL;
-    /* Free the label tabel */
-    while (current_label != NULL){
-        /* If we have a data or string label, we need to free the data nodes */
-        if (current_label -> label_type == DATA_LABEL || current_label -> label_type == STRING_LABEL){
-            current_data = current_label -> data_node;
-            while (current_data != NULL){
-                temp_data = current_data -> next_data;
-                free(current_data);
-                current_data = temp_data;
-            }
-        }
-        /* If we have an external label, we need to free the row nodes */
-        else if (current_label -> label_type == EXTERN_LABEL){
-            current_row = current_label -> row_list;
-            while (current_row != NULL){
-                temp_row = current_row -> next_row;
-                free(current_row);
-                current_row = temp_row;
-            }
-        }
-        temp_label = current_label->next_label;
-        free(temp_label);
-        current_label = temp_label;
-    }
-    /* Free the command nodes */
-    while (current_cmd != NULL){
-        temp_cmd = current_cmd->next_cmd;
-        free(current_cmd);
-        current_cmd = temp_cmd;
-    }
-}
-
-void print_label_guide() {
-    printf("-----------------------------------------------------------------\n");
-    printf("| Label Name | Label Type   | Details                           |\n");
-    printf("-----------------------------------------------------------------\n");
-    printf("| LabelName  | CMD_LABEL(0)   | LineInit                        |\n");
-    printf("| LabelName  | DEF_LABEL(1)   | DefinedData                     |\n");
-    printf("| LabelName  | ENTRY_LABEL(2) | EntryCount                      |\n");
-    printf("| LabelName  | EXTERN_LABEL(3)| LineInit| Addresses: Address1...|\n");   
-    printf("| LabelName  | STRING_LABEL(4)| DC | Data: Data1, ...           |\n");
-    printf("| LabelName  | DATA_LABEL(5)  | DC | Data: Data1, ...           |\n");
-    printf("-----------------------------------------------------------------\n");
-}
-

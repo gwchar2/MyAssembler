@@ -11,33 +11,28 @@
 /******************************* 
 ****** DEFINES AND MACROS ******
 ********************************/
-
-#define NUM_OF_CMDS 16
-#define NUM_OF_REGS 10
-#define MIN_ARGV 2
-#define FILE_NAME_LEN 290       /* Max amount of characters in a file name in a 32 bit system according to ASCII Standard*/
-#define CMD_NAME_LEN 3
-#define MAX_LINE_LEN 81
-#define MAX_ENDING_LEN 11
-#define BIN_WORD_LEN 14
-#define FIRST_GROUP_VARS 2
-#define SECOND_GROUP_VARS 1
-#define THIRD_GROUP_VARS 0
-#define COMMA ','
-#define SPACE_COMMA_DEL ", \f\r\t\v\n"
-#define BITS_IN_INT 12
-#define MAX_12BITS 2047
-#define MIN_12BITS -2048
-#define RS_SHIFT 3
-#define RT_SHIFT 0
-#define RT_BIT_FIELD 9
-#define LSB 13
-#define RSA_FIELD 8
-#define RTA_FIELD 10
-#define OPCODE_BIN_LEN 4
-#define OPCODE_FIELD 4
-#define RAM 4096
-#define MAX_LABEL_NAME 32
+#define PREFIX 10
+#define NUM_OF_CMDS 16                                                                              /* The number of valid commands in the program */
+#define NUM_OF_REGS 10                                                                              /* The number of valid registers in the program */
+#define MAX_REGS 4                                                                                  /* The maximum amount of arguments used in a command */
+#define MIN_ARGV 2                                                                                  /* The minimum amount of variables received in the CLI */
+#define FILE_NAME_LEN 290                                                                           /* Max amount of characters in a file name in a 32 bit system according to ASCII Standard*/
+#define MAX_LINE_LEN 81                                                                             /* The maximum length of a received line in the program */
+#define MAX_ENDING_LEN 11                                                                           /* The maximum length of a file ending */
+#define BIN_WORD_LEN 14                                                                             /* The length of 14 binary array */
+#define BITS_IN_INT 12                                                                              /* The amount of bits in an integer */
+#define MAX_12BITS 2047                                                                             /* The highest number achievable with 12 bits */
+#define MIN_12BITS -2048                                                                            /* The lowest number achievable with 12 bits */
+#define RS_SHIFT 3                                                                                  /* The amount to shift RS to its spot */
+#define RT_SHIFT 0                                                                                  /* The amount to shift RT to its spot */
+#define RT_BIT_FIELD 9                      
+#define LSB 13                                                                                      /* The location of the LSB */
+#define RSA_FIELD 8                         
+#define RTA_FIELD 10                        
+#define OPCODE_BIN_LEN 4                                                                            /* The length of a binary op code */
+#define OPCODE_FIELD 4                                                                              /* Size of OPCODE field */
+#define RAM 4096                                                                                    /* The total amount of RAM in the program */
+#define MAX_LABEL_NAME 32                                                                           /* The max length of a label in the program */
 /* Checks if the memory for (C) was allocated properly */
 #define check_allocation(c)\
         if (c == NULL){\
@@ -56,9 +51,10 @@
 /********************************** 
 ********** GLOBAL ENUMS ***********
 ***********************************/
-
+/* Different types of errors */
 typedef enum ErrorCode{
     ERR_UNDEFINED_REGISTER,
+    ERR_UNDEFINED_REGISTER_TYPE,
     ERR_UNDEFINED_COMMAND,
     ERR_EXTRANEOUS_TEXT,
     ERR_INVALID_LABEL,
@@ -71,6 +67,7 @@ typedef enum ErrorCode{
     ERR_SEGMENTATION_FAULT,
     ERR_REDEFINITION_MACRO,
     ERR_ILLEGAL_ADDRESSING,
+    ERR_ILLEGAL_BRACKETS,
     ERR_IMM_OVERFLOW,
     ERR_SIZE_LEAK,
     ERR_DUPLICATE_LABEL,
@@ -78,9 +75,11 @@ typedef enum ErrorCode{
     ERR_FILE_ARGS,
     ERR_ERR_FLAG,
     ERR_UNDEFINED_LBL_USE,
-    ERR_LBL_PARTNER
+    ERR_LBL_PARTNER,
+    ERR_FOLDER
 } ErrorCode; 
 
+/* A list of label types*/
 typedef enum Label_Type{
     CMD_LABEL,
     DEF_LABEL, 
@@ -91,6 +90,7 @@ typedef enum Label_Type{
     INVALID
 } Label_Type;
 
+/* File ending types */
 enum ending_type {
         as, 
         am,
@@ -98,6 +98,38 @@ enum ending_type {
         external, 
         entries
 };
+
+/* A list of different register types */
+typedef enum Reg_Type{
+    IMM, /* 0 */
+    IMM_FR_LBL, /* 1 */
+    LABEL, /* 2 */
+    IMM_LBL, /* 3 */
+    REG,  
+    EXTERN,
+    IMPLICIT
+} Reg_Type;
+
+/* A list of valid instructions */
+typedef enum Instruction {
+    MOV,
+    CMP,
+    ADD,
+    SUB,
+    NOT,
+    CLR,
+    LEA,
+    INC,
+    DEC,
+    JMP,
+    BNE,
+    RED,
+    PRN,
+    JSR,
+    RTS,
+    HLT,
+    UNKNOWN
+} Instruction;
 
 /************************************
 ************ STRUCTURES *************
@@ -114,23 +146,10 @@ typedef struct macro {
     struct macro *next;
 } macro;
 
-typedef struct Cmd_node{
-    int address;                                                                        /* The instruction count */
-    int total_vars;                                                                     /* The total amount of variables it holds */
-    int L;                                                                              /* num of bin words */
-    char *cmd_binary;
-    int sourceAdd;
-    int targetAdd;
-    int cmd_num;
-    char *source1_binary;
-    char *source2_binary;
-    char *target1_binary;
-    char *target2_binary; 
-    char *source_label;
-    char *target_label;
-    struct Cmd_node *next_cmd;                                                          /* Next cmd */
-    struct Label_node *next_label;                                                      /* Next label (null until merging with DC ) */
-} cmd_node;
+typedef struct Pointer_node{                                                            /* This structure will help us free all the dynamicaly allocated data */
+    char *pointer;
+    struct Pointer_node *next_pointer;
+} pointer_node;
 
 typedef struct Label_node{
     int line_init;                                                                      /* Address the label was intialized in */
@@ -150,21 +169,44 @@ typedef struct Label_node{
     struct Label_node *next_cmd_label;                                                  /* The next node representing a command label */                                               
 } label_node;
 
-typedef struct Data_node{                                                               /* For string, we put in ascii values */
-    int data;
-    struct Data_node *next_data;
+typedef struct Data_node{                                                               
+    int data;                                                                           /* The piece of data stored in the DATA or STRING labels */
+    struct Data_node *next_data;                                                        /* A pointer to the next piece of data stored */
 }data_node;
 
 typedef struct Row_node{
-    int address;
-    struct Row_node *next_row;
+    int address;                                                                        /* Holds the address where an external label appears */
+    struct Row_node *next_row;                                                          /* Points to the next row node (holds another address) */
 } row_node;
 
+typedef struct Cmd_node{
+    enum Instruction instruction;                                                       /* This enum represents the type of command */
+    char *bin_value;                                                                    /* This holds the binary value of the command */
+    int instruction_type;                                                               /* If has 2 registers, than 2, else 1 */
+    int address;                                                                        /* The IC address of the cmd */
+    int total_len;                                                                      /* Total amount of variables */
+    int addressStyleRS;                                                                 /* addressing style of the RS in base 10*/
+    int addressStyleRT;                                                                 /* addressing style of the RT in base 10*/
+    struct Cmd_node *next_cmd;                                                          /* A pointer to the next command in the instruction segment */
+    struct Reg_node *next_reg;                                                          /* A pointer to the register list */
+} cmd_node;
+
+typedef struct Reg_node{
+    char *bin_value;                                                                    /* Holds the binary value of the register */
+    int data;                                                                           /* Holds the base 10 data */
+    int ARE;                                                                            /* Holds the correct ARE*/
+    int RS;                                                                             /* RS / RT flag. 1 if they are what they are.*/
+    int RT;                                                                             /* RT Flag */
+    int IC;                                                                             /* The IC address of the register data. */
+    int row;                                                                            /* The line in the file where the register was first initiated. */
+    enum Reg_Type reg_type;                                                             /* This enum represents the reg type */
+    char *label_name;                                                                   /* If the register is a label, this holds the value */
+    struct Reg_node *next_reg;                                                          /* A pointer to the next register */
+} reg_node;
 /************************************
 ******** EXTERNAL VARIABLES *********
 *************************************/
-
-extern char *rest_of_line;                                                              /* this pointer will always pont to the rest of the input line that wans't proccessed yet. */
+                                                            
 extern char *curr_file;                                                                 /* This pointer will always point to the current file that is open. */
 extern char *commands[NUM_OF_CMDS];                                                     /* Global Commands array */
 extern char *registers[NUM_OF_REGS];                                                    /* Global Register array */
@@ -178,16 +220,15 @@ extern label_node *entry_head;                                                  
 extern label_node *extern_head;                                                         /* Extern list head */
 extern label_node *dc_head;                                                             /* Data segment list head */
 extern label_node *cmd_label_head;                                                      /* CMD Labels list head */
-extern cmd_node *cmd_head;                                                              /* Instruction segment head */
-extern cmd_node *new_cmd; 
-extern macro *head;
-
+extern macro *head;                                                                     /* Macro list head */
+extern cmd_node *cmd_head;                                                              /* Instruction segment list head */
+extern pointer_node *ptr_head;                                                          /* Pointer list head */
 
 /************************************
 ************ LABEL NODES ************
 *************************************/
-
-label_node *create_label(int line_init,int definedData,char *label_name,int entry_count,Label_Type label_type); /* This function creates a word_node according to the label name, type, initiated address and sets everything else to NULL */
+                                                                                        /* This function creates a word_node according to the label name, type, initiated address and sets everything else to NULL */
+label_node *create_label(int line_init,int definedData,char *label_name,int entry_count,Label_Type label_type); 
 
 label_node *label_exists(char *curr_label);                                             /* This function checks if a label exists in the data list  */
 
@@ -223,7 +264,16 @@ void *add_data(int data,label_node *label_node);                                
 ************ COMMAND NODES **********
 *************************************/
 
-cmd_node *create_cmd_node(int cmd_num);
+cmd_node *create_cmd(Instruction instruction);                                          /* This function creates a command node */
+
+void *add_cmd(Instruction instruction);                                                 /* This function adds a command node to the command list */
+
+reg_node *create_reg(Reg_Type reg_type, int value);                                     /* This function creates a register node */
+
+reg_node *add_reg (cmd_node *some_cmd, Reg_Type reg_type, int value);                   /* This function adds a register node to the list */
+
+void check_cmd(char *full_line);                                                        /* This function checks if the received line is a valid command input */
+
 
 /************************************
 ************ MACRO NODES ************
@@ -252,12 +302,19 @@ void *add_row(label_node *cur_label, int address);                              
 
 
 /*************************************
+*********** POINTER NODES ************
+*************************************/
+pointer_node *create_pointer(char *ptr);                                                /* This function creates a pointer node */
+
+void *add_ptr(char *pointer);                                                           /* This function adds a pointer node to the pointer list */
+
+/*************************************
 *********** MAIN FUNCTIONS ***********
 *************************************/
 
 void preAssembler(FILE *fp, char* clean_file_name);                                     /* Inputs all macros */ 
 
-void scan_file(char *clean_file_name);                                                                       /* Scans the .am file for the first time */
+void scan_file(char *clean_file_name);                                                  /* Scans the .am file for the first time */
 
 void makefiles(char *clean_file_name);                                                  /* Makes the required files */
 
@@ -296,9 +353,48 @@ void error_manager(ErrorCode errorCode);                                        
 *************************************/
 
 void extern_handler(char *pointer,Label_Type label_type);                               /* Handles extern labels */
+/************************************
+************ CMD HANDLER ************
+*************************************/
+
+Instruction get_cmd(char *cmd);                                                         /* This function returns the enum equal to the received command */
+
+int countCommas(int instruction_type,char *full_line);                                  /* This function counts the amount of commas in the received line */
+
+int countSquares(cmd_node *cmd_node, char *full_line);                                  /* This function counts the amount of brackets in the received line */
+
+int checkIfReg(char *reg);                                                              /* This function checks if the received string is a register */
+    
+int checkImmDef(char *reg);                                                             /* This function checks if the received string can be an immediate or a define*/
+
+int checkLblImmDef(char *reg);                                                          /* This function checks if the received string can be an immediate or define for a label[something] */                       
+
+
+/************************************
+*********** BINARY HANDLER **********
+*************************************/
+
+char *cmdBinTranslation(int cmd_num, int sourceAdd, int targetAdd);                     /* This translates the command to the correct 14 bit binary */
+
+char *opcodeBinTranslation(int num);                                                    /* This translates the op code to 14 bit binary */
+
+char *BinTranslation12Bit(int num, int ARE);                                            /* This translates the received immediate to 14 bit binary */
+
+char *RSBinTranslation(int reg_num);                                                    /* This translates the RS to 14 bit binary word*/
+
+char *RTBinTranslation(int reg_num);                                                    /* This function translates the RT to a 14 bit binary word*/
+
+char *combineRegBin(char *str1, char *str2);                                            /* This function combines 2 registers to 1 14 binary word */
+
+char *BinTranslation14Bit(int num);                                                     /* This function translates a number to a string of 14 binary  */
+
+void binToFour(FILE *obj_fp, char *str);                                                /* Translates a string of 14 binary characters, to encrypted base 4 */
+
+void translateToBin();                                                                  /* This function translates the entire command list to binary */
+
 
 /*************************************
-********** FILE FUNCTIONS ************
+*********** FILE HANDLER ************
 *************************************/
 
 char *addFileEnding(char *file_name, int type);                                         /* Adds the appropriate file ending */
@@ -318,17 +414,6 @@ void mergeSegments();                                                           
 void fixEntrys();                                                                       /* This function fixes the addresses in entries, and also makes sure every entry has a 'partner' */
 
 void fixCMDs();
-/*************************************
-************* FUNCTIONS **************
-*************************************/
-
-int checkWordInArray(char **words, char* targetWord);                                   /* This function checks to see if a targetWord exists in a word_array Returns 1 if it is, 0 if it isnt.*/
-
-char *BinTranslation14Bit(int num);                                                     /* This function translates a number to a string of 14 binary  */
-
-void binToFour(FILE *obj_fp, char *str);                                                /* Translates a string of 14 binary characters, to encrypted base 4 */
-
-int strToInt(char *string);                                                             /* Calculates the given string to an int value. */
 
 /*************************************
 *********** LABEL HANDLER ************
@@ -341,63 +426,25 @@ int check_label(char *p_copy,Label_Type label_type);                            
 
 int check_alpha(char *pointer);                                                         /* Checks if a string is all alphabetical letters returns 1 of yes 0 if no */
 
-/************************************
-*********** PARSE COMMAND ***********
+/*************************************
+************* FUNCTIONS **************
 *************************************/
-void check_command(char *string);
 
-int valid_command_name(char *cmd);
+int checkRegs(char *targetWord);                                                        /* This function checks to see if a targetWord exists in the register array. Returns 1 if it is, 0 if it isnt.*/
 
-void getNumOfVars();
+int checkCmds(char *targetWord);                                                        /* This function checks to see if a targetWord exists in the commands array. Returns 1 if it is, 0 if it isnt.*/
 
-int sourceOpCheck();
+int strToInt(char *string);                                                             /* Calculates the given string to an int value. */
 
-int isIndex(int *index, label_node **baseLabel, char **labelName);
+void resetGlobals();                                                                    /* This function resets the global variables */
 
-int targetOpCheck();
+void freeLists(); /* This function frees all the lists */
 
-int immProcessor(char *token, int *immNum);
+void freeDataList(data_node *head); /* Frees the sub data List */
 
-int isNumber(char *imm, int *num);
+void freeRowList(row_node *head); /* Frees the sub row list */
 
-char *BinTranslation12Bit(int num, int ARE);
+void freeRegs(reg_node *head); /* Frees the sub register List */
 
-int isReg(char *token);
-
-char *RSBinTranslation(int reg_num);
-
-char *RTBinTranslation(int reg_num);
-
-char *cmdBinTranslation(int cmd_num, int sourceAdd, int targetAdd);
-
-int rangeCheck(int num);
-
-char *opcodeBinTranslation(int num);
-
-char *combineRegBin(char *str1, char *str2);
-
-int commaCheck(char *input_copy);
-
-void *add_cmd(cmd_node *label_node);                                                        /* This function adds a cmd node to the cmd list */
-
-int checkExtra(char *extra) ;
-
-
-
+void freeMacro(mac_text *head); /* Frees the macro list */
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -3,6 +3,8 @@
 
 /* 
 *   This function handles all the different cases of .define
+*   @pointer - The remainder of the line.
+*   @label_type - The type of label.
 */
 void define_handler(char *pointer, Label_Type label_type){
     char *p_copy = pointer;                                                             /* Copies the pointer */
@@ -66,8 +68,9 @@ void def_case_1(char *pointer, Label_Type label_type){
     }
 
     /* Copy label name to variable */
-    label_name = malloc(strlen(p_copy));
+    label_name = malloc(strlen(p_copy)+1);
     check_allocation(label_name);
+    add_ptr(label_name);
     strcpy(label_name,p_copy);
 
     /* Grab the duplicate (if exists) */
@@ -80,8 +83,9 @@ void def_case_1(char *pointer, Label_Type label_type){
         return;
     }
 
-    num = malloc(strlen(p_copy));
+    num = malloc(strlen(p_copy)+1);
     check_allocation(num);
+    add_ptr(num);
     strcpy(num,p_copy);
 
     /* If the array is equal to 0, it is int 0. else set the int to atoi value */
@@ -100,7 +104,9 @@ void def_case_1(char *pointer, Label_Type label_type){
             }
             num++;
         }
-        p_copy = malloc(strlen(num));
+        p_copy = malloc(strlen(num)+1);
+        check_allocation(p_copy);
+        add_ptr(p_copy);
         strcpy(p_copy,num);
 
         /* Check there is no more data */
@@ -152,8 +158,9 @@ void def_case_2(char *pointer, Label_Type label_type, char *pointer2){
     }
     
     /* Save the label in label name variable */
-    label_name = malloc(strlen(p_copy));
+    label_name = malloc(strlen(p_copy)+1);
     check_allocation(label_name);
+    add_ptr(label_name);
     strcpy(label_name,p_copy);
 
     /* Grab the duplicate if it exists */
@@ -167,8 +174,9 @@ void def_case_2(char *pointer, Label_Type label_type, char *pointer2){
     }
 
     /* Save the variable in num string for int */
-    num = malloc(strlen(pointer2));
+    num = malloc(strlen(pointer2)+1);
     check_allocation(num);
+    add_ptr(num);
     strcpy(num,pointer2);
 
     /* If the array is equal to 0, it is int 0. else set the int to strToInt value */
@@ -186,7 +194,9 @@ void def_case_2(char *pointer, Label_Type label_type, char *pointer2){
             }
             num++;
         }
-        p_copy = malloc(strlen(num));
+        p_copy = malloc(strlen(num)+1);
+        check_allocation(p_copy);
+        add_ptr(p_copy);
         strcpy(p_copy,num);
         
         /* Check there is no more data */
@@ -239,16 +249,18 @@ void def_case_3(char *pointer, Label_Type label_type ,char *pointer2){
     }
     
     /* Save the label in label name variable */
-    label_name = malloc(strlen(p_copy));
+    label_name = malloc(strlen(p_copy)+1);
     check_allocation(label_name);
+    add_ptr(label_name);
     strcpy(label_name,p_copy);
     
     /* Grab the duplicate if it exists */
     temp = label_exists(label_name);
 
     /* Save the variable in num string for int */
-    num = malloc(strlen(pointer2));
+    num = malloc(strlen(pointer2)+1);
     check_allocation(num);
+    add_ptr(num);
     strcpy(num,pointer2);
 
     /* If the array is equal to 0, it is int 0. else set the int to strToInt value */
@@ -266,7 +278,9 @@ void def_case_3(char *pointer, Label_Type label_type ,char *pointer2){
             }
             num++;
         }
-        p_copy = malloc(strlen(num));
+        p_copy = malloc(strlen(num)+1);
+        check_allocation(p_copy);
+        add_ptr(p_copy);
         strcpy(p_copy,num);
 
         /* Check there is no more data */
@@ -320,8 +334,9 @@ void def_case_4(char *pointer, Label_Type label_type ,char *pointer2){
     }
     
     /* Save the label in label name variable */
-    label_name = malloc(strlen(p_copy));
+    label_name = malloc(strlen(p_copy)+1);
     check_allocation(label_name);
+    add_ptr(label_name);
     strcpy(label_name,p_copy);
 
     /* Grab the duplicate if it exists */
@@ -330,6 +345,7 @@ void def_case_4(char *pointer, Label_Type label_type ,char *pointer2){
     /* Save the variable in num string for int */
     num = malloc(strlen(pointer2)+1);
     check_allocation(num);
+    add_ptr(num);
     strcpy(num,pointer2);
 
     /* If the array is equal to 0, it is int 0. else set the int to atoi value */
@@ -347,7 +363,9 @@ void def_case_4(char *pointer, Label_Type label_type ,char *pointer2){
             }
             num++;
         }
-        p_copy = malloc(strlen(num));
+        p_copy = malloc(strlen(num)+1);
+        check_allocation(p_copy);
+        add_ptr(p_copy);
         strcpy(p_copy,num);
 
         /* Check there is no more data */

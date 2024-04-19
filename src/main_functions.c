@@ -1,5 +1,15 @@
 #include "../include/assembler.h"
 
+
+
+/* 
+* This function creates a new .am file with the macros spreaded.
+* The function goes through the .as file, when reaching a macro definition, 
+* it saves it’s name and *content. later, it creates a new .am file and copies the original file,
+* while replacing every macro use with it’s content.
+* @param – fp – pointer to the original  .as file
+* @param – clean_file_name – a string as recived from command line, representing the file’s name
+ */
 void preAssembler(FILE *fp, char* clean_file_name) {
     char *file_name = NULL;
     char *temp_name = NULL; 
@@ -13,12 +23,12 @@ void preAssembler(FILE *fp, char* clean_file_name) {
     /* create a new .am file with the matching file name */
     /* adding the .am ending */
     temp_name = addFileEnding(clean_file_name,1);
-    file_name = (char*)malloc(strlen(temp_name)+1);/* allocate memory for file name with ending */
+    file_name = malloc(strlen(temp_name)+1);/* allocate memory for file name with ending */
     check_allocation(file_name);
+    add_ptr(temp_name);
+    add_ptr(file_name);
     strcpy(file_name,temp_name); /* file name updated with the correct .am ending */
-
     newP = fopen(file_name,"w");
-    check_allocation(newP);
 
     /* going through the source file, spreading macros to the new .am file */
     while((fgets(cur_line, MAX_LINE_LEN, fp)) != NULL) {
@@ -63,7 +73,9 @@ void preAssembler(FILE *fp, char* clean_file_name) {
 }
 
 /* 
-*   This function scans the file and analyzes the rows according to the demands of the project.
+* This function scans the spreaded .am file and sends every line to it’s relevant process.
+* @param – clean_file_name – the file name without it’s ending. 
+* @return – after scanning and processing the whole file
 */
 void scan_file(char *clean_file_name){
     char line[MAX_LINE_LEN];
@@ -74,7 +86,6 @@ void scan_file(char *clean_file_name){
     FILE *fp;
     Label_Type label_type;
 
-    
     /* Open the .am file */
     fp = openFile(clean_file_name,1);
     if (fp == NULL){
@@ -88,32 +99,30 @@ void scan_file(char *clean_file_name){
         /* Grab the next line from the file */
         if (fgets(line, MAX_LINE_LEN, fp) == NULL) {
             if (feof(fp)) {
-                free(inputCopy);
+                fclose(fp);
                 break; 
             }
         }
-        inputCopy = (char *)malloc(strlen(line) + 1); 
+        inputCopy = malloc(strlen(line) + 1); 
         check_allocation(inputCopy);
         strcpy(inputCopy, line); 
         
         /* Check to see if the file is shorter than 80 characters if it isnt, go next line, else, handle. */
         if (strlen(line) == MAX_LINE_LEN - 1 && line[MAX_LINE_LEN - 2] != '\n') {                                       /* Checking to see if the array is full without \n */
             error(ERR_SIZE_LEAK);
-
             /* Keeps grabbing the remainder of the line so that we skip to the next one!  */
             while (strlen(line) == MAX_LINE_LEN - 1 && line[MAX_LINE_LEN - 2] != '\n'){
                 /* If we reach EOF or NULL just break. */
                 if (fgets(line, MAX_LINE_LEN, fp) == NULL) {
                     if (feof(fp)) {
                         free(inputCopy);
+                        fclose(fp);
                         break; 
                     }
                 }
             } 
             curr_line_number++;
         }
-        
-        
         else{
             inputCopy = malloc(strlen(line) + 1); 
             check_allocation(inputCopy);
@@ -160,17 +169,14 @@ void scan_file(char *clean_file_name){
                         strcpy(inputCopy, line);
                         len = strlen(pointer)+1;
                         full_line = inputCopy + len;
-                        check_command(full_line);
-                        IC += (new_cmd -> L);
+                        check_cmd(full_line);
                         curr_line_number++;
                     }
                     break;
 
                 /* Everything else */
                 case 3: 
-                    check_command(line);
-                    if (new_cmd != NULL)
-                        IC += (new_cmd -> L);
+                    check_cmd(line);
                     curr_line_number++;
                     break;
                 default:
@@ -178,10 +184,15 @@ void scan_file(char *clean_file_name){
                     break;
                 
             }
-        }           
+            
+        } 
+
+        
+        free(inputCopy);         
     }
     if ((IC + DC) > RAM){
         error(ERR_SIZE_LEAK);
+        fclose(fp);
         return;
     }
     
@@ -193,35 +204,57 @@ void scan_file(char *clean_file_name){
 */
 void makefiles(char *clean_file_name){
     char *temp_name = NULL;  
-    
-    if (extern_head != NULL){
-        /* add the correct ending to the file */
-        temp_name = addFileEnding(clean_file_name,3);
-        curr_file = malloc(strlen(temp_name)+1);
-        check_allocation(curr_file);
-        strcpy(curr_file,temp_name);
-        
-        /* Creating the external file */
-        make_extern();
+
+    /* Fix the addresses in the Data segment & Labels used in Instruction segment, and lastly, make the files. */
+    mergeSegments();
+            
+    /* Fix the entry labels to hold the correct addresses. */
+    fixEntrys();
+
+    /* Fix the commands to fill the missing information from labels. */
+    fixCMDs(); 
+
+    /* Translate the data to binary */
+    translateToBin();
+
+    /* If we have errors, dont create files, continue to translate next file given by user! */
+    if (err_flag != 0){
+        error(ERR_ERR_FLAG);
     }
-    if (entry_head != NULL){
+    else {
+        if (extern_head != NULL){
+            /* add the correct ending to the file */
+            temp_name = addFileEnding(clean_file_name,3);
+            curr_file = malloc(strlen(temp_name)+1);
+            check_allocation(curr_file);
+            strcpy(curr_file,temp_name);
+            
+            /* Creating the external file */
+            make_extern();
+            free(curr_file);
+            free(temp_name);
+        }
+        if (entry_head != NULL){
+            /* add the correct ending to the file */
+            temp_name = addFileEnding(clean_file_name,4);
+            curr_file = malloc(strlen(temp_name)+1);
+            check_allocation(curr_file);
+            strcpy(curr_file,temp_name);
+
+            /* Creating the entry file */
+            make_entry();
+            free(curr_file);
+        }
+        
         /* add the correct ending to the file */
-        temp_name = addFileEnding(clean_file_name,4);
+        temp_name = addFileEnding(clean_file_name,2);
         curr_file = malloc(strlen(temp_name)+1);
         check_allocation(curr_file);
         strcpy(curr_file,temp_name);
 
         /* Creating the entry file */
-        make_entry();
+        make_object();
+        free(temp_name);
     }
-    
-    /* add the correct ending to the file */
-    temp_name = addFileEnding(clean_file_name,2);
-    curr_file = malloc(strlen(temp_name)+1);
-    check_allocation(curr_file);
-    strcpy(curr_file,temp_name);
 
-    /* Creating the entry file */
-    make_object();
-    
 }

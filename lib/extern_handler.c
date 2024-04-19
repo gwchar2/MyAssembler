@@ -1,6 +1,11 @@
 #include "../include/assembler.h"
 
 
+/*
+*   This function handles all .external and .entry labels
+*   @pointer - The remainding line 
+*   @label_type - The type (entry or external) 
+*/
 void extern_handler(char *pointer,Label_Type label_type){
     char *label_name = NULL;
     char *p_copy = pointer;
@@ -18,12 +23,13 @@ void extern_handler(char *pointer,Label_Type label_type){
     temp = label_exists(p_copy);
     
     
-    label_name = malloc(strlen(p_copy));
+    label_name = malloc(strlen(p_copy)+1);
     check_allocation(label_name);
+    add_ptr(label_name);
     strcpy(label_name,p_copy);
 
     /* Check there is no remainder past the label */
-    pointer = strtok(NULL," \t\n");
+    pointer = strtok(NULL," \f\r\t\v\n");
     if (pointer != NULL){
         error(ERR_EXTRANEOUS_TEXT);
         return;

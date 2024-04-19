@@ -1,11 +1,14 @@
 #include "../include/assembler.h"
 
 /*
-* Returns 0 if error, 1 if ok, 2 if needs cmd check
+* This function handles all data and string labels.
+*   @pointer - The remainding line from the file.
+*   Returns 0 if error, 1 if ok, 2 if needs cmd check
 */
 int dstring_handler(char *pointer){
     char *label_name = NULL;                                            /* Copies the pointer */
     char *p_copy = NULL;
+    char *suggested_cmd = NULL;
     int i = 0;
     Label_Type label_type;
     label_node *temp_node = NULL;
@@ -20,11 +23,14 @@ int dstring_handler(char *pointer){
     /* Save the label_name and increment pointer */
     label_name = malloc(strlen(pointer)+1);
     check_allocation(label_name);
+    add_ptr(label_name);
     strcpy(label_name,pointer);
-    pointer = strtok(NULL," \t\n\r\f\v");                              
+
+    pointer = strtok(NULL," \t\n\r\f\v");   
+    suggested_cmd = pointer;                      
     
     /* Check to see if missing argument */
-    if (pointer == NULL){
+    if (pointer == NULL ){
         error(ERR_MISSING_ARGUMENT);
         return 0;
     }
@@ -43,8 +49,8 @@ int dstring_handler(char *pointer){
 
 
         /* Check the remainding text */
-        pointer = strtok(NULL,"\n\r\f\v"); 
-        if (pointer == NULL){
+        pointer = strtok(NULL,"\f\r\t\v\n");
+        if (pointer == NULL && strcmp(suggested_cmd,"hlt") != 0 && strcmp(suggested_cmd,"rts")!= 0){
             error(ERR_MISSING_ARGUMENT);
             return 0;
         }
@@ -53,6 +59,7 @@ int dstring_handler(char *pointer){
         if (label_type == STRING_LABEL || label_type == DATA_LABEL){
             p_copy = malloc(strlen(pointer)+1);
             check_allocation(p_copy);
+            add_ptr(p_copy);
             strcpy(p_copy,pointer);
 
             /* CHECK THE DATA */
@@ -101,6 +108,11 @@ int dstring_handler(char *pointer){
     return 1;
 }
 
+/*
+*   This function checks that the data in the line is by the rules
+*   @pointer - The full line
+*   @label_type - The type of label we are checking (data or string)
+*/
 int check_data(char *pointer,Label_Type label_type){
     /* Copy the string for safety */
     int i,counter,len;
@@ -164,10 +176,11 @@ int check_data(char *pointer,Label_Type label_type){
         char *pp = NULL;
         remainder_copy = (char*)malloc(strlen(pointer) + 1);   
         check_allocation(remainder_copy);
+        add_ptr(remainder_copy);
         strcpy(remainder_copy,pointer);                                               /* Copies the input */ 
         size_remainder = strlen(remainder_copy); 
         pp = strtok(string," ,\t\n\r\f\v");
-        
+
         /* As long as we have not reached the end of the input */
         while (pp != NULL ){     
             
@@ -188,6 +201,7 @@ int check_data(char *pointer,Label_Type label_type){
             numCounter++;
             pp = strtok(NULL," ,\t\n\r\f\v");
         } 
+        
         /* The maximum amount of numbers is 36 (with 1 letter label & 35 commas) */
         if (pp != NULL && numCounter >= 36){                                                   
             error(ERR_EXTRANEOUS_TEXT);
@@ -232,6 +246,11 @@ int check_data(char *pointer,Label_Type label_type){
     return 1;
 }
 
+/*
+*   This function grabs the data from the line and fills the corresponding node with it.
+*   @p_copy - The remainder of the line
+*   @temp_node - The node we are filling data into.
+*/
 void fetch_data(char *p_copy, label_node *temp_node){
 
     /* Copy the string for safety */
@@ -242,11 +261,14 @@ void fetch_data(char *p_copy, label_node *temp_node){
     label_node *ptr;
     string = malloc(strlen(p_copy)+1);
     check_allocation(string);
+    add_ptr(string);
     strcpy(string,p_copy);
-    
     /* We now fetch according to the label type */
     /* For string, just go through the string and translate to ASCII */
     if (temp_node -> label_type == STRING_LABEL){
+        while (string[strlen(string)-1] == '\n' || string[strlen(string)-1] == '\t' || string[strlen(string)-1] == ' '){
+            string[strlen(string)-1] ='\0';
+        }
         len = strlen(string)-2;
         string = string+1;
         for (i = 0; i < len; i++){
@@ -263,6 +285,7 @@ void fetch_data(char *p_copy, label_node *temp_node){
         while (pointer != NULL){
             num = malloc(strlen(pointer)+1);
             check_allocation(num);
+            add_ptr(num);
             strcpy(num,pointer);
 
             /* If we find a pointer that is not a number .. it must be a define label, since we already checked !!! */

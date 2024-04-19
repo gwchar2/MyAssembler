@@ -2,6 +2,8 @@
 
 /* 
 *   This function receives a word and checks what type of label it can potentialy be.
+*   @word - The word we are checking.
+*   returns a number corresponding to the specific case in the switch from scan_file();
 */
 int check_first_word (char *word){
     Label_Type type;
@@ -34,14 +36,16 @@ int check_first_word (char *word){
         return 3;                                                                                           /* Everything else */
 }
 /*
-* This function receives a word and returns the type of label it represents
+*   This function receives a word and returns the type of label it represents
+*   @pointer - The label.
 */
 Label_Type getLabelType(char *pointer){
     char *p_copy = NULL;
-    p_copy = malloc(strlen(pointer));
+    p_copy = malloc(strlen(pointer)+1);
     check_allocation(p_copy);
+
     strcpy(p_copy,pointer);
-    
+    add_ptr(p_copy);
     if (p_copy == NULL){
         return INVALID;
     }else if (strcmp(p_copy, ".data") == 0) {
@@ -54,7 +58,7 @@ Label_Type getLabelType(char *pointer){
         return ENTRY_LABEL;
     }else if (strcmp(p_copy, ".define") == 0) {
         return DEF_LABEL;
-    }else if (checkWordInArray(commands,p_copy)){
+    }else if (checkCmds(p_copy)){
         return CMD_LABEL;
     }
     return INVALID; 
@@ -65,13 +69,15 @@ Label_Type getLabelType(char *pointer){
 /*
 *   Checks if a label is according to the demands
 *   Returns 1 if it is, 0 if it isnt.
+*   @p_copy - A name of a label.
+*   @label_type - The type of the label.
 */
 int check_label(char *p_copy, Label_Type label_type){
     char *pointer;
     label_node *temp;
     if (label_type == DEF_LABEL || label_type == EXTERN_LABEL || label_type == ENTRY_LABEL){
         /* Checks to see if 1 <= label <= 31, if the label is a reg / cmd name, if its all alphabetical letters*/
-        if (strlen(p_copy) < 1 || strlen(p_copy) > 31 || checkWordInArray(registers,p_copy) == 1 || checkWordInArray(commands,p_copy) == 1 || check_alpha(p_copy) == 0){
+        if (strlen(p_copy) < 1 || strlen(p_copy) > 31 || checkCmds(p_copy) == 1 || checkRegs(p_copy) == 1 || check_alpha(p_copy) == 0){
             error(ERR_INVALID_LABEL);
             return 0;
         }
@@ -110,13 +116,14 @@ int check_label(char *p_copy, Label_Type label_type){
             error(ERR_INVALID_LABEL);
             return 0;
         }
-        pointer = malloc(strlen(p_copy)-1);
+        p_copy[strlen(p_copy)] = '\0';
+        pointer = malloc(strlen(p_copy)+1);
+        add_ptr(pointer);
         check_allocation(pointer);
         strcpy(pointer,p_copy);
         /* Checks to see if it is a legal word */
-        if (!check_alpha(pointer) || checkWordInArray(registers,pointer) == 1 || checkWordInArray(commands,pointer) == 1){                        /* Check to see if the label is all alphabetical letters or reg / cmd name*/
-            error(ERR_INVALID_LABEL);   
-            free(pointer);                     
+        if (!check_alpha(pointer) || checkCmds(pointer) == 1 || checkRegs(pointer) == 1){                        /* Check to see if the label is all alphabetical letters or reg / cmd name*/
+            error(ERR_INVALID_LABEL);                  
             return 0;
         }
 
@@ -141,6 +148,7 @@ int check_label(char *p_copy, Label_Type label_type){
 /* 
 *   Checks if a string is all alphabetical letters
 *   Returns 1 if it is, returns 0 if it is not
+*   @pointer - The string we are checking.
 */
 int check_alpha(char *pointer){
     int len = strlen(pointer);

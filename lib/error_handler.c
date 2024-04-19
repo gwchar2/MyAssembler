@@ -1,17 +1,25 @@
 #include "../include/assembler.h"
  
+/*  
+* This function handles the different errors that van accrue while scanning file.
+* The function prints the matching error message and flags error so the program won’t execute files.
+* @pram – errorCode – the error number to be printed
+*/
 void error_manager(ErrorCode errorCode) {
     if (err_flag == 0){
         fprintf(stderr, "Printing errors for file: %s\n",curr_file);
     }
     if(errorCode == ERR_ERR_FLAG){
-        fprintf(stderr, "You have [%d] errors in file [%s], continuing to next file!\n\n",err_flag,curr_file);
+        fprintf(stderr, "You have [%d] errors in file [%s]\n\n",err_flag,curr_file);
         return;
     }
     err_flag++;
     switch (errorCode) {
         case ERR_UNDEFINED_REGISTER:
             fprintf(stderr, "Error: Undefined register name in line %d\n", curr_line_number);
+            break;
+        case ERR_UNDEFINED_REGISTER_TYPE:
+            fprintf(stderr, "Error: Undefined register type in line %d\n", curr_line_number);
             break;
         case ERR_UNDEFINED_COMMAND:
             fprintf(stderr, "Error: Undefined command name in line %d\n", curr_line_number);
@@ -70,8 +78,13 @@ void error_manager(ErrorCode errorCode) {
         case ERR_UNDEFINED_LBL_USE:
             fprintf(stderr, "Error: Undefined Label is used in line %d\n",curr_line_number);
             break;
+        case ERR_ILLEGAL_BRACKETS:
+            fprintf(stderr, "Error: Illegal brackets in line %d\n",curr_line_number);
+            break;
+        case ERR_FOLDER:
+            fprintf(stderr, "Error creating folder!");
+            break;
         default:
-            fprintf(stderr, "Error: Unknown error in line %d\n", curr_line_number);
             break;
     }
 }

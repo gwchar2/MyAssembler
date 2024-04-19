@@ -1,42 +1,29 @@
 #include "../include/assembler.h"
 
-/* this function gets a obj file pointer and a binary string. it tranlates the binary code to encrypted 4 base code and writes the line in the obj file */
-void binToFour(FILE *obj_fp, char *str) {
+/* 
+This function checks if a given string is a register name.
+*   @param – targetWord –  a string to look for in registers array 
+*   @return – 1 if found in registers array. 0 if not
+*/
+int checkRegs(char *targetWord){
     int i;
-        for (i=0; i<BIN_WORD_LEN; i=i+2) {
-            if (*(str+i) == '0') {
-                if (*(str+i+1)=='0') { /* 00 */
-                    fputc('*',obj_fp);
-                    continue;
-                }
-                else {/* 01 */
-                    fputc('#',obj_fp);
-                    continue;
-                }
-            }
-            else {
-                if (*(str+i+1)=='0') { /* 10 */
-                    fputc('%',obj_fp);
-                    continue;
-                }
-                else {/* 11 */
-                    fputc('!',obj_fp);
-                    continue;
-                }
-            }
+    for (i = 0; i < NUM_OF_REGS; i++){
+        if (strcmp(registers[i], targetWord) == 0){
+            return 1; 
         }
-    fputc('\n',obj_fp);
-    str++; 
+    }   
+    return 0;
 }
 
 /* 
-*   This function checks to see if a targetWord exists in a word_array
-*   Returns 1 if it is, 0 if it isnt.
+* This function checks if a given string is a command name.
+*   @param – targetWord –  a string to look for in commands array 
+*   @return – 1 if found in commands array. 0 if not
 */
-int checkWordInArray(char **word_array, char *targetWord){
+int checkCmds(char *targetWord){
     int i;
-    for (i = 0; word_array[i] != NULL; i++){
-        if (strcmp(word_array[i], targetWord) == 0){
+    for (i = 0; i < NUM_OF_CMDS; i++){
+        if (strcmp(commands[i], targetWord) == 0){
             return 1; 
         }
     }   
@@ -74,25 +61,119 @@ int strToInt(char *string){
 
 }
 
-/*
-*   This function translates a number to a string of 14 binary 
+/* 
+* This function frees the memory of all the linked list created in the program.
+* Frees the label list and sub data list.
+* Frees the command list and sub reg list.
+* Frees the macro list and sub row list.
 */
-char *BinTranslation14Bit(int num) {
-    static char result[BIN_WORD_LEN];
-    int i, bit, index = 0;
-    int negHandle = 1 << BIN_WORD_LEN; 
 
-    /* Handle negative numbers using Two's complement */
-    if (num < 0) {
-        num += negHandle;
+void freeLists(){
+    label_node *current = lbl_head;
+    cmd_node *curcmd = cmd_head;
+    macro *curmac = head;
+    pointer_node *curptr = ptr_head;
+    label_node *temp = NULL;
+    cmd_node *curtemp = NULL;
+    macro *mactemp = NULL;
+    pointer_node *ptrtemp = NULL;
+    while (current != NULL){
+        free(current -> label_name);
+        freeDataList(current -> data_node);
+        freeRowList(current -> row_list);
+        temp = current;
+        current = current -> next_label;
+        free(temp);
+    }
+    while (curcmd != NULL){
+        free(curcmd -> bin_value);
+        freeRegs(curcmd -> next_reg);
+        curtemp = curcmd;
+        curcmd = curcmd -> next_cmd;
+        free(curtemp);
+    }
+    while (curmac != NULL){
+        free(curmac -> mac_name);
+        freeMacro(curmac -> text);
+        mactemp = curmac;
+        curmac = curmac -> next;
+        free(mactemp);
+    }
+    while (curptr != NULL){
+        free(curptr -> pointer);
+        ptrtemp = curptr;
+        curptr = curptr -> next_pointer;
+        free(ptrtemp);
     }
 
-    /* Store the binary representation of num in the string */
-    for (i = BIN_WORD_LEN-1; i >= 0; i--) {
-        bit = (num >> i) & 1;
-        result[index] = bit + '0'; 
-        index++;
+    resetGlobals();
+}
+/*
+*   Frees the macro list
+*/
+void freeMacro(mac_text *head){
+    mac_text *current = head;
+    mac_text *temp = NULL;
+    while (current != NULL) {
+        free(current -> text);
+        temp = current;
+        current = current -> next;
+        free(temp);
     }
-    return result;
+}
+/*
+*   Frees the sub register List
+*/
+void freeRegs(reg_node *head){
+    reg_node *temp = NULL;
+    reg_node *current = head;
+    while (current != NULL) {
+        free(current -> bin_value);
+        temp = current;
+        current = current -> next_reg;
+        free(temp);
+    }
+}
+/*
+*   Frees the sub data List
+*/
+void freeDataList(data_node *head){
+    data_node *temp = NULL;
+    data_node *current = head;
+    while (current != NULL) {
+        temp = current;
+        current = current -> next_data;
+        free(temp);
+    }
+}
+/*
+*   Frees the sub row list
+*/
+void freeRowList(row_node *head) {
+    row_node *current = head;
+    row_node *temp = NULL;
+    while (current != NULL) {
+        temp = current;
+        current = current -> next_row;
+        free(temp);
+    }
 }
 
+/*  
+*   This function resets all the global variables in the program in order to start processing another file. 
+*/
+void resetGlobals(){
+    curr_line_number = 1;
+    IC = 1;
+    DC = 1;
+    err_flag = 0;                                                                   
+    cmd_label_head = NULL;                                                  
+    lbl_head = NULL;                                                        
+    entry_head = NULL;                                                      
+    extern_head = NULL;                                                    
+    dc_head = NULL;                                                                                                             
+    head = NULL; 
+    cmd_head = NULL; 
+    curr_file = NULL;
+    ptr_head = NULL;
+}
