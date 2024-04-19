@@ -32,6 +32,7 @@ Before we kick it off, there are a few things you must know..
 
 To see our work progress on github, you can click here.
 [Github][https://github.com/gwchar2/MyAssembler]
+
 Scroll down more for a detailed project flow.
 
 ## Project Structure
