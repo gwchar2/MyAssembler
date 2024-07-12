@@ -66,6 +66,67 @@ Scroll down more for a detailed project flow.
 - `Data Structures Folder `: Holds the data structure files.
 - `lib Folder` : Holds the handlers for the rest of the program.
 
+
+## Project Features
+## Machine Code Structure
+
+- Machine Code: Encrypted BASE 4 (0 = *, 1 = #, 2 = %, 3 = !)
+- Structure: 1 to 5 memory words per code
+- Types: A (Absolute), R (Relocatable), E (External)
+
+## Instruction Set
+
+Commands are divided into 3 groups:
+
+1. Group 1 (2 Operands):
+   - mov, cmp, add, sub, lea
+
+2. Group 2 (1 Operand):
+   - not, clr, inc, dec, jmp, bne, red, prn, jsr
+
+3. Group 3 (0 Operands):
+   - rts, hlt
+
+## Macros
+
+- Macro Format: m_mcr
+- Example Macro:
+```c
+mcr m_mcr
+inc r2
+mov A,r1
+endmcr
+```
+
+## File Structure
+
+- Line Length: Up to 80 characters
+- Sentence Types: Empty, Note, Label, Command, Define
+- Labeled Sentences: .data, .string, .entry, .extern
+
+## Variables
+
+- Label Format: Starts with alphabetic letter, max 31 characters
+- Data Types: .string, .data, command
+
+## Input/Output
+
+- Input: Text files (source code), file names passed as ARGV
+- Output Files: .am (source code after macro translation), .ob (final machine code), .ext (external labels), .ent (entry labels)
+
+## Object File Format
+
+- Header: Total length of instruction segment, total length of data segment
+- Content: Address (base 10) | Encrypted BASE 4 (7 digits)
+
+## Entry and Externals Files
+
+- Entry File Format: Name of Label | Address of Label Initiation
+- Externals File Format: Name of Label | Address of Usage in Code
+- Prompts the user for errors, including the specific line the error was made. 
+- This project is constructed from a few linked lists, each linked list represents a different aspect of the program.
+
+
 ## Project Flow
 For a brief explanation about the project flow, you can take a look at the following figma graph.
 [https://www.figma.com/file/vnuBfEvpOJfwIhQHCc1v6Q/Assembler?type=whiteboard&node-id=0%3A1&t=YEHNED1LrLzBxb0X-1]
@@ -106,12 +167,3 @@ Afterwords, we translate the data received in the nodes, to the correct binary f
 If there are no errors in the file, we create .ext .entry .o files. If there are no external or entry labels in the code, the files will not be produced.
 We free the lists, reset the pointers & global variables, and go on to the next file.
 Important note: Pointer list frees all the dynamicaly allocated strings in the program (that are not free'd with there nodes).
-
-## Project Features
-
-- Opens and translates any amount of .as files (via CLI).
-- Translates all code received to an encrypted base 4 code as stated in the project requirements. 
-- Prompts the user for errors, including the specific line the error was made. 
-- This project is constructed from a few linked lists, each linked list represents a different aspect of the program.
-
-
