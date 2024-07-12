@@ -88,6 +88,7 @@ endmcr
 
 - Label Format: Starts with alphabetic letter, max 31 characters
 - Data Types: .string, .data, command
+  
   Important to note:
   It is stricly prohibited FOR EVERY COMMAND to parse in a string or data with the address of a different label (other than a .define)!
 
