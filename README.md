@@ -68,13 +68,13 @@ Scroll down more for a detailed project flow.
 
 
 ## Project Features
-## Machine Code Structure
+### Machine Code Structure
 
 - Machine Code: Encrypted BASE 4 (0 = *, 1 = #, 2 = %, 3 = !)
 - Structure: 1 to 5 memory words per code
 - Types: A (Absolute), R (Relocatable), E (External)
 
-## Instruction Set
+### Instruction Set
 
 Commands are divided into 3 groups:
 
@@ -87,7 +87,7 @@ Commands are divided into 3 groups:
 3. Group 3 (0 Operands):
    - rts, hlt
 
-## Macros
+### Macros
 
 - Macro Format: m_mcr
 - Example Macro:
@@ -98,28 +98,28 @@ mov A,r1
 endmcr
 ```
 
-## File Structure
+### File Structure
 
 - Line Length: Up to 80 characters
 - Sentence Types: Empty, Note, Label, Command, Define
 - Labeled Sentences: .data, .string, .entry, .extern
 
-## Variables
+### Variables
 
 - Label Format: Starts with alphabetic letter, max 31 characters
 - Data Types: .string, .data, command
 
-## Input/Output
+### Input/Output
 
 - Input: Text files (source code), file names passed as ARGV
 - Output Files: .am (source code after macro translation), .ob (final machine code), .ext (external labels), .ent (entry labels)
 
-## Object File Format
+### Object File Format
 
 - Header: Total length of instruction segment, total length of data segment
 - Content: Address (base 10) | Encrypted BASE 4 (7 digits)
 
-## Entry and Externals Files
+### Entry and Externals Files
 
 - Entry File Format: Name of Label | Address of Label Initiation
 - Externals File Format: Name of Label | Address of Usage in Code
