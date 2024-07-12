@@ -13,7 +13,7 @@ This README file is meant for you.
 Over here, you can learn more about our project structure, logic and flow.
 Before we kick it off, there are a few things you must know..
 
-1) All build files are constructed into the 'build' folder. So don't worry if you cant see them!
+1) All build files are constructed into the 'build' folder.
 
 2) In the 'tests' folder you can find 4 different files showcasing the output received from this code.
     All outputs were ran on MAC M1 , Ubuntu 16.04 and Windows 10 (x64)
