@@ -32,6 +32,9 @@ Before we kick it off, there are a few things you must know..
 
 ## Project Features
 ### Machine Code Structure
+| **Original Base 4**     |    0    |    1    |    2    |    3    |
+|-------------------------|---------|---------|---------|---------|
+|**Encrypted Base 4**     |    *    |    #    |    %    |    !    |
 
 - Machine Code: Encrypted BASE 4 (0 = *, 1 = #, 2 = %, 3 = !)
 - Structure: 1 to 5 memory words per code
