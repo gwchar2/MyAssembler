@@ -1,6 +1,12 @@
 # My Assembler
 
-## Overview
+# Table of Contents
+- [Introduction](#introduction)
+- [Project Structure](#Project Structure)
+- [Project Features](#Project Features)
+- [Project Flow](#Project Flow)
+
+## Introduction
 Dear Project Reviewer,
 
 This README file is ment for you.
@@ -112,8 +118,6 @@ endmcr
   
   Important to note:
   Empty lines, noted lines with ';' and lines that exceed the project limit (80 characters) DO NOT COUNT! An error will be prompted if you pass the 80 characters.
-
-
 
 ### Object File Format
 
