@@ -21,6 +21,13 @@ Before we kick it off, there are a few things you must know..
 
 ## Project Structure
 
+### Source Files
+
+- `src -> mainAssembler.c`: Main program logic.
+- `src -> main_functions.c`: The three major functions that are called in the main.
+- `Data Structures Folder `: Holds the data structure files.
+- `lib Folder` : Holds the handlers for the rest of the program.
+
 ### Header File: `header.h`
 
 - Defines and macros
@@ -40,13 +47,6 @@ Before we kick it off, there are a few things you must know..
 - File handler
 - Label handler
 - Other functions
-
-### Source Files
-
-- `src -> mainAssembler.c`: Main program logic.
-- `src -> main_functions.c`: The three major functions that are called in the main.
-- `Data Structures Folder `: Holds the data structure files.
-- `lib Folder` : Holds the handlers for the rest of the program.
 
 
 ## Project Features
