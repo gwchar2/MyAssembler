@@ -9,11 +9,11 @@
 ## Introduction
 Dear Project Reviewer,
 
-This README file is ment for you.
+This README file is meant for you.
 Over here, you can learn more about our project structure, logic and flow.
 Before we kick it off, there are a few things you must know..
 
-1) All build files are constructed into the 'build' folder. So dont worry if you cant see them!
+1) All build files are constructed into the 'build' folder. So don't worry if you cant see them!
 
 2) In the 'tests' folder you can find 4 different files showcasing the output received from this code.
     All outputs were ran on MAC M1 , Ubuntu 16.04 and Windows 10 (x64)
@@ -134,17 +134,17 @@ For a brief explanation about the project flow, you can take a look at the follo
 
 The project consists of 3 major phases.
 Before we get into the different phases, we 'grab' the user inputted file names from argv.
-Throughout the project we will itterate on the files. For each file, we will create the corresponding required files, unless an error emerges in one of the files.
+Throughout the project we will iterate on the files. For each file, we will create the corresponding required files, unless an error emerges in one of the files.
 If an error emerges in one of the files received, the corresponding .o .ext and .ent files will not be created!
 
 ### Phase One
 Main logic of this phase can be found in `main_functions.c -> preAssembler`.
-In this phase, we itterate through the .am file opened, and pre-process the macros. 
+In this phase, we iterate through the .am file opened, and pre-process the macros. 
 We swap the macros with the correct text, and create a .as file.
 
 ### Phase Two
 Main logic of this phase can be found in `main_functions.c -> scan_file`.
-In this phase, we itterate through the .as file opened, and pre-process the entire file.
+In this phase, we iterate through the .as file opened, and pre-process the entire file.
 Each line received goes through a statement checking its length. Lines over 80 characters are considered as errors.
 We start by checking for specific characteristics that can help us recognize what the following line may be.
 Afterwords, we send the line on its way down the flow, deppending on its type.
