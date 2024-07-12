@@ -2,9 +2,9 @@
 
 # Table of Contents
 - [Introduction](#introduction)
-- [Project Structure](#Project Structure)
-- [Project Features](#Project Features)
-- [Project Flow](#Project Flow)
+- [Project Structure](#Project-Structure)
+- [Project Features](#Project-Features)
+- [Project Flow](#Project-Flow)
 
 ## Introduction
 Dear Project Reviewer,
