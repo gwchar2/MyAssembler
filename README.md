@@ -18,10 +18,6 @@ Before we kick it off, there are a few things you must know..
 2) In the 'tests' folder you can find 4 different files showcasing the output received from this code.
     All outputs were ran on MAC M1 , Ubuntu 16.04 and Windows 10 (x64)
 
-To see our work progress on github, you can click here.
-[https://github.com/gwchar2/MyAssembler]
-
-Scroll down more for a detailed project flow.
 
 ## Project Structure
 
