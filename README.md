@@ -111,8 +111,7 @@ endmcr
 - Output Files: .am (source code after macro translation), .ob (final machine code), .ext (external labels), .ent (entry labels)
   
   Important to note:
-  Empty lines, noted lines with ';' and lines that exceed the project limit (80 characters) DO NOT COUNT!
-  Furthermore, they will not be handled within the code (An error will be prompted if you pass the 80 characters).
+  Empty lines, noted lines with ';' and lines that exceed the project limit (80 characters) DO NOT COUNT! An error will be prompted if you pass the 80 characters.
 
 
 
