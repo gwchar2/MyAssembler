@@ -7,29 +7,9 @@ This README file is ment for you.
 Over here, you can learn more about our project structure, logic and flow.
 Before we kick it off, there are a few things you must know..
 
-1) Empty lines, noted lines with ';' and lines that exceed the project limit (80 characters) DO NOT COUNT!
-    Furthermore, they will not be handled within the code (An error will be prompted if you pass the 80 characters).
+1) All build files are constructed into the 'build' folder. So dont worry if you cant see them!
 
-2) It is stricly prohibited to parse in a string or data with the address of a different label (other than a .define)!
-
-   For example:
-
-```c
-    Illegal:
-        add  r2, label[someLabel]
-        lea label[someLabel],label[otherLabel]
-        
-    Legal:
-        .define sz = 2
-        add label[3], label[sz]
-        add #3, label[3]
-```
-    
-    is illegal FOR EVERY COMMAND! and will be returned as an error.
-
-3) All build files are constructed into the 'build' folder. So dont worry if you cant see them!
-
-4) In the 'tests' folder you can find 4 different files showcasing the output received from this code.
+2) In the 'tests' folder you can find 4 different files showcasing the output received from this code.
     All outputs were ran on MAC M1 , Ubuntu 16.04 and Windows 10 (x64)
 
 To see our work progress on github, you can click here.
@@ -108,11 +88,31 @@ endmcr
 
 - Label Format: Starts with alphabetic letter, max 31 characters
 - Data Types: .string, .data, command
+  Important to note:
+  It is stricly prohibited FOR EVERY COMMAND to parse in a string or data with the address of a different label (other than a .define)!
+
+   For example:
+
+```c
+    Illegal:
+        add  r2, label[someLabel]
+        lea label[someLabel],label[otherLabel]
+        
+    Legal:
+        .define sz = 2
+        add label[3], label[sz]
+        add #3, label[3]
+```
 
 ### Input/Output
 
 - Input: Text files (source code), file names passed as ARGV
 - Output Files: .am (source code after macro translation), .ob (final machine code), .ext (external labels), .ent (entry labels)
+  Important to note:
+     Empty lines, noted lines with ';' and lines that exceed the project limit (80 characters) DO NOT COUNT!
+     Furthermore, they will not be handled within the code (An error will be prompted if you pass the 80 characters).
+
+
 
 ### Object File Format
 
