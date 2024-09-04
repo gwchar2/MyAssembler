@@ -1,4 +1,5 @@
 ; everything here is correct
+						;		
 a: .entry hello
 .define sz = 2
 STR: .data 5,3,2,1,0,-2,3,-4,sz
