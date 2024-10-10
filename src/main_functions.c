@@ -252,7 +252,7 @@ void makefiles(char *clean_file_name){
         check_allocation(curr_file);
         strcpy(curr_file,temp_name);
 
-        /* Creating the entry file */
+        /* Creating the object file */
         make_object();
         free(temp_name);
     }
