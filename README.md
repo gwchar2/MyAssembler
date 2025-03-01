@@ -7,10 +7,14 @@
    - [Prerequisites](#prerequisites)
    - [Installation & Setup Instructions](#installation--setup-instructions)
 3. [Usage](#usage)
-   - [Supported Commands](#supported-commands)
    - [How to Assemble a File](#how-to-assemble-a-file)
+4. [Instruction Set Summary](#instruction-set-summary)
+   - [Instruction Word Encoding](#instruction-word-encoding)
+   - [OpCodes](#opcodes)
+   - [Addressing Modes](#addressing-modes)
+   - [A,R,E Encoding](#are-encoding)
    - [Encryption Details](#encryption-details)
-   - [Output Files](#output-files)
+5. [File Generation](#file-generation)
      - [Object Files](#object-files)
      - [Entry Files](#entry-files)
      - [External Files](#external-files)
@@ -78,45 +82,6 @@ Before running the C-based assembler software, ensure that the following prerequ
      ```
    Replace `"User Input Here"` with the actual path to your assembly file.
 
-
-## Usage
-
-### Supported Commands
-The assembler supports commands divided into three groups based on the number of operands:
-
-### Group 1 (2 Operands)
-- `mov` – Move data between registers or memory locations.
-- `cmp` – Compare two operands.
-- `add` – Add two operands.
-- `sub` – Subtract one operand from another.
-- `lea` – Load the effective address of the operand into a register.
-
-### Group 2 (1 Operand)
-- `not` – Perform a bitwise NOT operation on the operand.
-- `clr` – Clear (reset to zero) the operand.
-- `inc` – Increment the operand by 1.
-- `dec` – Decrement the operand by 1.
-- `jmp` – Jump to a specified memory location.
-- `bne` – Branch to a specified location if the comparison is not equal.
-- `red` – Read input into the operand.
-- `prn` – Print the operand.
-- `jsr` – Jump to subroutine.
-
-### Group 3 (0 Operands)
-- `rts` – Return from subroutine.
-- `hlt` – Halt the program.
-
-### Macro Format
-- **Macro Format**: `m_mcr`
-
-### Example Macro:
-```c
-mcr m_mcr
-    inc r2
-    mov A, r1
-endmcr 
-```
-
 ### Notes
 - Rows that begin with `;` are designated as **comments** or **notes** and will not be processed by the assembler.
 
@@ -149,27 +114,68 @@ To assemble a file using the assembler, follow these steps:
    - If errors are encountered, refer to the error messages for details on what needs to be corrected in your assembly file.
    - Make the necessary adjustments and re-run the assembler until the file assembles successfully.
 
-### Encryption Details
+## Instruction Set Summary
+
+### Instruction Word Encoding
+
+| Bits  | Usage |
+|-------|-------|
+| 0-1   | `A,R,E` |
+| 2-3   | Destination Operand |
+| 4-5   | Source Operand |
+| 6-9   | Opcode |
+| 10-13 | Not Used |
+
+### Opcodes
+
+| OpCode (Decimal) | Operation CMD | Usage |
+|--------------------|------------|--------|
+| 0  | mov | Move data between registers or memory locations. |
+| 1  | cmp | Compare two operands |
+| 2  | add | Add two operands. |
+| 3  | sub | Subtract one operand from another. |
+| 4  | not | Perform a bitwise NOT operation on the operand. |
+| 5  | clr | Clear (reset to zero) the operand. |
+| 6  | lea | Load the effective address of the operand into a register. |
+| 7  | inc | Increment the operand by 1. |
+| 8  | dec | Decrement the operand by 1. |
+| 9  | jmp | Jump to a specified memory location. |
+| 10 | bne | Branch to a specified location if the comparison is not equal. |
+| 11 | red | Read input into the operand. |
+| 12 | prn | Print the operand. |
+| 13 | jsr | Jump to subroutine. |
+| 14 | rts | Return from subroutine. |
+| 15 | hlt | Halt the program. |
+
+### Addressing Modes
+
+| Mode Number | Addressing Mode Name | Example |
+|------------|----------------------|---------|
+| 0 | Immediate Addressing | `mov #-1,r2` | 
+| 1 | Direct Addressing | `dec x` | 
+| 2 | Indexed Addressing with Constant Index | `mov x[2],r2` | 
+| 3 | Direct Register Addressing | `mov r1,r2` |
+
+### `A,R,E` Encoding
+
+| Value | Meaning |
+|-------|---------|
+| 00    | Absolute |
+| 01    | External |
+| 10    | Relocatable |
+
+### Encryption Details 
 
 The assembler project implements a custom encryption method for converting the original Base 4 representation of commands and data into an encrypted Base 4 format. The encryption process involves the following structure:
 
-### Machine Code Structure
 | **Original Base 4**     |    0    |    1    |    2    |    3    |
 |-------------------------|---------|---------|---------|---------|
 | **Encrypted Base 4**    |    *    |    #    |    %    |    !    |
 
-### Encryption Method
-- **Mapping**: Each original Base 4 value is mapped to a specific encrypted character. The mapping is as follows:
-  - `0` is converted to `*`
-  - `1` is converted to `#`
-  - `2` is converted to `%`
-  - `3` is converted to `!`
-
 ### Purpose of Encryption
 The purpose of this encryption method is to enhance the security of the output files by obscuring the actual machine code representation. This makes it more challenging for unauthorized users to interpret the assembly instructions and data stored within the generated files.
 
-### Decryption
-The assembler generates several types of output files upon successful assembly of the input assembly file. Each file type serves a specific purpose in the assembly process.
+## File Generation
 
 ### Object Files
 - **File Extension**: `.o`
@@ -187,6 +193,14 @@ The assembler generates several types of output files upon successful assembly o
 ## Examples
 Save the code displayed below in a file named `basic_example.as`, then run the assembler as follows:
    `MainAssembler basic_example`
+
+### Example Macro:
+```c
+mcr m_mcr
+    inc r2
+    mov A, r1
+endmcr 
+```
 
 ### Basic Example
 To demonstrate a simple assembly file, consider the following example:
