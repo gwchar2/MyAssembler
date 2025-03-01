@@ -186,7 +186,8 @@ The assembler generates several types of output files upon successful assembly o
 
 ## Examples
 Save the code displayed below in a file named `basic_example.as`, then run the assembler as follows:
-./MainAssembler basic_example.as
+```bash
+MainAssembler basic_example```
 
 ### Basic Example
 To demonstrate a simple assembly file, consider the following example:
