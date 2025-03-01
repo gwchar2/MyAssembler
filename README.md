@@ -192,14 +192,21 @@ Save the code displayed below in a file named `basic_example.as`, then run the a
 To demonstrate a simple assembly file, consider the following example:
 ```assembly
 ; This is a simple assembly program
-entryPoint: .entry label
-.define size = 10
-something: .data 5,4,3,2,1
-label: .string "Hello world"
-
-main:   mov r2, r1
-        add r1, label[size]     
-        hlt
+.define sz = 2
+MAIN: mov r3,LIST[sz]
+LOOP: jmp L1
+        prn #-5
+        mov STR[5], STR[2]
+        sub r1,r4
+        cmp r3, #sz
+        bne END
+L1:     inc K
+        bne LOOP
+END:    hlt
+.define len = 4
+STR:    .string "abcdef"
+LIST:   .data 6,-9,len
+K:      .data 22
 ```
 
 ### Advanced Example
@@ -220,6 +227,100 @@ main:   inc r1
         hlt
 ```
 
+| Decimal Address | Source Code | Binary Machine Code |
+|----------------|-------------|----------------------|
+| 0100 | MAIN: mov r3, LIST[sz] | 00000000111000 |
+| 0101 |  | 00000001100000 |
+| 0102 |  | 00001000010010 |
+| 0103 |  | 00000000001000 |
+| 0104 | LOOP: jmp W | 00001001000100 |
+| 0105 |  | 00000000000001 |
+| 0106 | prn #-5 | 00001100000000 |
+| 0107 |  | 11111111101100 |
+| 0108 | mov STR[5], STR[2] | 00000000101000 |
+| 0109 |  | 00000111110110 |
+| 0110 |  | 00000000010100 |
+| 0111 |  | 00000111110110 |
+| 0112 |  | 00000000001000 |
+| 0113 | sub r1, r4 | 00000011111100 |
+| 0114 |  | 00000000110000 |
+| 0115 | cmp K, #sz | 00000001010000 |
+| 0116 |  | 00001000011110 |
+| 0117 |  | 00000000001000 |
+| 0118 | bne W | 00001010000100 |
+| 0119 |  | 00000000000001 |
+| 0120 | L1: inc L3 | 00000111000100 |
+| 0121 |  | 00000000000001 |
+| 0122 | bne LOOP | 00001010000100 |
+| 0123 |  | 00000110100010 |
+| 0124 | END: hlt | 00001111000000 |
+| 0125 | STR: .string "abcdef" | 00000001100001 |
+| 0126 |  | 00000001100010 |
+| 0127 |  | 00000001100011 |
+| 0128 |  | 00000001100100 |
+| 0129 |  | 00000001100101 |
+| 0130 |  | 00000001100110 |
+| 0131 |  | 00000000000000 |
+| 0132 |  |  |
+| 0133 |  |  |
+| 0134 | LIST: .data 6, -9, len | 00000000000110 |
+| 0135 |  | 11111111110111 |
+| 0136 |  | 00000000000100 |
+| 0137 | K: .data 22 | 00000000010110 |
+
+**Example .obj File**
+```	
+   25	11
+100	****!%*
+101	***#%**
+102	**%*#*%
+103	*****%*
+104	**%#*#*
+105	******#
+106	**!****
+107	!!!!%!*
+108	****%%*
+109	**#!!#%
+110	****##*
+111	**#!!#%
+112	*****%*
+113	***!!!*
+114	****!**
+115	***##**
+116	**%*#!%
+117	*****%*
+118	**%%*#*
+119	******#
+120	**#!*#*
+121	******#
+122	**%%*#*
+123	**#%%*%
+124	**!!***
+125	***#%*#
+126	***#%*%
+127	***#%*!
+128	***#%#*
+129	***#%##
+130	***#%#%
+131	*******
+132	*****#%
+133	!!!!!#!
+134	*****#*
+135	****##%
+```
+
+**Example .ext File**
+```
+W	105
+W	119
+L3	121
+```
+
+**Example .ent File**
+```
+LIST	132
+LOOP	104
+```
 ## Error Handling
 
 The assembler includes robust error handling to help identify and resolve issues that may arise during the assembly process. The error manager function logs and describes errors found in the assembly file, along with the specific line number where the issue occurred.
