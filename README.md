@@ -156,13 +156,20 @@ To assemble a file using the assembler, follow these steps:
 | 2 | Indexed Addressing with Constant Index | `mov x[2],r2` | 
 | 3 | Direct Register Addressing | `mov r1,r2` |
 
-### `A,R,E` Encoding
+### `A,R,E` Encoding and Addressing Modes
 
 | Value | Meaning |
 |-------|---------|
 | 00    | Absolute |
 | 01    | External |
 | 10    | Relocatable |
+
+| Mode Number | Addressing Mode Name | Example | Explanation | A,R,E Value |
+|------------|----------------------|---------|-------------|------------|
+| 0 | Immediate Addressing | `mov #-1,r2` | The operand starts with the # character, followed immediately by a decimal integer. Can also be replaced by a defined name in the program | `A,R,E=00` |
+| 1 | Direct Addressing | `dec x` | The operand is a label that has already been declared or will be declared later in the file, or a .extern directive. | `A,R,E=01/10` |
+| 2 | Indexed Addressing with Constant Index | `mov x[2],r2` | The operand consists of a label that represents the starting address of a 0-indexed array, followed by an index in square brackets specifying the element to access. The index can be a numerical constant or a .define | Each word seperately (Immediate & Direct Addressing) |
+| 3 | Direct Register Addressing | `mov r1,r2` | The operand is a name of a register. | `A,R,E=00` |
 
 ### Encryption Details 
 
