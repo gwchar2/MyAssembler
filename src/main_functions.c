@@ -1,7 +1,5 @@
 #include "../include/assembler.h"
 
-
-
 /* 
 * This function creates a new .am file with the macros spreaded.
 * The function goes through the .as file, when reaching a macro definition, 

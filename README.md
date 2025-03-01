@@ -185,45 +185,39 @@ The assembler generates several types of output files upon successful assembly o
 
 
 ## Examples
-Save the code displayed below in a file named `basic_example.asm`, then run the assembler as follows:
-./MainAssembler basic_example.asm
+Save the code displayed below in a file named `basic_example.as`, then run the assembler as follows:
+   `MainAssembler basic_example`
 
 ### Basic Example
 To demonstrate a simple assembly file, consider the following example:
 ```assembly
 ; This is a simple assembly program
-.define size = 10
-.data
-label: .string "Hello, World!"
 entryPoint: .entry label
+.define size = 10
+something: .data 5,4,3,2,1
+label: .string "Hello world"
 
-main:
-    mov r1, #5             ; Move the immediate value 5 to register r1
-    add r1, label[size]     ; Add the value at label[size] to r1
-    hlt                    ; Halt the program
+main:   mov r2, r1
+        add r1, label[size]     
+        hlt
 ```
 
 ### Advanced Example
 ```assembly
 ; Advanced example demonstrating macros and external labels
+
 .define arraySize = 5
 .extern someFunction
-
-mcr incrementArray
-    inc r1
-    add r1, r2
-endmcr
-
-.data
 myArray: .data 1, 2, 3, 4, 5
 anotherLabel: .string "Array Initialized"
-
 entryPoint: .entry myArray
 
-main:
-    mcr incrementArray
-    jmp someFunction        ; Jump to an external function
-    hlt
+main:   inc r1
+        add r1, r2
+        clr r1
+        add r1,arraySize
+        prn r1
+        hlt
 ```
 
 ## Error Handling

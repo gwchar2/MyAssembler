@@ -1,5 +1,10 @@
 ; everything here is correct
-						;		
+.define arraySize = 5
+.extern someFunction
+
+
+
+
 a: .entry hello
 .define sz = 2
 STR: .data 5,3,2,1,0,-2,3,-4,sz

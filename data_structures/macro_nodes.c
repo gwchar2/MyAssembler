@@ -1,7 +1,7 @@
 #include "../include/assembler.h"
 
 /* 
-* This function creates a new nac_text node 
+* This function creates a new mac_text node 
 *   @param – line – a string to add to the current macro
 *   @return – result – the new mac_text created
 */
